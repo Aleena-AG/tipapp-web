@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        run: yarn build
+        env:
+          VITE_API_URL: https://example.com
+          VITE_STRIPE_PUBLIC_KEY: pk_test_placeholder
+          VITE_FIREBASE_API_KEY: placeholder
+          VITE_FIREBASE_AUTH_DOMAIN: placeholder.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: placeholder
+          VITE_FIREBASE_STORAGE_BUCKET: placeholder.appspot.com
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "0"
+          VITE_FIREBASE_APP_ID: "0:web:0"
+          VITE_FIREBASE_MEASUREMENT_ID: G-PLACEHOLDER
+          VITE_FIREBASE_VAPID_KEY: placeholder
+          VITE_EXCHANGE_RATE_API: https://api.exchangerate-api.com/v4/latest/
+          VITE_BIGDATA_CLOUD_API: https://api.bigdatacloud.net/data/region-codes
