@@ -3,21 +3,12 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 /**
- * In dev, use same-origin `/api` so Vite can proxy to `VITE_API_URL` (your real backend).
- * If `VITE_API_URL` points at the Vite port by mistake, signup hits the SPA server → 404.
+ * Always call same-origin `/api`:
+ * - Dev: Vite proxies to `VITE_API_URL` (see vite.config.ts)
+ * - Prod (Vercel): vercel.json rewrites `/api` → backend (avoids CORS)
  */
 function resolveApiBaseURL(): string {
-  const origin = (
-    import.meta.env.VITE_API_URL as string | undefined
-  )?.replace(/\/$/, "");
-  if (import.meta.env.DEV) {
-    return "/api";
-  }
-  if (!origin) {
-    console.warn("VITE_API_URL is not set; API requests will fail in production.");
-    return "/api";
-  }
-  return `${origin}/api`;
+  return "/api";
 }
 
 const authFetch = axios.create({
