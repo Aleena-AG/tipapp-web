@@ -35,7 +35,7 @@ const ViewHistoryCardSection = () => {
       </div>
       <div
         ref={containerRef}
-        className={`sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)] sm:bg-white min-w-full sm:min-w-[527px] mx-auto rounded-2xl min-h-[624px] max-h-[624px] overflow-y-auto secondary-scrollabr overflow-x-hidden py-24 px-10 sm:px-15 flex flex-col gap-26 ${
+        className={`sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)] sm:bg-white min-w-full sm:min-w-[527px] mx-auto rounded-2xl min-h-[220px] max-h-[42vh] sm:min-h-[624px] sm:max-h-[624px] overflow-y-auto secondary-scrollabr overflow-x-hidden py-16 px-10 sm:py-24 sm:px-15 flex flex-col gap-26 ${
           isLoading ? "justify-center items-center" : ""
         }`}
       >
