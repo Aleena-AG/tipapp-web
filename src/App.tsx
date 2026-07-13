@@ -23,6 +23,7 @@ import {
   ProfilePage,
   ResetPasswordScreen,
   VerifyOTPscreen,
+  VerifySignupOtpScreen,
   ForgotPasswordScreen,
   PaymentScreen,
   PaymentSucessScreen,
@@ -204,6 +205,9 @@ function App() {
         </Route>
         <Route path="/verify-otp" element={<RootLayout />}>
           <Route index element={<VerifyOTPscreen />} />
+        </Route>
+        <Route path="/verify-signup-otp" element={<RootLayout />}>
+          <Route index element={<VerifySignupOtpScreen />} />
         </Route>
         <Route path="/reset-password" element={<RootLayout />}>
           <Route index element={<ResetPasswordScreen />} />

@@ -23,6 +23,11 @@ const SPHomeScreen = () => {
 
   useEffect(() => {
     if (!isStripeOnboardingComplete() || hasShownSuccessToastRef.current) return;
+    if (sessionStorage.getItem("stripeOnboardingSuccessToastShown") === "1") {
+      sessionStorage.removeItem("stripeOnboardingSuccessToastShown");
+      hasShownSuccessToastRef.current = true;
+      return;
+    }
     hasShownSuccessToastRef.current = true;
     ToastProvider.success(t("onboarding.completeSuccess"));
   }, [t]);

@@ -178,6 +178,10 @@ export default function useAuth() {
     navigate("/verify-otp", { state: { email } });
   };
 
+  const handleRedirectToSignupOTP = async (email: string) => {
+    navigate("/verify-signup-otp", { state: { email } });
+  };
+
   const handleRedirectToResetPassword = async (email: string, otp: string) => {
     navigate("/reset-password", { state: { email, otp } });
   };
@@ -202,7 +206,7 @@ export default function useAuth() {
     localStorage.removeItem("googleProfileData");
   };
 
-  const handleLogout = () => {
+  const clearLocalSession = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("userType");
@@ -213,9 +217,27 @@ export default function useAuth() {
     localStorage.removeItem("selectedCurrency");
     localStorage.removeItem("pendingSignUp");
     localStorage.removeItem("googleProfileData");
+    localStorage.removeItem("userEmail");
+    sessionStorage.removeItem("pendingSignupPassword");
     clearPendingSpStripeOnboarding();
     clearStripeOnboardingComplete();
     clearStripeOnboardingLinkOpened();
+  };
+
+  const handleLogout = async () => {
+    const token = localStorage.getItem("token");
+    const deviceUniqueId = localStorage.getItem("notification_token");
+
+    if (token && deviceUniqueId) {
+      try {
+        const { logoutDevice } = await import("@/api/notifications");
+        await logoutDevice(deviceUniqueId);
+      } catch (error) {
+        console.error("Device logout failed:", error);
+      }
+    }
+
+    clearLocalSession();
     navigate("/sign-in");
   };
 
@@ -234,6 +256,7 @@ export default function useAuth() {
     setCurrentUserType,
     handleSignUpRedirect,
     handleRedirectToOTP,
+    handleRedirectToSignupOTP,
     handleRedirectToResetPassword,
     handleRedirectToLogin,
     handleRedirectByRole,

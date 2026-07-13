@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrimaryButton } from "@/components/atoms/buttons/primaryButton";
@@ -188,10 +187,6 @@ export const TippingCardSection = (props: Props) => {
     }
   );
 
-  const userId = localStorage.getItem("userId");
-  // const user = JSON.parse(localStorage.getItem("user") || "{}");
-  // const connectedBankAccountId = user?.ConnectedBankAccountId;
-  
   // Fetch current user details to ensure we have the latest ConnectedBankAccountId
   const { data: currentUser } = useGetCurrentUser();
   const connectedBankAccountId = currentUser?.ConnectedBankAccountId;
@@ -204,10 +199,8 @@ export const TippingCardSection = (props: Props) => {
     isSubmitting,
   } = useFormik({
     initialValues: {
-      UserID: userId,
       PaymentMethod: "paymentMethodisCard",
       TotalAmount: value || 0,
-      Status: true,
     },
     validationSchema: Yup.object({
       TotalAmount: Yup.number()
@@ -227,10 +220,7 @@ export const TippingCardSection = (props: Props) => {
 
     onSubmit: async (values) => {
        
-      const { Status, ...restValues } = values;
       const formattedValues = {
-        ...restValues,
-        UserID: userId,
         PaymentMethod: "paymentMethodisCard",
         TotalAmount: Number.parseFloat(values.TotalAmount as any),
         Currency: currency,

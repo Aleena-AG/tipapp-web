@@ -67,7 +67,12 @@ const PaymentContainer = () => {
 
   const handleBalancePayment = () => {
     addTipMutate({
-      ...tipData,
+      ServiceProviderID: tipData.ServiceProviderID,
+      Amount: tipData.Amount,
+      Currency: tipData.Currency,
+      TipDate: tipData.TipDate,
+      Rating: tipData.Rating,
+      Review: tipData.Review,
       paymentMethodType: "BALANCE",
     });
   };

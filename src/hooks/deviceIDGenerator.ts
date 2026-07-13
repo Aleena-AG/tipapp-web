@@ -12,8 +12,6 @@ export function useNotificationToken() {
   };
   const { mutate: addDeviceToken } = useAddDeviceToken(onSuccess, onError);
 
-  const userID = localStorage.getItem("userId");
-
   useEffect(() => {
     let isMounted = true; // Flag to track component mounting state
 
@@ -29,7 +27,6 @@ export function useNotificationToken() {
             token: "token",
             deviceUniqueId: token,
             deviceType: "WEB",
-            UserID: userID || "",
           });
         }
       }
@@ -41,5 +38,5 @@ export function useNotificationToken() {
     return () => {
       isMounted = false; // Mark component as unmounted
     };
-  }, [addDeviceToken, userID]);
+  }, [addDeviceToken]);
 }

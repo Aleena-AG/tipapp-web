@@ -77,7 +77,10 @@ const PaymentSucessScreen = () => {
 
     const finalizeTip = async () => {
       try {
-        const statusData = await getPaymentIntentStatus(paymentIntentFromUrl);
+        const statusData = await getPaymentIntentStatus(
+          paymentIntentFromUrl,
+          pending.clientSecret
+        );
         if (statusData?.status !== "succeeded") {
           ToastProvider.error("Payment verification failed.");
           navigate("/tip-provider", { replace: true });
@@ -86,7 +89,6 @@ const PaymentSucessScreen = () => {
 
         addTipMutate(
           {
-            TipperID: pending.tipData.TipperID,
             ServiceProviderID: pending.tipData.ServiceProviderID,
             paymentIntentId: paymentIntentFromUrl,
             TipDate: pending.tipData.TipDate,

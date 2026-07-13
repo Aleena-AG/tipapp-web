@@ -28,8 +28,6 @@ import { FaArrowLeft } from "react-icons/fa";
 import {
   ChevronRight,
   BadgeCheck,
-  Calendar,
-  Contact,
   ShieldCheck,
   Zap,
   Smile,
@@ -158,7 +156,6 @@ const QrResultContainer = () => {
     FirstName: "--",
     LastName: "--",
     id: "--",
-    age: 0,
     Bio: "--",
     ProfilePictureURL: "",
   });
@@ -210,9 +207,11 @@ const QrResultContainer = () => {
   }
 
   const handleSubmit = async (values: FormValues) => {
+    const token = localStorage.getItem("token");
     const userid = (await getCurrentUserId()) || "";
-    if (!userid) {
+    if (!token || !userid) {
       ToastProvider.error("Please login to continue");
+      navigate("/sign-in");
       return;
     }
     if (!id) {
@@ -254,6 +253,7 @@ const QrResultContainer = () => {
           TipDate: tipData.TipDate.toISOString(),
         },
         paymentIntentId: result.paymentIntentId,
+        clientSecret: result.clientSecret,
       });
 
       navigate("/payment", {
@@ -263,10 +263,19 @@ const QrResultContainer = () => {
           paymentIntentId: result.paymentIntentId,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create payment intent:", error);
-      ToastProvider.error("Failed to create payment intent. Please try again.");
-      return;
+      const status = error?.response?.status;
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to create payment intent. Please try again.";
+      if (status === 401) {
+        ToastProvider.error("Please login to continue");
+        navigate("/sign-in");
+        return;
+      }
+      ToastProvider.error(message);
     }
   };
 
@@ -284,16 +293,10 @@ const QrResultContainer = () => {
         return;
       }
 
-      const dob = new Date(userData?.DateOfBirth);
-      const age = Math.floor(
-        (new Date().getTime() - dob.getTime()) / 3.15576e10
-      );
-
       setUser({
         FirstName: userData.FirstName ?? "--",
         LastName: userData.LastName ?? "--",
-        id: String(userData.id ?? "--"),
-        age,
+        id: String(userData.KeyCloakID ?? userData.id ?? "--"),
         Bio: userData.Bio ?? "--",
         ProfilePictureURL: userData.ProfilePictureURL ?? "",
       });
@@ -487,45 +490,18 @@ const QrResultContainer = () => {
                     </div>
                   </div>
 
-                  <div className="mt-24 grid grid-cols-2 gap-12">
-                    <div className="flex items-center gap-12 rounded-[12px] bg-[#F8FBFE] px-16 py-12">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#EAF4FF]">
-                        <Calendar className="h-4 w-4 text-[#0B538D]" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="poppins-medium text-[11px] text-[#7A7A7A]">
-                          {t("common.age")}
-                        </p>
-                        <p className="poppins-semibold mt-2 text-[15px] text-[#141414]">
-                          {user.age ? user.age.toString() : "N/A"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-12 rounded-[12px] bg-[#F8FBFE] px-16 py-12">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#EAF4FF]">
-                        <Contact className="h-4 w-4 text-[#0B538D]" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="poppins-medium text-[11px] text-[#7A7A7A]">
-                          {t("common.tipAppId")}
-                        </p>
-                        <p className="poppins-semibold mt-2 truncate text-[15px] text-[#141414]">
-                          {user.id ? user.id.toString() : "N/A"}
-                        </p>
-                      </div>
+                  <div className="mt-24">
+                    <div className="rounded-[12px] bg-[#F8FBFE] px-16 py-12">
+                      <p className="poppins-medium text-[11px] text-[#7A7A7A]">
+                        {t("common.description")}
+                      </p>
+                      <p className="poppins-regular mt-4 line-clamp-3 text-[13px] leading-[22px] text-[#141414]">
+                        {user?.Bio && user.Bio !== "--"
+                          ? user.Bio.toString()
+                          : t("common.noDescriptionYet")}
+                      </p>
                     </div>
                   </div>
-
-                  {user?.Bio && user.Bio !== "--" && (
-                    <div className="mt-16 rounded-[12px] border border-[#EEF2F6] px-16 py-12">
-                      <p className="poppins-semibold text-[13px] text-[#141414]">
-                        {t("common.aboutMe")}
-                      </p>
-                      <p className="poppins-regular mt-4 line-clamp-2 text-[13px] leading-[22px] text-[#6A6A6A]">
-                        {user.Bio.toString()}
-                      </p>
-                    </div>
-                  )}
 
                   {user.id && (
                     <div className="mt-24 flex flex-col gap-12">

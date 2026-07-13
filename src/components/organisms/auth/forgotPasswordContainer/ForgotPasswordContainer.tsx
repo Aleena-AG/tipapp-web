@@ -34,19 +34,17 @@ const ForgotPasswordContainer = () => {
 
   useEffect(() => {
     if (isError && error) {
-      ToastProvider.error(
-        error.response?.data?.message || t("auth.anErrorOccurred")
-      );
-      setShowLoading(false); // Reset loading state on error
+      // Anti-enumeration: backend may still return generic success; don't surface "user not found".
+      setShowLoading(false);
     }
   }, [isError, error, t]);
 
   useEffect(() => {
     if (isSuccess && data) {
       ToastProvider.success(
-        data.message || data.data.message || "Registration successfull!."
+        "If an account exists for this email, an OTP has been sent."
       );
-      setShowLoading(false); // Reset loading state on success
+      setShowLoading(false);
     }
   }, [isSuccess, data]);
 

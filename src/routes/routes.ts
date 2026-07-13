@@ -24,6 +24,7 @@ export const authRoutes = [
   "/register",
   "/forgot-password",
   "/verify-otp",
+  "/verify-signup-otp",
   "/reset-password",
   "/user-selection",
   // "/view-more/newsletter",

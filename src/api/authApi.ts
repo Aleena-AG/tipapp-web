@@ -133,24 +133,25 @@ export const useLogin = () => {
 };
 
 export const useSignUp = () => {
-  const {
-    setToken,
-    // setCurrentUser,
-    setCurrentUserId,
-    handleSignUpRedirect,
-    // setCurrentUserType,
-    // handleRedirect,
-    setCurrentUserEmail,
-  } = useAuth();
+  const { handleRedirectToSignupOTP, setCurrentUserEmail } = useAuth();
+  let signupEmail = "";
+  let signupPassword = "";
+
   return useMutation<any, any, RegisterData>({
     mutationFn: async (data: RegisterData) => {
+      signupEmail = data.email;
+      signupPassword = data.password;
       return await authFetch.post("/auth/sign-up", data);
     },
     onSuccess: (data) => {
-      setCurrentUserId(data.data.data.userid);
-      setCurrentUserEmail(data.data.data.email);
-      setToken(data.data.access_token);
-      handleSignUpRedirect();
+      const email = data?.data?.data?.email || signupEmail;
+      setCurrentUserEmail(email);
+      sessionStorage.setItem("pendingSignupPassword", signupPassword);
+      ToastProvider.success(
+        data?.data?.message ||
+          "Account created. Please verify the OTP sent to your email."
+      );
+      handleRedirectToSignupOTP(email);
     },
     onError: (error: any) => {
       console.error(
@@ -161,8 +162,12 @@ export const useSignUp = () => {
       let displayMessage = "An error occurred during sign up. Please try again.";
 
       if (backendMessage) {
-        if (backendMessage.toLowerCase().includes("already exists") || backendMessage.toLowerCase().includes("email")) {
-          displayMessage = "This email address is already registered. Please try signing in.";
+        if (
+          backendMessage.toLowerCase().includes("already exists") ||
+          backendMessage.toLowerCase().includes("email")
+        ) {
+          displayMessage =
+            "This email address is already registered. Please try signing in.";
         } else {
           displayMessage = backendMessage;
         }
@@ -215,6 +220,10 @@ export const useForgotPassword = () => {
       });
     },
     onSuccess: () => {
+      // Backend always returns a generic anti-enumeration message.
+      ToastProvider.success(
+        "If an account exists for this email, an OTP has been sent."
+      );
       handleRedirectToOTP(email);
     },
     onError: (error: any) => {
@@ -222,6 +231,13 @@ export const useForgotPassword = () => {
         "Forgot password error:",
         error.response?.data?.message || error.message
       );
+      // Do not show "user not found" — keep messaging generic.
+      ToastProvider.success(
+        "If an account exists for this email, an OTP has been sent."
+      );
+      if (email) {
+        handleRedirectToOTP(email);
+      }
     },
   });
 };
@@ -243,6 +259,90 @@ export const useVerifyOTP = () => {
       console.error(
         "OTP verification error:",
         error.response?.data?.message || error.message
+      );
+    },
+  });
+};
+
+export const useVerifySignupOTP = () => {
+  const {
+    setToken,
+    setCurrentUser,
+    setCurrentUserId,
+    setCurrentUserEmail,
+    handleSignUpRedirect,
+  } = useAuth();
+
+  return useMutation<
+    any,
+    any,
+    { email: string; otp: string; password: string }
+  >({
+    mutationFn: async (data) => {
+      return await authFetch.post("/auth/verify-signup-otp", data);
+    },
+    onSuccess: (data) => {
+      sessionStorage.removeItem("pendingSignupPassword");
+      // Same shape as login: { access_token, user: UserDetails, message, ... }
+      const body = data?.data ?? {};
+      const user = body.user ?? body.data?.user ?? null;
+      const userId =
+        user?.KeyCloakID ||
+        body.data?.userid ||
+        body.userid ||
+        body.data?.KeyCloakID ||
+        "";
+      const email = user?.Email || body.data?.email || body.email || "";
+
+      if (!body.access_token || !userId) {
+        console.error("Signup OTP verify response missing token/userId", body);
+        ToastProvider.error(
+          "Verification succeeded but session could not be started. Please sign in."
+        );
+        return;
+      }
+
+      setToken(body.access_token);
+      setCurrentUserId(userId);
+      if (email) {
+        setCurrentUserEmail(email);
+      }
+      if (user) {
+        setCurrentUser(user);
+      }
+
+      ToastProvider.success(
+        body.message || "Email verified successfully. Welcome!"
+      );
+      handleSignUpRedirect();
+    },
+    onError: (error: any) => {
+      console.error(
+        "Signup OTP verification error:",
+        error.response?.data?.message || error.message
+      );
+      ToastProvider.error(
+        error.response?.data?.message ||
+          "Invalid or expired OTP. Please try again."
+      );
+    },
+  });
+};
+
+export const useResendSignupOTP = () => {
+  return useMutation<any, any, { email: string }>({
+    mutationFn: async (data) => {
+      return await authFetch.post("/auth/resend-signup-otp", data);
+    },
+    onSuccess: () => {
+      ToastProvider.success(
+        "If an account needs verification for this email, an OTP has been sent."
+      );
+    },
+    onError: () => {
+      // Anti-enumeration: always show the same generic message.
+      ToastProvider.success(
+        "If an account needs verification for this email, an OTP has been sent."
       );
     },
   });

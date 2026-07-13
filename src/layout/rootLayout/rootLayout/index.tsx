@@ -32,6 +32,10 @@ const RootLayout = () => {
         "/login-success",
         "/register",
         "/my-profile",
+        "/verify-signup-otp",
+        "/verify-otp",
+        "/forgot-password",
+        "/reset-password",
       ];
 
       if (allowedPaths.some((p) => path === p || path.startsWith(`${p}/`))) {
@@ -50,7 +54,12 @@ const RootLayout = () => {
     checkProfile();
   }, [location.pathname, getCurrentUser, getToken, navigate]);
 
-  const hideChromeRoutes = ["/sign-in", "/sign-up", "/user-selection"];
+  const hideChromeRoutes = [
+    "/sign-in",
+    "/sign-up",
+    "/user-selection",
+    "/verify-signup-otp",
+  ];
   const hideChrome = hideChromeRoutes.some(
     (p) => location.pathname === p || location.pathname.startsWith(`${p}/`)
   );

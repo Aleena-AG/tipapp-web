@@ -14,7 +14,6 @@ import {
   isUserRegistrationComplete,
   markStripeOnboardingComplete,
   markStripeOnboardingLinkOpened,
-  isStripeOnboardingLinkOpened,
   clearStripeOnboardingLinkOpened,
   parseStripeAccountLinkResponse,
   openStripeOnboardingUrl,
@@ -83,14 +82,18 @@ const OnboardingPage = () => {
   const OnboardingShell = ({
     children,
     fullScreen = false,
+    showSwitchAccount = true,
   }: {
     children: ReactNode;
     fullScreen?: boolean;
+    showSwitchAccount?: boolean;
   }) => (
     <div className="bg-primary-hex min-h-screen w-full pt-80 pb-50 flex flex-col justify-center sm:justify-start">
-      <div className="fixed right-3 top-[64px] z-30 sm:right-4 sm:top-[70px] lg:right-8 lg:top-[76px]">
-        <SwitchAccount role={t("userSelection.serviceProvider")} />
-      </div>
+      {showSwitchAccount ? (
+        <div className="fixed right-3 top-[64px] z-30 sm:right-4 sm:top-[70px] lg:right-8 lg:top-[76px]">
+          <SwitchAccount role={t("userSelection.serviceProvider")} />
+        </div>
+      ) : null}
       <div
         className={`px-20 mx-auto w-full max-w-[527px] ${
           fullScreen
@@ -132,10 +135,7 @@ const OnboardingPage = () => {
     setOnboardingIncomplete(false);
   };
 
-  const runStatusCheck = (
-    accountId: string,
-    options?: { incompleteOnFalse?: boolean }
-  ) => {
+  const runStatusCheck = (accountId: string) => {
     checkAccountStatus(accountId, {
       onSuccess: (status: boolean) => {
         if (status) {
@@ -145,16 +145,10 @@ const OnboardingPage = () => {
           return;
         }
 
+        // Keep waiting while Stripe confirmation is in progress — never bounce
+        // the user back to the start screen just because one poll is still false.
         falsePollCountRef.current += 1;
-
-        // User refocused the tab after opening Stripe elsewhere — treat as abandoned.
-        if (options?.incompleteOnFalse) {
-          pendingStripeReturnCheckRef.current = false;
-          handleOnboardingIncomplete();
-          return;
-        }
-
-        const maxPolls = pendingStripeReturnCheckRef.current ? 30 : 15;
+        const maxPolls = pendingStripeReturnCheckRef.current ? 45 : 30;
         if (falsePollCountRef.current >= maxPolls) {
           pendingStripeReturnCheckRef.current = false;
           handleOnboardingIncomplete();
@@ -197,7 +191,10 @@ const OnboardingPage = () => {
     if (isStripeReturn) {
       markStripeOnboardingLinkOpened();
       setAwaitingStripeConfirmation(true);
+      setOnboardingIncomplete(false);
       pendingStripeReturnCheckRef.current = true;
+      falsePollCountRef.current = 0;
+      pollAccountIdRef.current = null;
 
       const nextParams = new URLSearchParams(searchParams);
       nextParams.delete("stripe_return");
@@ -205,13 +202,10 @@ const OnboardingPage = () => {
       return;
     }
 
-    // Stale session flag from a previous visit — don't trap the user on the waiting screen.
-    if (isStripeOnboardingLinkOpened() && !user?.isOnboarded) {
-      clearStripeOnboardingLinkOpened();
-      setAwaitingStripeConfirmation(false);
-      pendingStripeReturnCheckRef.current = false;
-    }
-  }, [searchParams, setSearchParams, user?.isOnboarded]);
+    // Do NOT clear awaitingStripeConfirmation here.
+    // After Stripe return we strip ?stripe_return=1; clearing awaiting would
+    // flash the "Start Onboarding" card again before success/incomplete.
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     if (user?.isOnboarded) {
@@ -259,13 +253,12 @@ const OnboardingPage = () => {
   useEffect(() => {
     if (!awaitingStripeConfirmation || !connectedBankAccountId) return;
 
+    // Keep polling on focus — do not mark incomplete until Stripe confirms
+    // success or polling times out. Premature incomplete made users "come back"
+    // without ever seeing the success message.
     const handleFocus = () => {
       void refetchUser();
-      if (pendingStripeReturnCheckRef.current) {
-        runStatusCheck(connectedBankAccountId);
-        return;
-      }
-      runStatusCheck(connectedBankAccountId, { incompleteOnFalse: true });
+      runStatusCheck(connectedBankAccountId);
     };
 
     window.addEventListener("focus", handleFocus);
@@ -284,13 +277,16 @@ const OnboardingPage = () => {
     if (!isOnboarded || hasRedirectedRef.current) return;
     hasRedirectedRef.current = true;
     markStripeOnboardingComplete();
+    sessionStorage.setItem("stripeOnboardingSuccessToastShown", "1");
+    ToastProvider.success(t("onboarding.completeSuccess"));
 
+    // Stay on the success screen until the user has time to see the message.
     const redirectTimer = setTimeout(() => {
       navigate("/service-provider", { replace: true });
-    }, 1500);
+    }, 3500);
 
     return () => clearTimeout(redirectTimer);
-  }, [isOnboarded, navigate]);
+  }, [isOnboarded, navigate, t]);
 
   const { mutateAsync: createStripeAccount } = useCreateStripeAccount();
 
@@ -475,18 +471,28 @@ const OnboardingPage = () => {
 
   if (isOnboarded) {
     return (
-      <OnboardingShell>
-        <ProcessingCard
-          title={t("onboarding.onboardingComplete")}
-          description={t("onboarding.redirectingToDashboard")}
-        />
+      <OnboardingShell showSwitchAccount={false}>
+        <div className="bg-white rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center gap-4">
+          <SecondaryTypo
+            typo={t("onboarding.onboardingComplete")}
+            styles="text-center text-[18px] text-[#0B538D]"
+          />
+          <SecondaryTypo
+            typo={t("onboarding.completeSuccess")}
+            styles="text-center text-gray-600 text-sm max-w-md"
+          />
+          <SecondaryTypo
+            typo={t("onboarding.redirectingToDashboard")}
+            styles="text-center text-gray-500 text-sm max-w-md"
+          />
+        </div>
       </OnboardingShell>
     );
   }
 
   if (startingOnboarding && !awaitingStripeConfirmation) {
     return (
-      <OnboardingShell>
+      <OnboardingShell showSwitchAccount={false}>
         <ProcessingCard
           title={t("onboarding.startingOnboarding")}
           description={t("onboarding.preparingLink")}
@@ -500,7 +506,7 @@ const OnboardingPage = () => {
       userQueryLoading || !connectedBankAccountId || !user;
 
     return (
-      <OnboardingShell>
+      <OnboardingShell showSwitchAccount={false}>
         <ProcessingCard
           title={
             isConfirmingReturn
@@ -512,8 +518,10 @@ const OnboardingPage = () => {
               ? t("onboarding.confirmingReturnHint")
               : t("onboarding.waitingForStripeHint")
           }
-          showReopenLink={!isConfirmingReturn}
-          showStartButton={!stripeOnboardingUrl}
+          showReopenLink={Boolean(stripeOnboardingUrl)}
+          // Never show Start Onboarding while we are waiting for Stripe
+          // success or incomplete result after return.
+          showStartButton={false}
         />
       </OnboardingShell>
     );

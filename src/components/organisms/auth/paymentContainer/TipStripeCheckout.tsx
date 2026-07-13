@@ -55,7 +55,6 @@ const TipStripeCheckout = ({
     (confirmedPaymentIntentId: string) => {
       addTipMutate(
         {
-          TipperID: tipData.TipperID,
           ServiceProviderID: tipData.ServiceProviderID,
           paymentIntentId: confirmedPaymentIntentId,
           TipDate: tipData.TipDate,
@@ -87,14 +86,17 @@ const TipStripeCheckout = ({
 
   const finalizePayment = useCallback(
     async (confirmedPaymentIntentId: string) => {
-      const statusData = await getPaymentIntentStatus(confirmedPaymentIntentId);
+      const statusData = await getPaymentIntentStatus(
+        confirmedPaymentIntentId,
+        clientSecret
+      );
       if (statusData?.status === "succeeded") {
         recordTip(confirmedPaymentIntentId);
       } else {
         ToastProvider.error("Payment was not completed. Please try again.");
       }
     },
-    [recordTip]
+    [clientSecret, recordTip]
   );
 
   const handleExpressCheckoutConfirm = useCallback(async () => {

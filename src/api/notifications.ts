@@ -59,11 +59,19 @@ export const useAddDeviceToken = (
       token: string;
       deviceUniqueId: string;
       deviceType: string;
-      UserID: string;
     }) => {
-      return await authFetch.post('/device-info', deviceData);
+      // UserID is set from JWT on the server — do not send it in the body.
+      return await authFetch.post("/device-info", {
+        token: deviceData.token,
+        deviceUniqueId: deviceData.deviceUniqueId,
+        deviceType: deviceData.deviceType,
+      });
     },
     onSuccess,
     onError,
   });
+};
+
+export const logoutDevice = async (deviceUniqueId: string) => {
+  return authFetch.post("/device-info/logout", { deviceUniqueId });
 };

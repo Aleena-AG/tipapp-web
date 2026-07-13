@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { FaSignOutAlt } from "react-icons/fa";
 import { ArrowRight, Briefcase, Heart, Quote, Store, User } from "lucide-react";
 import ToastProvider from "@/providers/ToastProvider";
+import useAuth from "@/hooks/useAuth";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -83,6 +84,7 @@ const UserDeciderContainer = () => {
   const location = useLocation();
   const { role } = location.state || {};
   const { t } = useTranslation();
+  const { handleLogout } = useAuth();
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
 
   const handleRouteSPHome = () => {
@@ -112,14 +114,8 @@ const UserDeciderContainer = () => {
   };
 
   const handleConfirmLogout = () => {
-    try {
-      clearPendingSpStripeOnboarding();
-      localStorage.clear();
-    } catch (_) {
-      // ignore
-    }
     setShowLogoutConfirmation(false);
-    navigate("/sign-in");
+    void handleLogout();
   };
 
   useEffect(() => {

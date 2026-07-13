@@ -274,12 +274,20 @@ const RegistrationContainer = () => {
     values: FormValues,
     { setSubmitting }: FormikHelpers<FormValues>
   ) => {
-    const resolvedRole = (await getCurrentUserRole()) || role || "";
+    const resolvedRole =
+      (await getCurrentUserRole()) ||
+      role ||
+      localStorage.getItem("userType") ||
+      "";
     const id = (await getCurrentUserId()) || "";
     const email = currentUser?.Email || (await getCurrentEmail()) || "";
 
-    if (!resolvedRole || !id) {
+    if (!id) {
       ToastProvider.error("Please login again");
+      return;
+    }
+    if (!resolvedRole) {
+      ToastProvider.error("Please select tipper or service provider first");
       return;
     }
 

@@ -177,8 +177,14 @@ export const useAddWithdrawTip = (
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: AddWithdrawalType) => {
-      const response = await authFetch.post("/invoices", data);
+    mutationFn: async (data: AddWithdrawalType & { Currency?: string }) => {
+      // CreateInvoiceDto only — UserID comes from JWT on the server.
+      const payload = {
+        PaymentMethod: data.PaymentMethod,
+        TotalAmount: Number(data.TotalAmount),
+        Currency: data.Currency || "GBP",
+      };
+      const response = await authFetch.post("/invoices", payload);
       const body = response.data as {
         data?: unknown;
         message?: string;
@@ -195,29 +201,6 @@ export const useAddWithdrawTip = (
       queryClient.invalidateQueries(["get_Tip_balance"]);
       refreshUserBalanceAfterWithdrawal(queryClient, payload.balance);
       onSuccess(normalizeWithdrawalResponse(payload), message);
-    },
-    onError: (error) => {
-      //@ts-expect-error access error
-      onError(error?.response?.data?.message);
-    },
-  });
-};
-
-export const useSimulatedWithdrawTip = (
-  onSuccess: () => void,
-  onError: (error: string) => void
-) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (data: AddWithdrawalType) => {
-      return await authFetch.post("/invoices/simulate-withdraw", data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["get_Withdraw_history"]);
-      queryClient.invalidateQueries(["get_Tip_history"]);
-      queryClient.invalidateQueries(["get_Tip_balance"]);
-      void queryClient.invalidateQueries(CURRENT_USER_QUERY_KEY);
-      onSuccess();
     },
     onError: (error) => {
       //@ts-expect-error access error
@@ -246,8 +229,45 @@ export const useWithdrawFromStripe = () => {
 
 export const useAddTip = () => {
   return useMutation<any, any, any>({
-    mutationFn: async (data: any ) => {
-      return await authFetch.post("/tip-management", data);
+    mutationFn: async (data: any) => {
+      // Only send CreateTipManagementDto fields (forbidNonWhitelisted).
+      // TipperID is set from JWT on the server — do not send identity fields.
+      const tipDate =
+        data.TipDate instanceof Date
+          ? data.TipDate.toISOString()
+          : data.TipDate;
+
+      const payload: Record<string, unknown> = {
+        ServiceProviderID: data.ServiceProviderID,
+        TipDate: tipDate,
+      };
+
+      if (data.paymentIntentId) {
+        payload.paymentIntentId = data.paymentIntentId;
+      }
+      if (data.paymentMethodType) {
+        payload.paymentMethodType = data.paymentMethodType;
+      }
+      if (data.Amount != null && data.paymentMethodType === "BALANCE") {
+        payload.Amount = data.Amount;
+      }
+      if (data.Currency && data.paymentMethodType === "BALANCE") {
+        payload.Currency = data.Currency;
+      }
+      if (data.Review != null && data.Review !== "") {
+        payload.Review = data.Review;
+      }
+      if (data.Rating != null && data.Rating > 0) {
+        payload.Rating = data.Rating;
+      }
+      if (data.Comment != null && data.Comment !== "") {
+        payload.Comment = data.Comment;
+      }
+      if (data.FeedBackPictureURL) {
+        payload.FeedBackPictureURL = data.FeedBackPictureURL;
+      }
+
+      return await authFetch.post("/tip-management", payload);
     },
     onError: (error: any) => {
       const errorMessage = error.response?.data?.message || error.message || "Failed to send tip";

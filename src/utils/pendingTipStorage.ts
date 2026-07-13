@@ -16,6 +16,7 @@ export interface PendingTipData {
 export interface PendingTipPayment {
   tipData: PendingTipData;
   paymentIntentId: string;
+  clientSecret?: string;
 }
 
 export interface TipSuccessSummary {

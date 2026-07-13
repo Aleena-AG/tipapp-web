@@ -12,6 +12,7 @@ import SignUpScreen from "@/page/auth/sign-up-screen";
 import RegisterScreen from "@/page/auth/register-screen";
 import ForgotPasswordScreen from "./auth/forgot-password-screen";
 import VerifyOTPscreen from "./auth/verify-otp-screen";
+import VerifySignupOtpScreen from "./auth/verify-signup-otp-screen";
 import ResetPasswordScreen from "./auth/reset-password-screen";
 import PaymentScreen from "@/page/auth/payement-screen";
 import WithDrawMoney from "@/page/service-provider/withdraw-money";
@@ -38,6 +39,7 @@ export {
   RegisterScreen,
   ForgotPasswordScreen,
   VerifyOTPscreen,
+  VerifySignupOtpScreen,
   ResetPasswordScreen,
   PaymentScreen,
   WithDrawMoney,

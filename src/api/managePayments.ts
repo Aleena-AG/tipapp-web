@@ -39,9 +39,17 @@ export const useCreateTipPaymentIntent = (
 ) => {
   return useMutation({
     mutationFn: async (data: CreateTipPaymentIntentPayload) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Authentication required to create a tip payment");
+      }
       const response = await authFetch.post(
         "/stripe/create-tip-payment-intent",
-        data
+        {
+          amount: data.amount,
+          currency: data.currency,
+          serviceProviderId: data.serviceProviderId,
+        }
       );
       return response.data?.data as TipPaymentIntentResult;
     },
@@ -57,9 +65,13 @@ export const useCreateTipPaymentIntent = (
   });
 };
 
-export const getPaymentIntentStatus = async (paymentIntentId: string) => {
+export const getPaymentIntentStatus = async (
+  paymentIntentId: string,
+  clientSecret?: string
+) => {
   const response = await authFetch.get(
-    `/stripe/payment-intent/${paymentIntentId}/status`
+    `/stripe/payment-intent/${paymentIntentId}/status`,
+    clientSecret ? { params: { clientSecret } } : undefined
   );
   return response.data?.data;
 };
