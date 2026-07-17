@@ -48,14 +48,14 @@ const TextArea: FunctionComponent<TextAreaProps> = ({
       <Field name={name}>
         {({ field }: { field: FieldInputProps<any> }) => (
           <div
-            className={`${containerStyles} bg-white rounded-lg border border-gray-300 ${
-              isFocused ? "ring-2 ring-blue-200" : ""
+            className={`${containerStyles} rounded-lg border border-border bg-[#F8FAFC] dark:bg-[#121e36] dark:border-white/10 ${
+              isFocused ? "ring-2 ring-ring/30 border-ring" : ""
             }`}
           >
             <textarea
               {...field}
               placeholder={placeholder}
-              className={`w-full p-3 bg-transparent  placeholder:text-opacity-40 text-black placeholder-gray-400 text-base font-sans resize-none outline-none ${inputStyles}`}
+              className={`w-full p-3 bg-transparent placeholder:text-opacity-40 text-[#0B2C4A] placeholder:text-muted-foreground text-base font-sans resize-none outline-none dark:text-white ${inputStyles}`}
               disabled={disabled}
               rows={rows}
               onFocus={handleFocus}

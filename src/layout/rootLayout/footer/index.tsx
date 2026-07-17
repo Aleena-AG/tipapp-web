@@ -12,7 +12,7 @@ const Footer = () => {
   const { t } = useTranslation();
 
   return (
-    <footer className="border-t border-[#E4E0F2] bg-[#F3F1FB] px-4 pt-6 pb-4 sm:px-6 lg:px-10">
+    <footer className="border-t border-border bg-app-surface-muted px-4 pt-6 pb-4 sm:px-6 lg:px-10 dark:border-white/10 dark:bg-[#010816]">
       <div className="mx-auto w-full max-w-[1280px]">
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           {/* Brand */}
@@ -23,10 +23,10 @@ const Footer = () => {
               className="h-10 w-10 rounded-lg object-contain shadow-sm"
             />
             <div className="flex flex-col leading-tight">
-              <span className="poppins-semibold whitespace-nowrap text-sm text-black">
+              <span className="poppins-semibold whitespace-nowrap text-sm text-app">
                 TIP APP
               </span>
-              <span className="poppins-regular whitespace-nowrap text-[11px] text-[#6F6F6F]">
+              <span className="poppins-regular whitespace-nowrap text-[11px] text-app-muted">
                 {t("footer.tagline")}
               </span>
             </div>
@@ -55,22 +55,22 @@ const Footer = () => {
         </div>
 
         {/* Bottom line */}
-        <div className="mt-5 flex flex-col items-center gap-2 border-t border-[#E4E0F2] pt-4 text-center sm:flex-row sm:justify-between sm:text-left">
-          <span className="poppins-medium text-[11px] leading-4 text-[#8A879B]">
+        <div className="mt-5 flex flex-col items-center gap-2 border-t border-border pt-4 text-center sm:flex-row sm:justify-between sm:text-left">
+          <span className="poppins-medium text-[11px] leading-4 text-app-muted">
             {t("footer.copyright")}
           </span>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             <Link
               to="/view-more/newsletter"
               onClick={() => window.scrollTo(0, 0)}
-              className="poppins-medium text-[11px] leading-4 text-[#8A879B] transition-colors hover:text-[#1E4FA3]"
+              className="poppins-medium text-[11px] leading-4 text-app-muted transition-colors hover:text-[#1E4FA3] dark:hover:text-[#93C5FD]"
             >
-              {t("footer.moreFromTipApp.newsletters")}
+              {t("footer.moreFromTipTapp.newsletters")}
             </Link>
             {attachedDocuments.map((document, index) => (
               <span
                 key={index}
-                className="poppins-regular text-[11px] leading-4 text-[#8A879B] transition-colors hover:text-black"
+                className="poppins-regular text-[11px] leading-4 text-app-muted transition-colors hover:text-app"
               >
                 {t(document.name)}
               </span>

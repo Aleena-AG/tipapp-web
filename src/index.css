@@ -36,36 +36,51 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    --app-page: 248 247 255;
+    --app-surface: 255 255 255;
+    --app-surface-muted: 243 241 251;
+    --app-text: 20 20 20;
+    --app-text-muted: 111 111 111;
+    --app-border: 228 224 242;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 220 60% 4%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 220 45% 9%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 220 45% 9%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 220 40% 12%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 40% 12%;
+    --muted-foreground: 215 20% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 220 40% 12%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 220 30% 16%;
+    --input: 220 30% 16%;
+    --ring: 217 91% 60%;
+
+    /* Midnight navy — matches tipper dark design */
+    --app-page: 1 8 22;
+    --app-surface: 10 22 41;
+    --app-surface-muted: 18 30 54;
+    --app-text: 255 255 255;
+    --app-text-muted: 160 174 192;
+    --app-border: 30 48 80;
   }
 }
 
@@ -75,6 +90,96 @@
   }
   body {
     @apply bg-background text-foreground;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .dark body {
+    background-color: #010816;
+  }
+}
+
+@layer utilities {
+  .bg-app-page {
+    background-color: rgb(var(--app-page));
+  }
+
+  .bg-app-surface {
+    background-color: rgb(var(--app-surface));
+  }
+
+  .bg-app-surface-muted {
+    background-color: rgb(var(--app-surface-muted));
+  }
+
+  .text-app {
+    color: rgb(var(--app-text));
+  }
+
+  .text-app-muted {
+    color: rgb(var(--app-text-muted));
+  }
+
+  .border-app {
+    border-color: rgb(var(--app-border));
+  }
+
+  /* Deep midnight navy with soft center glow (dark mode design) */
+  .bg-app-atmosphere {
+    background-color: #f8f7ff;
+    background-image: radial-gradient(
+      ellipse 80% 60% at 55% 40%,
+      rgba(213, 219, 241, 0.7) 0%,
+      rgba(248, 247, 255, 0.2) 45%,
+      transparent 70%
+    );
+  }
+
+  .dark .bg-app-atmosphere {
+    background-color: #010816;
+    background-image:
+      radial-gradient(
+        ellipse 70% 55% at 58% 42%,
+        rgba(11, 83, 141, 0.45) 0%,
+        rgba(5, 22, 48, 0.55) 35%,
+        transparent 65%
+      ),
+      radial-gradient(
+        ellipse 50% 40% at 20% 15%,
+        rgba(37, 99, 235, 0.12) 0%,
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 40% 35% at 85% 75%,
+        rgba(11, 83, 141, 0.18) 0%,
+        transparent 50%
+      ),
+      linear-gradient(180deg, #010816 0%, #00040a 100%);
+  }
+}
+
+@layer components {
+  .app-shell {
+    @apply bg-background text-foreground min-h-screen;
+  }
+
+  .dark .app-shell {
+    background-color: #010816;
+  }
+
+  .app-page {
+    @apply bg-app-page text-app min-h-full;
+  }
+
+  .dark .app-page {
+    background-color: #010816;
+  }
+
+  .app-card {
+    @apply rounded-xl border border-border bg-card text-card-foreground shadow-sm;
+  }
+
+  .app-input {
+    @apply rounded-[7px] border border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none;
   }
 }
 
@@ -226,6 +331,23 @@
   margin-right: 10px;
 }
 
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #dddce2 transparent;
+}
+
+.dark {
+  scrollbar-color: #2a3a55 transparent;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #2a3a55;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #010816;
+}
+
 /* For Internet Explorer and Microsoft Edge */
 * {
   -ms-overflow-style: none; /* Disables default scrollbar */
@@ -233,6 +355,10 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #e0e0e0;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #3d5273;
 }
 
 .secondary-scrollabr::-webkit-scrollbar {
@@ -246,6 +372,22 @@
 .secondary-scrollabr::-webkit-scrollbar-track {
   background: none;
   margin-right: 10px;
+}
+
+.dark .secondary-scrollabr {
+  scrollbar-color: #2a3a55 transparent;
+}
+
+.dark .secondary-scrollabr::-webkit-scrollbar-thumb {
+  background-color: #2a3a55;
+}
+
+.dark .secondary-scrollabr::-webkit-scrollbar-thumb:hover {
+  background-color: #3d5273;
+}
+
+.dark .secondary-scrollabr::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* For Internet Explorer and Microsoft Edge */
@@ -275,6 +417,16 @@
 }
 .themed-scroll::-webkit-scrollbar-thumb:hover {
   background-color: #0B538D;
+}
+
+.dark .themed-scroll {
+  scrollbar-color: #334155 transparent;
+}
+.dark .themed-scroll::-webkit-scrollbar-thumb {
+  background-color: #475569;
+}
+.dark .themed-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b;
 }
 
 /* ---- Success screen animations ---- */
@@ -400,6 +552,134 @@
   animation-delay: 0.75s;
 }
 
+/* ---- Marketing page (About / Contact) ---- */
+@keyframes ta-border-spin {
+  to {
+    --ta-angle: 360deg;
+  }
+}
+
+@keyframes ta-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes ta-orb-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(18px, -22px) scale(1.05);
+  }
+  66% {
+    transform: translate(-14px, 12px) scale(0.96);
+  }
+}
+
+@property --ta-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.ta-gradient-border {
+  position: relative;
+  border-radius: 16px;
+  background: #ffffff;
+  isolation: isolate;
+  box-shadow: 0 10px 30px rgba(11, 83, 141, 0.08);
+}
+
+.ta-gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--ta-angle),
+    #0b538d,
+    #2b9cdb,
+    #9e2a2b,
+    #d71921,
+    #0b538d
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: ta-border-spin 6s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ta-gradient-border > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ta-orb {
+  animation: ta-orb-drift 10s ease-in-out infinite;
+}
+
+.ta-orb-slow {
+  animation: ta-orb-drift 14s ease-in-out infinite reverse;
+}
+
+.ta-glow-pulse {
+  animation: ta-glow-pulse 4s ease-in-out infinite;
+}
+
+@keyframes ta-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ta-loader-spin {
+  animation: ta-loader-spin 0.85s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+@keyframes ta-tip-amount-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.85);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ta-tip-amount-pop {
+  display: inline-block;
+  animation: ta-tip-amount-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ta-delay-6 {
+  animation-delay: 0.9s;
+}
+
+.ta-delay-7 {
+  animation-delay: 1.05s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ta-animate-pop,
   .ta-animate-slide-up,
@@ -407,7 +687,13 @@
   .ta-check-path,
   .ta-ring-pulse,
   .ta-float,
-  .ta-confetti {
+  .ta-confetti,
+  .ta-gradient-border::before,
+  .ta-orb,
+  .ta-orb-slow,
+  .ta-glow-pulse,
+  .ta-loader-spin,
+  .ta-tip-amount-pop {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

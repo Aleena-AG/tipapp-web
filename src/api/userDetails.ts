@@ -86,9 +86,11 @@ export const useUpdateUser = (
 
   return useMutation({
     mutationFn: async (data: UserDetails) => {
-      return await authFetch.patch(`/user-details`, {
-        ...data,
-      });
+      // Gender is UI-only (avatar filter) — never send to backend
+      const { Gender: _gender, ...payload } = data as UserDetails & {
+        Gender?: string | null;
+      };
+      return await authFetch.patch(`/user-details`, payload);
     },
     onSuccess: () => {
       onSuccess();

@@ -55,7 +55,7 @@ const ForgotPasswordContainer = () => {
       onSubmit={handleSubmit}
     >
       {() => (
-        <Form className="md:bg-white max-w-[448px] mx-auto sm:px-[60px] rounded-2xl py-[40px] px-[20px] flex flex-col justify-between sm:shadow-xl">
+        <Form className="md:bg-card max-w-[448px] mx-auto sm:px-[60px] rounded-2xl py-[40px] px-[20px] flex flex-col justify-between sm:shadow-xl">
           <div className="flex flex-col">
             <PrimaryTypo
               typo={t("auth.forgotPassword")}
@@ -64,7 +64,7 @@ const ForgotPasswordContainer = () => {
           </div>
 
           <div className="flex w-full items-center justify-center ">
-            <span className="text-[#6F6F6F] px-6 text-center text-sm mt-[18px] leading-[21px]">
+            <span className="text-app-muted px-6 text-center text-sm mt-[18px] leading-[21px]">
               {t("auth.pleaseEnterEmailForOTP")}
             </span>
           </div>

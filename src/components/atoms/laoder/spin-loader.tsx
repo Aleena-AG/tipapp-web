@@ -8,7 +8,7 @@ const SpinLoader = ({
   isLoadingTextVisible?: boolean;
 }) => {
   return (
-    <div className="flex justify-center items-center h-40 sm:bg-white">
+    <div className="flex justify-center items-center h-40 sm:bg-app-surface">
       {isLoadingTextVisible && <span className="text-black ">Loading ...</span>}
       <BounceLoader
         color={"#000000"}

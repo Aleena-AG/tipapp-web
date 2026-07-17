@@ -14,7 +14,7 @@ interface Props {
 export const RatingsCardSection = (props: Props) => {
   const { t } = useTranslation();
   return (
-    <div className="sm:bg-white sm:max-w-[660px] min-h-[140px] sm:min-w-[660px] max-h-[211px] h-full max-w-[320px] flex flex-col rounded-16 pt-24 sm:border sm:border-[#0B538D] sm:shadow-[0_0_15px_0_rgba(11,83,141,0.5)] ">
+    <div className="sm:bg-card sm:max-w-[660px] min-h-[140px] sm:min-w-[660px] max-h-[211px] h-full max-w-[320px] flex flex-col rounded-16 pt-24 sm:border sm:border-[#0B538D] sm:shadow-[0_0_15px_0_rgba(11,83,141,0.5)] ">
       {props.isLoading ? (
         <SpinLoader isLoading={props.isLoading} />
       ) : (

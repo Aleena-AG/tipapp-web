@@ -396,12 +396,12 @@ const RegistrationContainer = () => {
       onSubmit={handleSubmit}
     >
       {({ values, setFieldValue, dirty, isSubmitting }) => (
-        <div className="bg-[#F8F7FF] min-w-[300px] sm:px-[20px] xl:px-[60px]">
+        <div className="bg-app-page min-w-[300px] sm:px-[20px] xl:px-[60px]">
           <Form
             className={`max-w-[600px]    ${showBankDetails
               ? "g-red-600"
               : " sm:max-w-[335px] max-w-[320px] md:max-w-[688px] lg:max-w-[843px]"
-              }  mx-auto   bg-white   rounded-[16px] lg:px-[70px] py-[44px] lg:py-[30px] px-[20px] flex flex-col justify-between ${roleClassesBorder}`}
+              }  mx-auto   bg-card   rounded-[16px] lg:px-[70px] py-[44px] lg:py-[30px] px-[20px] flex flex-col justify-between ${roleClassesBorder}`}
           >
               <div className="flex justify-start mb-4">
                 <button
@@ -468,7 +468,7 @@ const RegistrationContainer = () => {
                 </div>
               ) : (
                 <div className="flex-col flex md:flex-row-reverse  0  items-start gap-[47px]">
-                  <div className="flex max-w-[330px] md:max-w-[184px]  lg:w-full max-lg:w-[200px] max-lg:h-[200px] md:h-[206px] bg-white py-[30px] mx-auto border-[1px] border-[#DBDBDB] rounded-[8px] justify-center items-center relative overflow-hidden">
+                  <div className="flex max-w-[330px] md:max-w-[184px]  lg:w-full max-lg:w-[200px] max-lg:h-[200px] md:h-[206px] bg-card py-[30px] mx-auto border-[1px] border-[#DBDBDB] rounded-[8px] justify-center items-center relative overflow-hidden">
                     <input
                       key={fileInputKey}
                       type="file"
@@ -494,7 +494,7 @@ const RegistrationContainer = () => {
                           alt="upload icon"
                           className="mr-2 h-5"
                         />
-                        <span className="text-[#6F6F6F] text-sm poppins-medium leading-[21px]">
+                        <span className="text-app-muted text-sm poppins-medium leading-[21px]">
                           Upload Picture <br></br>(64KB-4MB)
                         </span>
                       </button>
@@ -626,7 +626,7 @@ const RegistrationContainer = () => {
                               setFieldValue("Country", selectedCountry?.label || "");
                             }}
                             disabled
-                            className="w-full h-[40px] pl-[32px] pr-4 border border-[#E0E0E0] rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                            className="w-full h-[40px] pl-[32px] pr-4 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-card"
                             autoComplete="off"
                           >
                             <option value="">Select Country</option>

@@ -39,7 +39,7 @@ export const ReviewsProgressCardSection = (props: Props) => {
   ]);
 
   return (
-    <div className="sm:bg-white sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)] max-w-[350px] min-h-[211px] sm:min-w-[350px] max-h-[211px] h-full w-full flex flex-col rounded-16 pt-31 pb-20 justify-between">
+    <div className="sm:bg-card sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)] max-w-[350px] min-h-[211px] sm:min-w-[350px] max-h-[211px] h-full w-full flex flex-col rounded-16 pt-31 pb-20 justify-between">
       <RatingProgressRowCard
         stars={5}
         percentage={props.fiveStarPercentage}

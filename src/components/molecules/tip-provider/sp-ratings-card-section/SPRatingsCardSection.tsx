@@ -15,7 +15,7 @@ interface Props {
 export const SPRatingsCardSection = (props: Props) => {
   const { t } = useTranslation();
   return (
-    <div className="sm:bg-white max-w-[660px] min-h-[140px] sm:min-w-[660px] max-h-[211px] h-full w-ful flex flex-col rounded-16 pt-24 sm:shadow-xl">
+    <div className="sm:bg-card max-w-[660px] min-h-[140px] sm:min-w-[660px] max-h-[211px] h-full w-ful flex flex-col rounded-16 pt-24 sm:shadow-xl">
       {props.isLoading ? (
         <SpinLoader isLoading={props.isLoading} />
       ) : (

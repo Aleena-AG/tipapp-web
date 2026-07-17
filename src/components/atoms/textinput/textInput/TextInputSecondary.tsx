@@ -24,7 +24,7 @@ const TextInputSecondary = (props: Props) => {
       <input
         type={props.type || "text"}
         placeholder={props.placeholder}
-        className={`max-w-[467px] w-full min-h-[30px] max-h-[30px] rounded-8 border border-black outline-none px-14 py-6 placeholder:text-[12px] placeholder:poppins-medium placeholder:leading-[18px] placeholder:text-black ${props.inputStyles}`}
+        className={`max-w-[467px] w-full min-h-[30px] max-h-[30px] rounded-8 border border-border bg-background text-foreground outline-none focus:border-ring px-14 py-6 placeholder:text-[12px] placeholder:poppins-medium placeholder:leading-[18px] placeholder:text-muted-foreground ${props.inputStyles}`}
         value={props.value}
         onChange={props.onChange}
         onBlur={props.onBlur}

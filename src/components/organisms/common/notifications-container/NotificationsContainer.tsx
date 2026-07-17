@@ -36,12 +36,12 @@ const NotificationsContainer = ({
   };
 
   return (
-    <div className={`rounded-16 sm:bg-white min-h-[704px] max-h-[704px] max-w-[843px] w-full mx-70 overflow-y-auto lg:p-32 p-20 gap-y-24 mt-8 flex flex-col sm:${roleClassesBorder}`}>
+    <div className={`rounded-16 sm:bg-card min-h-[704px] max-h-[704px] max-w-[843px] w-full mx-70 overflow-y-auto lg:p-32 p-20 gap-y-24 mt-8 flex flex-col sm:${roleClassesBorder}`}>
       {isLoading ? (
         <SpinLoader isLoading={isLoading} />
       ) : data.length === 0 ? (
         <>
-          <div className="sticky-bg sm:bg-white lg:py-32 py-20 bg-primary-hex">
+          <div className="sticky-bg sm:bg-app-surface lg:py-32 py-20 bg-primary-hex">
             <PrimaryTypo
               typo="Notifications"
               styles="!text-[20px] poppins-semibold text-center"

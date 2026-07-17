@@ -39,9 +39,9 @@ const SPHomeScreen = () => {
   }, [currentUser?.isOnboarded]);
 
   return (
-    <div className="relative overflow-hidden bg-primary-hex min-h-screen pt-80 pb-50 flex flex-col justify-center sm:justify-start">
+    <div className="relative min-h-screen overflow-hidden bg-app-atmosphere pb-80 pt-[72px] lg:pb-48 lg:pt-32">
       <SPScreenBackground />
-      <div className="relative flex flex-col">
+      <div className="relative z-10">
         <StripeOnboardingBanner />
         <SPQRCodeContainer />
       </div>

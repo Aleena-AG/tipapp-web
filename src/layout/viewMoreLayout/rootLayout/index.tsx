@@ -5,7 +5,7 @@ import Footer from "../footer";
 
 const ViewMoreLayout = () => {
   return (
-    <div className="bg-white min-h-screen">
+    <div className="app-shell">
       <Navbar />
       <main>
         <Outlet />

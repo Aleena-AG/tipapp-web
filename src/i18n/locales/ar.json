@@ -5,16 +5,41 @@
     "contact": "اتصل بنا",
     "howItWorks": "كيف يعمل"
   },
+  "theme": {
+    "label": "المظهر",
+    "light": "فاتح",
+    "dark": "داكن",
+    "system": "النظام",
+    "switchToLight": "التبديل إلى الوضع الفاتح",
+    "switchToDark": "التبديل إلى الوضع الداكن"
+  },
   "howItWorks": {
     "title": "كيف يعمل",
-    "subtitle": "تعرّف على كيفية استخدام تطبيق Tip App على الويب. اتبع خطوات بسيطة لمقدمي الإكراميات ومقدمي الخدمة.",
+    "titlePrefix": "كيف يعمل",
+    "brandTip": "Tip",
+    "brandApp": "App",
+    "titleSuffix": "",
+    "subtitle": "شاهد كيف يتواصل مقدمو الخدمة ومقدمو الإكرامية في ثوانٍ.",
+    "clickForPreview": "اضغط على الدوائر للمعاينة",
+    "imageComingSoon": "المعاينة قريباً",
+    "previewAlt": "شاشة التطبيق الخطوة {{step}}",
+    "steps": {
+      "generatesQr": "إنشاء رمز QR",
+      "receivesTip": "استلام الإكرامية فوراً",
+      "tracksWithdrawals": "تتبع الأرباح والسحوبات",
+      "scansCode": "مسح الرمز",
+      "sendsPayment": "إرسال الدفع",
+      "leavesReview": "ترك تقييم"
+    },
     "tabs": {
       "web": "تطبيق الويب",
       "mobile": "تطبيق الجوال"
     },
     "sections": {
       "tipper": "مقدم الإكرامية (ويب)",
-      "serviceProvider": "مقدم الخدمة (ويب)"
+      "serviceProvider": "مقدم الخدمة (ويب)",
+      "tipperMobile": "مقدم الإكرامية (جوال)",
+      "serviceProviderMobile": "مقدم الخدمة (جوال)"
     },
     "comingSoon": "قريباً"
   },
@@ -34,7 +59,7 @@
       "press": "الصحافة",
       "jobs": "الوظائف"
     },
-    "moreFromTipApp": {
+    "moreFromTipTapp": {
       "title": "المزيد من تطبيق TIP",
       "newsletters": "النشرات الإخبارية",
       "magazine": "المجلة",
@@ -279,6 +304,7 @@
     "deleteCardConfirmation": "هل تريد حقاً حذف هذه البطاقة؟",
     "switchToTipperConfirmation": "هل تريد حقاً التبديل إلى مقدم الإكراميات؟",
     "switchToServiceProviderConfirmation": "هل تريد حقاً التبديل إلى مقدم الخدمة؟",
+    "signInAsRoleConfirmation": "هل تريد تسجيل الدخول كـ {{role}}؟",
     "scanQRCode": "مسح رمز QR",
     "tipHistory": "تاريخ الإكراميات",
     "reviews": "التقييمات",
@@ -318,6 +344,26 @@
     "trustInstantDesc": "تُرسل الإكراميات فوراً",
     "trustEasy": "سهل",
     "trustEasyDesc": "خطوات بسيطة، أثر كبير",
+    "spHeroNewTipPrefix": "لقد استلمت",
+    "spHeroNewTipHighlight": "إكرامية جديدة!",
+    "spHeroWelcomePrefix": "شارك",
+    "spHeroWelcomeHighlight": "رمز QR",
+    "spHeroSubtext": "إكراميات العملاء السعداء تساعدك على النمو. واصل عملك الرائع!",
+    "spHeroEmptySubtext": "اعرض رمز QR الخاص بك على العملاء واستلم الإكراميات فوراً وبأمان.",
+    "spQrCardDesc": "شارك أو نزّل رمز QR الخاص بك ليتمكن العملاء من إكراميك فوراً.",
+    "availableToWithdraw": "متاح للسحب",
+    "viewHistory": "عرض السجل",
+    "todaysTips": "إكراميات اليوم",
+    "vsYesterday": "مقارنة بالأمس",
+    "totalCustomers": "إجمالي العملاء",
+    "recentTips": "أحدث الإكراميات",
+    "viewAll": "عرض الكل",
+    "noRecentTips": "لم تستلم أي إكراميات بعد. شارك رمز QR للبدء!",
+    "youReceivedATip": "لقد استلمت إكرامية!",
+    "thankYouEmoji": "شكراً لك! 😊",
+    "spTrustSecureDesc": "بياناتك وإكرامياتك محمية",
+    "spTrustInstantDesc": "استلم الإكراميات فوراً",
+    "spTrustEasyDesc": "تتبّع واسحب بسهولة",
     "qrCode": "رمز QR",
     "scanToTip": "امسح لإرسال إكرامية",
     "shareQRCode": "مشاركة",
@@ -327,7 +373,7 @@
     "yourReviews": "تقييماتك",
     "youHaveSeenItAll": "رائع! لقد رأيت كل شيء",
     "age": "العمر",
-    "tipAppId": "معرف تطبيق تيب",
+    "TipTappId": "معرف تطبيق تيب",
     "description": "الوصف",
     "noDescriptionYet": "لا يوجد وصف بعد",
     "aboutMe": "نبذة عني",
@@ -403,6 +449,7 @@
     "tipperDescription": "قدّم إكرامية بسخاء واترك ملاحظاتك",
     "tipperAction": "أرسل إكرامية",
     "tipperActionDescription": "قدّم إكرامية مقابل خدمة رائعة",
+    "providerShort": "مقدم الخدمة",
     "serviceProvider": "مقدم الخدمة",
     "serviceProviderDescription": "استلم الإكراميات والتقييمات من العملاء",
     "serviceProviderAction": "استلم الإكراميات",

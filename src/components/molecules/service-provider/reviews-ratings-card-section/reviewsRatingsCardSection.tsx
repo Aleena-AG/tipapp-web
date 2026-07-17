@@ -13,7 +13,7 @@ interface Props {
 export const ReviewsRatingsCardSection = (props: Props) => {
   const { t } = useTranslation();
   return (
-    <div className="sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)] sm:bg-white max-w-[300px] min-h-[211px] sm:min-w-[300px] max-h-[211px] h-full w-full flex flex-col rounded-16 pt-24 justify-between">
+    <div className="sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)] sm:bg-card max-w-[300px] min-h-[211px] sm:min-w-[300px] max-h-[211px] h-full w-full flex flex-col rounded-16 pt-24 justify-between">
       <PrimaryTypo
         typo={t("common.overallRating")}
         styles="text-center text-[15px]"

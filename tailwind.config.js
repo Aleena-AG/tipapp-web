@@ -27,7 +27,7 @@ module.exports = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          hex: "#F8F7FF",
+          hex: "rgb(var(--app-page) / <alpha-value>)",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -52,6 +52,13 @@ module.exports = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        app: {
+          page: "rgb(var(--app-page) / <alpha-value>)",
+          surface: "rgb(var(--app-surface) / <alpha-value>)",
+          "surface-muted": "rgb(var(--app-surface-muted) / <alpha-value>)",
+          text: "rgb(var(--app-text) / <alpha-value>)",
+          "text-muted": "rgb(var(--app-text-muted) / <alpha-value>)",
         },
       },
       borderRadius: {

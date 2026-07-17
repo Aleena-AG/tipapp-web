@@ -97,7 +97,7 @@ const VerifyOTPContainer = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto lg:mt-[138px] mt-[60px] lg:mb-[155px] mb-[80px] lg:bg-white lg:px-[60px] pt-[46px] pb-[42px] p-8 rounded-lg sm:shadow-xl">
+    <div className="max-w-md mx-auto lg:mt-[138px] mt-[60px] lg:mb-[155px] mb-[80px] lg:bg-card lg:px-[60px] pt-[46px] pb-[42px] p-8 rounded-lg sm:shadow-xl">
       <button
         onClick={handleBackClick}
         className="text-gray-600 hover:text-gray-800 mb-4 flex items-center text-sm"
@@ -121,7 +121,7 @@ const VerifyOTPContainer = () => {
             id={`otp-${index}`}
             type="text"
             maxLength={1}
-            className="w-12 h-12 mt-[29px] text-center border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            className="w-12 h-12 mt-[29px] text-center border border-border rounded-md focus:outline-none focus:border-blue-500"
             value={digit}
             onChange={(e) => handleOtpChange(index, e.target.value)}
           />
@@ -134,7 +134,7 @@ const VerifyOTPContainer = () => {
       >
         {isLoading ? <SpinLoaderButton isLoading={true} /> : "Reset Password"}
       </button>
-      <p className="text-center mt-[15px] text-[14px] text-[#6F6F6F]">
+      <p className="text-center mt-[15px] text-[14px] text-app-muted">
         Didn't get an OTP?{" "}
         <button
           className="text-black font-semibold hover:underline"

@@ -220,7 +220,7 @@ const PaymentDetailsSection = (props: Props) => {
                       </AlertDialogTrigger>
                       <AlertDialogContent className=" w-full max-w-[350px] rounded-xl md:max-w-[500px] lg:max-w-[650px] lg:p-8">
                         <div className="relative">
-                          <div className=" absolute transform bg-white p-8 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 max-w-[84.363px] min-h-[84.363px] mih-h-[84.363px] max-h-[84.363px] h-full w-full rounded-full ">
+                          <div className=" absolute transform bg-card p-8 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 max-w-[84.363px] min-h-[84.363px] mih-h-[84.363px] max-h-[84.363px] h-full w-full rounded-full ">
                             <div className="bg-black h-full w-full rounded-full justify-center items-center flex">
                               <img src={ConfirmationIcon} />
                             </div>

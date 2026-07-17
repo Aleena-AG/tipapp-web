@@ -29,12 +29,12 @@ class ErrorBoundary extends Component<Props, State> {
   render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-screen flex-col items-center justify-center gap-24 bg-white px-24 text-center">
+        <div className="flex min-h-screen flex-col items-center justify-center gap-24 bg-app-surface px-24 text-center">
           <PrimaryTypo
             typo="Something went wrong"
             styles="!text-[24px] poppins-semibold text-[#8B1A1A]"
           />
-          <p className="max-w-md text-sm text-[#6F6F6F]">
+          <p className="max-w-md text-sm text-app-muted">
             An unexpected error occurred. Please try again or return to the home
             page.
           </p>

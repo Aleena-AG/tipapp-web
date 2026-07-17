@@ -9,16 +9,25 @@ import { useEffect, useState } from "react";
 import ToastProvider from "@/providers/ToastProvider";
 import PaymentDetailsSection from "./paymentDetailsSection";
 import { useUploadImage } from "@/api/authApi";
-import UploadIcon from "@/assets/svg/camera.svg";
+import authFetch from "@/api/axiosInterceptor";
+import { useQueryClient } from "react-query";
 import { ProfileImage } from "@/utils/constants/UsersData";
 import EditIcon from "@/assets/svg/editIcon-profile.svg";
-import { TbPencilCancel } from "react-icons/tb";
 import { editProfileValidationSchema } from "@/utils/validations";
 import { handleScrollTop } from "@/hooks/hooks";
 import SpinLoaderButton from "@/components/atoms/laoder/spin-loader-secondary";
 import useDateOfBirthValidation from "@/hooks/useDateOfBirthValidation";
 import useAuth from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
+import AvatarSelectModal from "@/components/molecules/profile/AvatarSelectModal";
+import {
+  type AvatarGender,
+  PROFILE_GENDER_STORAGE_KEY,
+  inferGenderFromAvatarUrl,
+  resolveAvatarDisplaySrc,
+  resolveAvatarStorageUrl,
+  toAvatarRelativePath,
+} from "@/utils/constants/ProfileAvatars";
 
 const EditProfileDetailsSection = ({
   isVerified,
@@ -31,6 +40,7 @@ const EditProfileDetailsSection = ({
   toggleEdit: () => void;
   bankDetails: any;
 }) => {
+  const queryClient = useQueryClient();
   const {
     mutate: uploadFile,
     isSuccess: fileUploadSuccess,
@@ -40,9 +50,15 @@ const EditProfileDetailsSection = ({
   } = useUploadImage();
   const [paypalEmail, setPaypalEmail] = useState(userDetails?.Paypal || "");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [removed, setRemoved] = useState(false);
-  const [showUploadButton, setShowUploadButton] = useState(false);
+  const [, setRemoved] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
+  const [savingAvatar, setSavingAvatar] = useState(false);
+  const [avatarGender, setAvatarGender] = useState<AvatarGender>(() => {
+    const saved = localStorage.getItem(PROFILE_GENDER_STORAGE_KEY);
+    if (saved === "male" || saved === "female") return saved;
+    return "male";
+  });
   const { getMaxDate, getMinDate } = useDateOfBirthValidation();
   const { t } = useTranslation();
   const onError = (error: string) => {
@@ -88,11 +104,24 @@ const EditProfileDetailsSection = ({
       ProfilePictureURL: "",
     },
     validationSchema: editProfileValidationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (formValues) => {
       setShowLoading(true);
       try {
         if (userDetails) {
-          await updateProfile(values);
+          const existing = JSON.parse(localStorage.getItem("user") || "{}");
+          const { Gender: _g1, ...safeExisting } = existing;
+          const { Gender: _g2, ...safeForm } = formValues as typeof formValues & {
+            Gender?: string;
+          };
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...safeExisting,
+              ...safeForm,
+              ProfilePictureURL: formValues.ProfilePictureURL,
+            })
+          );
+          await updateProfile(safeForm as UserDetails);
         }
       } finally {
         setTimeout(() => {
@@ -117,6 +146,16 @@ const EditProfileDetailsSection = ({
         currentUser?.ProfilePictureURL ||
         "";
 
+      const savedGender = localStorage.getItem(PROFILE_GENDER_STORAGE_KEY);
+      const inferred = inferGenderFromAvatarUrl(profilePictureUrl);
+      const nextGender: AvatarGender =
+        savedGender === "male" || savedGender === "female"
+          ? savedGender
+          : inferred === "male" || inferred === "female"
+            ? inferred
+            : "male";
+
+      setAvatarGender(nextGender);
       setFieldValue("FirstName", firstName);
       setFieldValue("LastName", lastName);
       setFieldValue("Email", email);
@@ -145,11 +184,58 @@ const EditProfileDetailsSection = ({
     getGoogleProfileData,
   ]);
 
+  const handleSelectAvatar = async (
+    pathOrUrl: string,
+    selectedGender: AvatarGender
+  ) => {
+    const displayPath = toAvatarRelativePath(pathOrUrl) || pathOrUrl;
+    const storageUrl = resolveAvatarStorageUrl(pathOrUrl);
+
+    setAvatarGender(selectedGender);
+    setFieldValue("ProfilePictureURL", displayPath);
+    setUploadedImage(displayPath);
+    setRemoved(false);
+
+    // Remember last avatar-filter choice locally only (not a required profile field)
+    localStorage.setItem(PROFILE_GENDER_STORAGE_KEY, selectedGender);
+    const existing = JSON.parse(localStorage.getItem("user") || "{}");
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        ...existing,
+        ProfilePictureURL: storageUrl,
+      })
+    );
+
+    setSavingAvatar(true);
+    try {
+      await authFetch.patch(`/user-details`, {
+        ProfilePictureURL: storageUrl,
+        FirstName: values.FirstName || userDetails?.FirstName,
+        LastName: values.LastName || userDetails?.LastName,
+        Email: values.Email || userDetails?.Email,
+        Address: values.Address || userDetails?.Address,
+        Phone: values.Phone || userDetails?.Phone,
+        Whatsapp: values.Whatsapp || userDetails?.Whatsapp,
+        Country: values.Country || userDetails?.Country,
+        City: values.City || userDetails?.City,
+        Bio: values.Bio || userDetails?.Bio,
+        DateOfBirth: values.DateOfBirth || userDetails?.DateOfBirth,
+      });
+      await queryClient.invalidateQueries(["get_current_user", "v2"]);
+      ToastProvider.success("Profile photo saved");
+    } catch (error: any) {
+      ToastProvider.error(
+        error?.response?.data?.message || "Failed to save profile photo"
+      );
+    } finally {
+      setSavingAvatar(false);
+    }
+  };
+
   useEffect(() => {
     setFieldValue("Paypal", paypalEmail);
   }, [paypalEmail, setFieldValue]);
-
-  const [fileInputKey] = useState(0);
 
   const MIN_BYTES = 64 * 1024; // 64KB
   const MAX_BYTES = 1 * 1024 * 1024; // 1MB
@@ -208,13 +294,10 @@ const EditProfileDetailsSection = ({
         uploadData.message || "File uploaded successfully!"
       );
       setFieldValue("ProfilePictureURL", uploadData.fileUrl);
-      setShowUploadButton(false);
+      setRemoved(false);
+      setShowAvatarModal(false);
     }
   }, [fileUploadSuccess, uploadData, setFieldValue]);
-
-  const toggleUploadButton = () => {
-    setShowUploadButton(!showUploadButton);
-  };
 
   const removeUploadedFile = () => {
     const userData = JSON.parse(localStorage.getItem("user") || "{}");
@@ -229,7 +312,10 @@ const EditProfileDetailsSection = ({
   };
 
   const updateLocalStorage = (userDetails: UserDetails) => {
-    localStorage.setItem("user", JSON.stringify(userDetails));
+    const { Gender: _gender, ...safeUser } = userDetails as UserDetails & {
+      Gender?: string | null;
+    };
+    localStorage.setItem("user", JSON.stringify(safeUser));
   };
 
   {/*Color role handling */ }
@@ -606,101 +692,56 @@ const EditProfileDetailsSection = ({
           </div>
         </div>
         <div className="flex justify-center">
-          <div className="flex flex-col items-center gap-10">
-            {!showUploadButton && (
-              <div className="max-h-[189px] min-h-[189px] max-w-[184px] min-w-[184px]">
-                {removed && (
-                  <>
-                    <img
-                      src={
-                        values.ProfilePictureURL || uploadedImage || ProfileImage
-                      }
-                      alt="Profile"
-                      className="w-full h-full rounded-4 object-contain"
-                    />
-                  </>
+          <div className="relative flex flex-col items-center gap-10">
+            <div className="h-[140px] w-[140px] overflow-hidden rounded-full ring-[3px] ring-[#E8B923] ring-offset-2 ring-offset-white shadow-[0_8px_20px_rgba(232,185,35,0.25)] sm:h-[160px] sm:w-[160px] dark:ring-offset-[#0a1629] dark:shadow-[0_8px_20px_rgba(232,185,35,0.2)]">
+              <img
+                src={resolveAvatarDisplaySrc(
+                  values.ProfilePictureURL || uploadedImage || ProfileImage
                 )}
-                {!removed && (
-                  <>
-                    <img
-                      src={
-                        values.ProfilePictureURL || uploadedImage || ProfileImage
-                      }
-                      alt="Profile"
-                      className="w-full h-full object-cover rounded-4"
-                    />
-                  </>
-                )}
-              </div>
-            )}
-            {showUploadButton && (
-              <div className="flex max-h-[189px] min-h-[189px] max-w-[184px] min-w-[184px] bg-white py-[30px] mx-auto border-[1px] border-[#DBDBDB] rounded-[8px] justify-center items-center relative overflow-hidden">
-                <input
-                  key={fileInputKey}
-                  type="file"
-                  // Frontend validation: HTML file type restriction - DISABLED
-                  // accept="image/*"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                />
-                {uploadedImage ? (
-                  <img
-                    src={uploadedImage}
-                    alt="Uploaded profile"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <button
-                    type="button"
-                    className="flex flex-col gap-[10px] justify-center items-center"
-                  >
-                    <img
-                      src={UploadIcon}
-                      alt="upload icon"
-                      className="mr-2 h-5"
-                    />
-                    <span className="text-[#6F6F6F] text-sm poppins-medium leading-[21px]">
-                      Upload Picture<br></br>(64KB-4MB)
-                    </span>
-                  </button>
-                )}
-              </div>
-            )}
-            {!showUploadButton && (
-              <PrimaryButton
-                typo="Remove Profile Image"
-                styles={`${roleClassesButton} w-full max-w-[328px] h-[48px] cursor-pointer`}
-                handleOnClick={() => {
-                  removeUploadedFile();
-                }}
-                type="submit"
+                alt="Profile"
+                className="h-full w-full object-cover"
               />
-            )}
-          </div>
-          <div className="relative">
-            {!showUploadButton ? (
-              <>
-                <div
-                  className={`cursor-pointer absolute top-0 right-0 trnasform translate-x-1/2 sm:translate-x-0 -translate-y-1/2 ${roleClassesButton} w-8 h-8 flex items-center justify-center rounded-full hover:scale-95 duration-500 gap-6`}
-                  onClick={toggleUploadButton}
-                >
-                  <img src={EditIcon} alt="edit-icon" />
-                </div>
-              </>
-            ) : (
-              <>
-                <div
-                  className={`cursor-pointer absolute top-0 right-0 trnasform translate-x-1/2 sm:translate-x-0 -translate-y-1/2 ${roleClassesButton} w-8 h-8 flex items-center justify-center rounded-full hover:scale-95 duration-500 gap-6`}
-                  onClick={toggleUploadButton}
-                >
-                  <TbPencilCancel className="w-5 h-5 text-white" />
-                </div>
-              </>
-            )}
+            </div>
+
+            <button
+              type="button"
+              aria-label="Choose profile photo"
+              className={`absolute right-0 top-0 flex h-9 w-9 items-center justify-center rounded-full ${roleClassesButton} text-white shadow-md transition hover:scale-95`}
+              onClick={() => setShowAvatarModal(true)}
+            >
+              <img src={EditIcon} alt="" className="h-[14px] w-[14px]" />
+            </button>
+
+            <PrimaryButton
+              typo="Remove Profile Image"
+              styles={`${roleClassesButton} w-full max-w-[220px] h-[44px] cursor-pointer rounded-[12px]`}
+              handleOnClick={() => {
+                removeUploadedFile();
+              }}
+              type="button"
+            />
           </div>
         </div>
       </div>
+
+      <AvatarSelectModal
+        open={showAvatarModal}
+        onClose={() => setShowAvatarModal(false)}
+        gender={avatarGender}
+        selectedUrl={values.ProfilePictureURL || uploadedImage || undefined}
+        onConfirm={(url, selectedGender) => {
+          void handleSelectAvatar(url, selectedGender);
+        }}
+        accentColor={role === "sp" ? "#9E2A2B" : "#0B538D"}
+        onUploadFile={handleFileUpload}
+      />
+
+      {savingAvatar ? (
+        <p className="poppins-regular mt-10 text-center text-[12px] text-[#6B7A8A] dark:text-slate-400">
+          Saving profile photo...
+        </p>
+      ) : null}
+
       <div className="flex items-center w-full mx-auto justify-center py-40">
         <PrimaryButton
           typo={showLoading ? <SpinLoaderButton isLoading={true} /> : "Update"}

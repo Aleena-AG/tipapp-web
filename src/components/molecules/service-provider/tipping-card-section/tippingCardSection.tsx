@@ -269,7 +269,7 @@ export const TippingCardSection = (props: Props) => {
   });
 
   return (
-    <div className="flex flex-col items-center mt-[25px] bg-white max-w-[527px] mx-auto rounded-2xl min-h-[311px] max-h-[311px] justify-center flex-shrink-0 sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)]">
+    <div className="flex flex-col items-center mt-[25px] bg-card max-w-[527px] mx-auto rounded-2xl min-h-[311px] max-h-[311px] justify-center flex-shrink-0 sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)]">
       <SecondaryTypo
         typo={t("payments.withdrawAmount")}
         styles="text-center text-[14px] mb-2"

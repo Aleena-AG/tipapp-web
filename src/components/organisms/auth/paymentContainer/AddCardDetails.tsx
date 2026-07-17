@@ -80,18 +80,18 @@ const AddCardDetails = ({
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col gap-15 w-full">
-        <div className="flex !border-gray-300 border rounded-[7px] pl-10 pr-3 py-2.5 gap-10">
+        <div className="flex !border-border border rounded-[7px] pl-10 pr-3 py-2.5 gap-10">
           <img src={cardNumber} alt="cardNumber icon" />
-          <CardNumberElement options={isFirstCard ? { placeholder: '4242 4242 4242 4242' } : {}} className="h-full w-full text-input-font rounded-r-[7px] bg-white font-sans text-base font-normal text-blue-gray-700 outline-none placeholder:text-custom-gray" />
+          <CardNumberElement options={isFirstCard ? { placeholder: '4242 4242 4242 4242' } : {}} className="h-full w-full text-input-font rounded-r-[7px] bg-card font-sans text-base font-normal text-blue-gray-700 outline-none placeholder:text-custom-gray" />
         </div>
         <div className="flex flex-row gap-16 items-center">
-          <div className="flex !border-gray-300 border rounded-[7px] pl-10 pr-3 py-2.5 gap-10 w-full">
+          <div className="flex !border-border border rounded-[7px] pl-10 pr-3 py-2.5 gap-10 w-full">
             <img src={expDate} alt="cardNumber icon" />
-            <CardExpiryElement options={isFirstCard ? { placeholder: '11/29' } : {}} className="h-full w-full text-input-font rounded-r-[7px] bg-white font-sans text-base font-normal text-blue-gray-700 outline-none placeholder:text-custom-gray" />
+            <CardExpiryElement options={isFirstCard ? { placeholder: '11/29' } : {}} className="h-full w-full text-input-font rounded-r-[7px] bg-card font-sans text-base font-normal text-blue-gray-700 outline-none placeholder:text-custom-gray" />
           </div>
-          <div className="flex !border-gray-300 border rounded-[7px] pl-10 pr-3 py-2.5 gap-10 w-full">
+          <div className="flex !border-border border rounded-[7px] pl-10 pr-3 py-2.5 gap-10 w-full">
             <img src={cardNumber} alt="cardNumber icon" />
-            <CardCvcElement options={isFirstCard ? { placeholder: '424' } : {}} className="h-full w-full text-input-font rounded-r-[7px] bg-white font-sans text-base font-normal text-blue-gray-700 outline-none placeholder:text-custom-gray" />
+            <CardCvcElement options={isFirstCard ? { placeholder: '424' } : {}} className="h-full w-full text-input-font rounded-r-[7px] bg-card font-sans text-base font-normal text-blue-gray-700 outline-none placeholder:text-custom-gray" />
           </div>
         </div>
         <div className="flex justify-center w-full">

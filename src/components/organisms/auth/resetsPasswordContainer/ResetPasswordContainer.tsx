@@ -69,7 +69,7 @@ const ResetPasswordContainer = () => {
       onSubmit={handleSubmit}
     >
       {() => (
-        <Form className="md:bg-white max-w-[477px] mx-auto sm:px-[60px] rounded-2xl py-[30px] px-[20px] flex flex-col justify-between sm:shadow-xl">
+        <Form className="md:bg-card max-w-[477px] mx-auto sm:px-[60px] rounded-2xl py-[30px] px-[20px] flex flex-col justify-between sm:shadow-xl">
           <button
             onClick={handleBackClick}
             className="text-gray-600 hover:text-gray-800 mb-4 flex items-center text-sm"

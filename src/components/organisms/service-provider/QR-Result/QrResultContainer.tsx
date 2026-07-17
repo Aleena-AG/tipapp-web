@@ -112,11 +112,11 @@ const TipAmountInput = (props: any & { t: any }) => {
     <div className="mt-[30px] flex flex-col items-center">
       <SecondaryTypo
         typo={props.t("common.amount")}
-        styles="text-[#141414] text-center text-[14px] mb-8"
+        styles="text-app text-center text-[14px] mb-8"
       />
       <div className="mt-12 flex w-full items-center justify-between gap-16">
         <button
-          className={`flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-[16px] border border-[#E4EDF5] bg-white text-[32px] leading-none text-[#0B538D] transition-colors hover:bg-[#EAF3FA] ${
+          className={`flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-[16px] border border-[#E4EDF5] bg-card text-[32px] leading-none text-[#0B538D] transition-colors hover:bg-[#EAF3FA] ${
             parseFloat(value) <= 1 ? "cursor-not-allowed opacity-40" : ""
           }`}
           onClick={decrementValue}
@@ -131,11 +131,11 @@ const TipAmountInput = (props: any & { t: any }) => {
             value={value}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="w-full max-w-[160px] rounded-md border-none text-center text-[42px] font-poppins-thin text-[#141414] outline-none"
+            className="w-full max-w-[160px] rounded-md border-none text-center text-[42px] font-poppins-thin text-app outline-none"
           />
           <SecondaryTypo
             typo={currency}
-            styles="text-[#7A7A7A] text-center text-[13px] mt-2"
+            styles="text-[#7A7A7A] dark:text-slate-400 text-center text-[13px] mt-2"
           />
         </div>
         <button
@@ -338,7 +338,7 @@ const QrResultContainer = () => {
 
   if (isGetUserDetailsLoading) {
     return (
-      <div className="mx-auto flex min-h-[320px] w-full max-w-[480px] flex-col items-center justify-center gap-16 rounded-[20px] border border-[#E4EDF5] bg-white p-32 shadow-sm">
+      <div className="mx-auto flex min-h-[320px] w-full max-w-[480px] flex-col items-center justify-center gap-16 rounded-[20px] border border-[#E4EDF5] bg-card p-32 shadow-sm">
         <BounceLoader
           color={"#0B538D"}
           loading={isGetUserDetailsLoading}
@@ -346,7 +346,7 @@ const QrResultContainer = () => {
           aria-label="Loading Spinner"
           data-testid="loader"
         />
-        <p className="poppins-medium text-[14px] text-[#7A7A7A]">
+        <p className="poppins-medium text-[14px] text-[#7A7A7A] dark:text-slate-400">
           {t("common.loading")}
         </p>
       </div>
@@ -420,19 +420,19 @@ const QrResultContainer = () => {
         <button
           type="button"
           onClick={isTipScreenOpen ? () => setIsTipScreenOpen(false) : handleBackToHome}
-          className="inline-flex w-fit items-center gap-8 rounded-full border border-[#E4EDF5] bg-white px-16 py-8 text-[#0B538D] shadow-[0_4px_12px_rgba(11,83,141,0.08)] transition-colors hover:bg-[#EAF3FA]"
+          className="inline-flex w-fit items-center gap-8 rounded-full border border-[#E4EDF5] bg-card px-16 py-8 text-[#0B538D] shadow-[0_4px_12px_rgba(11,83,141,0.08)] transition-colors hover:bg-[#EAF3FA]"
         >
           <FaArrowLeft className="text-[12px]" />
           <span className="poppins-semibold text-[13px]">{t("buttons.back")}</span>
         </button>
 
         <div>
-          <h1 className="poppins-semibold text-[30px] leading-[1.1] tracking-[-0.03em] text-[#0B2B4E] sm:text-[40px]">
+          <h1 className="poppins-semibold text-[30px] leading-[1.1] tracking-[-0.03em] text-[#0B2B4E] dark:text-white sm:text-[40px]">
             {isTipScreenOpen
               ? t("common.rateMyWork")
               : t("userSelection.serviceProvider")}
           </h1>
-          <p className="poppins-regular mt-8 max-w-[480px] text-[14px] text-[#6F7682] sm:text-[15px]">
+          <p className="poppins-regular mt-8 max-w-[480px] text-[14px] text-[#6F7682] dark:text-slate-400 sm:text-[15px]">
             {isTipScreenOpen
               ? t("common.whatElseCanIDoToImproveMyService")
               : t("common.reviewProviderBeforeTipping")}
@@ -447,7 +447,7 @@ const QrResultContainer = () => {
           onSubmit={handleSubmit}
         >
           {({ setFieldValue }) => (
-            <Form className="w-full max-w-[440px] overflow-hidden rounded-[20px] border border-[#E4EDF5] bg-white shadow-[0_8px_32px_rgba(11,83,141,0.08)]">
+            <Form className="w-full max-w-[440px] overflow-hidden rounded-[20px] border border-[#E4EDF5] bg-card shadow-[0_8px_32px_rgba(11,83,141,0.08)]">
               {/* Top bar */}
               <div className="flex items-center gap-12 border-b border-[#EEF2F6] px-20 py-16">
                 {isTipScreenOpen && (
@@ -462,7 +462,7 @@ const QrResultContainer = () => {
                       : t("userSelection.serviceProvider")}
                   </h2>
                   {!isTipScreenOpen && (
-                    <p className="poppins-regular text-[12px] text-[#7A7A7A]">
+                    <p className="poppins-regular text-[12px] text-[#7A7A7A] dark:text-slate-400">
                       {t("common.scanToGetStarted")}
                     </p>
                   )}
@@ -481,7 +481,7 @@ const QrResultContainer = () => {
                       />
                     </div>
                     <div className="mt-16 flex items-center justify-center gap-6">
-                      <h3 className="poppins-semibold text-center text-[20px] text-[#141414]">
+                      <h3 className="poppins-semibold text-center text-[20px] text-app">
                         {getUserDisplayName(user) || "User Not Found"}
                       </h3>
                       {user.id && (
@@ -492,10 +492,10 @@ const QrResultContainer = () => {
 
                   <div className="mt-24">
                     <div className="rounded-[12px] bg-[#F8FBFE] px-16 py-12">
-                      <p className="poppins-medium text-[11px] text-[#7A7A7A]">
+                      <p className="poppins-medium text-[11px] text-[#7A7A7A] dark:text-slate-400">
                         {t("common.description")}
                       </p>
-                      <p className="poppins-regular mt-4 line-clamp-3 text-[13px] leading-[22px] text-[#141414]">
+                      <p className="poppins-regular mt-4 line-clamp-3 text-[13px] leading-[22px] text-app">
                         {user?.Bio && user.Bio !== "--"
                           ? user.Bio.toString()
                           : t("common.noDescriptionYet")}
@@ -536,7 +536,7 @@ const QrResultContainer = () => {
                   <div className="mt-20 w-full">
                     <SecondaryTypo
                       typo={t("common.whatElseCanIDoToImproveMyService")}
-                      styles="text-[14px] text-[#141414]"
+                      styles="text-[14px] text-app"
                     />
                     <div className="mt-8 w-full">
                       <TextArea
@@ -595,13 +595,13 @@ const QrResultContainer = () => {
               </div>
 
               <div className="min-w-0">
-                <h2 className="poppins-semibold text-[28px] leading-[1.1] tracking-[-0.03em] text-[#0B2B4E] xl:text-[32px]">
+                <h2 className="poppins-semibold text-[28px] leading-[1.1] tracking-[-0.03em] text-[#0B2B4E] dark:text-white xl:text-[32px]">
                   {t("common.readyToAppreciateLine1")}{" "}
                   <span className="text-[#0B538D]">
                     {t("common.readyToAppreciateLine2")}
                   </span>
                 </h2>
-                <p className="poppins-regular mt-12 max-w-[280px] text-[15px] leading-relaxed text-[#6F7682]">
+                <p className="poppins-regular mt-12 max-w-[280px] text-[15px] leading-relaxed text-[#6F7682] dark:text-slate-400">
                   {t("common.readyToAppreciateSubtext")}
                 </p>
               </div>
@@ -611,12 +611,12 @@ const QrResultContainer = () => {
               {trustBadges.map(({ icon: Icon, title, desc }) => (
                 <div
                   key={title}
-                  className="rounded-[16px] border border-[#E5EEF7] bg-white p-16 shadow-[0_10px_28px_rgba(11,83,141,0.06)]"
+                  className="rounded-[16px] border border-[#E5EEF7] bg-card p-16 shadow-[0_10px_28px_rgba(11,83,141,0.06)]"
                 >
                   <span className="mb-12 flex h-10 w-10 items-center justify-center rounded-full bg-[#EAF4FF]">
                     <Icon className="h-5 w-5 text-[#0B538D]" />
                   </span>
-                  <h3 className="poppins-semibold text-[13px] text-[#0B2B4E]">
+                  <h3 className="poppins-semibold text-[13px] text-[#0B2B4E] dark:text-white">
                     {title}
                   </h3>
                   <p className="poppins-regular mt-4 text-[11px] leading-relaxed text-[#8A8A8A]">
@@ -646,16 +646,16 @@ const QrResultContainer = () => {
               />
 
               {/* Speech bubble */}
-              <div className="absolute right-0 top-8 z-20 w-[160px] rounded-[18px] border border-[#EEF2F6] bg-white px-16 py-12 text-center shadow-[0_14px_34px_rgba(11,83,141,0.12)]">
+              <div className="absolute right-0 top-8 z-20 w-[160px] rounded-[18px] border border-[#EEF2F6] bg-card px-16 py-12 text-center shadow-[0_14px_34px_rgba(11,83,141,0.12)]">
                 <div className="flex justify-center gap-2">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <AiFillStar key={i} className="h-4 w-4 text-[#F4D11B]" />
                   ))}
                 </div>
-                <p className="poppins-medium mt-6 text-[12px] leading-snug text-[#6F7682]">
+                <p className="poppins-medium mt-6 text-[12px] leading-snug text-[#6F7682] dark:text-slate-400">
                   {t("common.thanksForHelpingMeGrow")}
                 </p>
-                <span className="absolute -bottom-2 left-6 h-4 w-4 rotate-45 border-b border-r border-[#EEF2F6] bg-white" />
+                <span className="absolute -bottom-2 left-6 h-4 w-4 rotate-45 border-b border-r border-border bg-card" />
               </div>
             </div>
 
@@ -663,14 +663,14 @@ const QrResultContainer = () => {
               {tipBadges.map(({ icon: Icon, title, desc, iconColor, iconBg }) => (
                 <div
                   key={title}
-                  className="rounded-[16px] border border-[#E5EEF7] bg-white p-16 text-center shadow-[0_10px_28px_rgba(11,83,141,0.06)]"
+                  className="rounded-[16px] border border-[#E5EEF7] bg-card p-16 text-center shadow-[0_10px_28px_rgba(11,83,141,0.06)]"
                 >
                   <span
                     className={`mx-auto mb-12 flex h-10 w-10 items-center justify-center rounded-full ${iconBg}`}
                   >
                     <Icon className={`h-5 w-5 ${iconColor}`} />
                   </span>
-                  <h3 className="poppins-semibold text-[13px] text-[#0B2B4E]">
+                  <h3 className="poppins-semibold text-[13px] text-[#0B2B4E] dark:text-white">
                     {title}
                   </h3>
                   <p className="poppins-regular mt-4 text-[11px] leading-relaxed text-[#8A8A8A]">

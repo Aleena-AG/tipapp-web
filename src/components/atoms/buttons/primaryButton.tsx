@@ -23,9 +23,9 @@ export const PrimaryButton = ({
 
   const roleClassesButton =
     role === "tp"
-      ? "bg-[#0B538D] hover:bg-[#0077B6] text-white"
+      ? "bg-[#0B538D] hover:bg-[#0077B6] text-white dark:bg-[#0B538D] dark:hover:bg-[#0077B6] dark:text-white"
       : role === "sp"
-        ? "bg-[#9E2A2B] hover:bg-[#ce260b] text-white"
+        ? "bg-[#9E2A2B] hover:bg-[#ce260b] text-white dark:bg-[#9E2A2B] dark:hover:bg-[#ce260b] dark:text-white"
         : "";
 
   return (

@@ -1,6 +1,5 @@
 import { useUser } from "@/contexts/UserContext";
 import { PrimaryButton } from "@/components/atoms/buttons/primaryButton";
-import { PrimaryTypo } from "@/components/atoms/typo/primaryTypo";
 import { ProfileDetailsSection } from "@/components/molecules/profile/profile-details-section/profileDetailsSection";
 import { useEffect, useState } from "react";
 import EditIcon from "@/assets/svg/editIcon-profile.svg";
@@ -13,6 +12,7 @@ import { handleScrollTop } from "@/hooks/hooks";
 import ToastProvider from "@/providers/ToastProvider";
 import useAuth from "@/hooks/useAuth";
 import { getUserFromLocalStorage } from "@/utils/localStorageUtils";
+import { resolveAvatarDisplaySrc } from "@/utils/constants/ProfileAvatars";
 
 const ProfileContainer = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -137,49 +137,46 @@ const ProfileContainer = () => {
       ? "bg-[#0B538D] hover:bg-[#0077B6]"
       : role === "sp"
         ? "bg-[#9E2A2B] hover:bg-[#ce260b]"
-        : "";
+        : "bg-[#0B538D] hover:bg-[#0077B6]";
 
-  const roleClassesBorder =
-    role === "tp"
-      ? "sm:border sm:border-[#0B538D] sm:shadow-[0_0_15px_0_rgba(11,83,141,0.5)]"
-      : role === "sp"
-        ? "sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)]"
-        : "";
+  const isSp = role === "sp";
 
+  const BrandUnderline = () => (
+    <div className="mx-auto flex h-[3px] w-[48px] overflow-hidden rounded-full">
+      <span className="h-full w-1/2 bg-[#0B538D]" />
+      <span className="h-full w-1/2 bg-[#d71921]" />
+    </div>
+  );
 
   return (
     <div
-      className={`${edit == true
-          ? "max-w-[900px] min-h-[950px] lg:max-h-[]  "
-          : "max-w-[784px] min-h-[784px] lg:max-h-[]  "
-        }  mx-auto sm:bg-white py-34 px-20 lg:px-74 rounded-16 overflow-hidden ${roleClassesBorder}`}
+      className={`ta-animate-fade mx-auto w-full overflow-hidden rounded-[20px] border border-[#E4EAF2] bg-card px-20 py-28 shadow-[0_10px_32px_rgba(11,83,141,0.08)] sm:px-28 sm:py-32 lg:px-40 dark:border-white/10 dark:bg-[#0a1629]/95 dark:shadow-[0_10px_32px_rgba(0,0,0,0.45)] ${
+        edit ? "max-w-[900px]" : "max-w-[840px]"
+      } ${isSp ? "border-t-[3px] border-t-[#d71921]" : "border-t-[3px] border-t-[#0B538D]"}`}
     >
-      <div className="flex justify-between items-center w-full">
-        <div className="w-full justify-center items-end flex">
-          <PrimaryTypo
-            typo={`${edit ? "Edit Profile" : "Profile"}`}
-            styles="text-center !text-[20px] leading-normal poppins-semibold"
-          />
-        </div>
+      <div className="relative mb-8 flex flex-col items-center gap-8 text-center">
+        <button
+          type="button"
+          className={`absolute right-0 top-0 flex items-center gap-6 rounded-full px-14 py-7 text-white transition-all duration-200 hover:scale-[0.98] ${roleClassesButton}`}
+          onClick={toggleEdit}
+        >
+          <img src={EditIcon} alt="" className="h-[14px] w-[14px]" />
+          <span className="text-[13px] poppins-medium">
+            {edit ? "Cancel" : "Edit"}
+          </span>
+        </button>
+
+        <h1 className="poppins-semibold text-[24px] leading-none text-[#0B2C4A] dark:text-white sm:text-[28px]">
+          {edit ? "Edit Profile" : "Profile"}
+        </h1>
+        <BrandUnderline />
+        <p className="poppins-regular max-w-[420px] text-[13px] leading-[20px] text-[#5A6A7A] dark:text-slate-400 sm:text-[14px]">
+          {edit
+            ? "Update your personal details and keep your TipTapp account current."
+            : "Your TipTapp account details and contact information."}
+        </p>
       </div>
-      <div className="relative mt-20">
-        <div className=" w-1/2 justify-end items-end flex absolute top-0 right-0 transform sm:-translate-y-10 -translate-y-20">
-          <button
-            className={`${edit
-                ? "w-[100px] h-[25px] max-h-[25px] max-w-[100px]"
-                : "w-[66px] h-[25px] max-h-[25px] max-w-[66px]"
-              } ${roleClassesButton} text-white flex items-center justify-center rounded-4 hover:scale-95 duration-500 gap-6`}
-            onClick={() => {
-              toggleEdit();
-            }}
-          >
-            <img src={EditIcon} alt="edit-icon" />
-            <span className="text-[14px] poppins-medium ">
-              {edit ? "Cancel" : "Edit"}
-            </span>
-          </button>
-        </div>
-      </div>
+
       {!edit && (
         <div>
           {loading || (!currentUserData && !isLoading) ? (
@@ -190,11 +187,6 @@ const ProfileContainer = () => {
             <>
               {verifyUser === "true" ? (
                 <ProfileDetailsSection
-                  // userName={
-                  //   currentUserData?.Username
-                  //     ? currentUserData?.Username
-                  //     : "Not provided yet"
-                  // }
                   email={
                     googleProfileData?.email || currentUserData?.Email
                       ? googleProfileData?.email || currentUserData?.Email
@@ -243,13 +235,11 @@ const ProfileContainer = () => {
                       ? currentUserData?.Bio
                       : "Not provided yet"
                   }
-                  imageUrl={
+                  imageUrl={resolveAvatarDisplaySrc(
                     googleProfileData?.profilePictureUrl ||
-                      currentUserData?.ProfilePictureURL
-                      ? googleProfileData?.profilePictureUrl ||
-                      currentUserData?.ProfilePictureURL
-                      : ProfileImage
-                  }
+                      currentUserData?.ProfilePictureURL ||
+                      ProfileImage
+                  )}
                   city={
                     currentUserData?.City
                       ? currentUserData?.City
@@ -271,11 +261,6 @@ const ProfileContainer = () => {
                 />
               ) : (
                 <ProfileDetailsSection
-                  // userName={
-                  //   currentUserData?.Username
-                  //     ? currentUserData?.Username
-                  //     : "Not provided yet"
-                  // }
                   email={
                     googleProfileData?.email || currentUserData?.Email
                       ? googleProfileData?.email || currentUserData?.Email
@@ -324,13 +309,11 @@ const ProfileContainer = () => {
                       ? currentUserData?.Bio
                       : "Not provided yet"
                   }
-                  imageUrl={
+                  imageUrl={resolveAvatarDisplaySrc(
                     googleProfileData?.profilePictureUrl ||
-                      currentUserData?.ProfilePictureURL
-                      ? googleProfileData?.profilePictureUrl ||
-                      currentUserData?.ProfilePictureURL
-                      : ProfileImage
-                  }
+                      currentUserData?.ProfilePictureURL ||
+                      ProfileImage
+                  )}
                   city={
                     currentUserData?.City
                       ? currentUserData?.City
@@ -353,7 +336,7 @@ const ProfileContainer = () => {
               )}
             </>
           )}
-          <div className="flex justify-center items-center">
+          <div className="mt-28 flex justify-center">
             <PrimaryButton
               handleOnClick={() => {
                 handleScrollTop();
@@ -361,31 +344,27 @@ const ProfileContainer = () => {
               }}
               type="submit"
               typo="Done"
-              styles={`${roleClassesButton} w-[238px] min-w-[338px] min-h-[48px] h-[48px]`}
+              styles={`${roleClassesButton} h-[48px] min-h-[48px] w-full max-w-[280px] rounded-[12px] sm:max-w-[320px]`}
             />
           </div>
         </div>
       )}
       {edit && (
         <>
-          {edit && (
-            <>
-              {verifyUser === "true" ? (
-                <EditProfileDetailsSection
-                  isVerified={false}
-                  userDetails={currentUserData as UserDetails}
-                  toggleEdit={toggleEdit}
-                  bankDetails={bankDetails}
-                />
-              ) : (
-                <EditProfileDetailsSection
-                  isVerified={true}
-                  userDetails={currentUserData as UserDetails}
-                  toggleEdit={toggleEdit}
-                  bankDetails={bankDetails}
-                />
-              )}
-            </>
+          {verifyUser === "true" ? (
+            <EditProfileDetailsSection
+              isVerified={false}
+              userDetails={currentUserData as UserDetails}
+              toggleEdit={toggleEdit}
+              bankDetails={bankDetails}
+            />
+          ) : (
+            <EditProfileDetailsSection
+              isVerified={true}
+              userDetails={currentUserData as UserDetails}
+              toggleEdit={toggleEdit}
+              bankDetails={bankDetails}
+            />
           )}
         </>
       )}

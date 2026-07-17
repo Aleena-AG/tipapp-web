@@ -11,7 +11,7 @@ const BulletPoints = ({ typo, href }: { typo: string; href?: string }) => {
         target={href?.includes("https://") ? "_blank" : undefined}
         rel={href?.includes("https://") ? "noreferrer" : undefined}>
           
-        <div className="poppins-medium text-sm text-[#6F6F6F] leading-5">
+        <div className="poppins-medium text-sm text-app-muted leading-5">
           {typo}
         </div>
       </Link>

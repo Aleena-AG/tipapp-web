@@ -1,11 +1,3 @@
-import logo from "@/assets/images/appLogo.png";
-import { AccountCard } from "@/components/atoms/account/accountCard";
-import { RegisterAccountCard } from "@/components/atoms/account/registerAccountCard";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,14 +7,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, Store, User } from "lucide-react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useUpdateUser } from "@/api/userDetails";
 import ToastProvider from "@/providers/ToastProvider";
-import { FaChevronDown } from "react-icons/fa";
 import { useUser } from "@/contexts/UserContext";
 import {
   clearPendingSpStripeOnboarding,
@@ -30,11 +21,21 @@ import {
   setPendingSpStripeOnboarding,
 } from "@/utils/constants/enums";
 
-export const SwitchAccount = ({ role }: { role: string }) => {
+type SwitchTarget = "tp" | "sp" | null;
+
+export const SwitchAccount = ({
+  variant = "floating",
+}: {
+  role?: string;
+  variant?: "navbar" | "floating";
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { userDetails } = useUser();
+  const [pendingRole, setPendingRole] = useState<SwitchTarget>(null);
+  const [showRegisterConfirm, setShowRegisterConfirm] = useState(false);
+
   const displaySwitchAccount = localStorage.getItem("displaySwitch");
   const roleType = localStorage.getItem("userType");
   const isOnboardingPage = location.pathname.includes(
@@ -46,6 +47,9 @@ export const SwitchAccount = ({ role }: { role: string }) => {
     userDetails?.Role === "both" ||
     isOnboardingPage ||
     isPendingSpStripeOnboarding();
+
+  const isTipper = roleType === "tp";
+  const isServiceProvider = roleType === "sp";
 
   const navigateAfterTipperSwitch = () => {
     const stored = localStorage.getItem("user");
@@ -73,6 +77,7 @@ export const SwitchAccount = ({ role }: { role: string }) => {
   const handleSwitchAccount = (newRole: string) => {
     localStorage.setItem("userType", newRole);
     localStorage.setItem("displaySwitch", "true");
+    setPendingRole(null);
 
     if (newRole === "tp") {
       clearPendingSpStripeOnboarding();
@@ -94,6 +99,7 @@ export const SwitchAccount = ({ role }: { role: string }) => {
       const newRole = roleType === "tp" ? "sp" : "tp";
       localStorage.setItem("displaySwitch", "true");
       localStorage.setItem("userType", newRole);
+      setShowRegisterConfirm(false);
       if (newRole === "sp") {
         ToastProvider.success(t("userSelection.welcomeBackServiceProvider"));
         navigateAfterServiceProviderSwitch();
@@ -104,10 +110,11 @@ export const SwitchAccount = ({ role }: { role: string }) => {
     },
     () => {
       ToastProvider.error("Failed to create account");
+      setShowRegisterConfirm(false);
     }
   );
 
-  const handleRegisterAccount = async () => {
+  const handleRegisterAccount = () => {
     const newRole = roleType === "tp" ? "sp" : "tp";
 
     localStorage.setItem("displaySwitch", "true");
@@ -121,133 +128,162 @@ export const SwitchAccount = ({ role }: { role: string }) => {
     mutate({ Role: "both" });
   };
 
-  {/* Color role handling */ }
-  const colorChangeRole = typeof window !== "undefined" ? localStorage.getItem("userType") : null; // "tp" | "sp" | null
-  const roleClassesBorder =
-    colorChangeRole === "tp"
-      ? "sm:border sm:border-[#0B538D] sm:shadow-[0_0_15px_0_rgba(11,83,141,0.5)]"
-      : colorChangeRole === "sp"
-        ? "sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)]"
-        : "";
+  const requestSwitch = (target: "tp" | "sp") => {
+    if (target === roleType) return;
 
+    if (shouldShowSwitchOptions) {
+      setPendingRole(target);
+      return;
+    }
+
+    setShowRegisterConfirm(true);
+  };
+
+  const confirmRole = pendingRole;
+  const isConfirmingTipper = confirmRole === "tp";
+  const registerTarget =
+    roleType === "tp"
+      ? t("userSelection.serviceProvider")
+      : t("userSelection.tipper");
+
+  const isNavbar = variant === "navbar";
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button
-          onClick={() => { }}
-          className="group flex h-full items-center gap-2 rounded-[12px] bg-white px-3 py-1.5 shadow-[0_6px_18px_rgba(11,83,141,0.12)] ring-1 ring-[#EDF1F6] transition-all hover:shadow-[0_8px_22px_rgba(11,83,141,0.18)]"
-        >
-          <img src={logo} className="h-8 w-auto" alt="logo" />
-          <span className="poppins-semibold text-[14px] text-[#1B1B1B]">{role}</span>
-          <FaChevronDown className="ml-1 text-[11px] text-[#7A869A] transition-transform duration-200 group-data-[state=open]:rotate-180" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        className={`w-[240px] rounded-[16px] border border-[#EDF1F6] bg-white p-3 shadow-[0_18px_40px_rgba(11,83,141,0.16)] ${roleClassesBorder}`}
+    <>
+      <div
+        role="group"
+        aria-label={t("userSelection.chooseHowToContinue")}
+        className={
+          isNavbar
+            ? "flex items-center rounded-full bg-white/15 p-[3px] backdrop-blur-sm ring-1 ring-white/20"
+            : "flex items-center rounded-full bg-white p-[3px] shadow-[0_6px_18px_rgba(11,83,141,0.12)] ring-1 ring-[#EDF1F6] dark:bg-slate-800 dark:shadow-[0_6px_18px_rgba(0,0,0,0.4)] dark:ring-slate-700"
+        }
       >
-        <p className="poppins-semibold mb-2 px-1 text-[11px] uppercase tracking-[0.08em] text-[#9AA6B6]">
-          {t("userSelection.chooseHowToContinue")}
-        </p>
-        {shouldShowSwitchOptions ? (
-          <div className="flex flex-col gap-2">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <div>
-                  <AccountCard
-                    selected={roleType === "tp"}
-                    variant="tp"
-                    title={t("userSelection.tipper")}
-                  />
-                </div>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="w-full max-w-[400px] gap-0 rounded-[20px] border-none p-0">
-                <div className="flex flex-col items-center px-6 pb-6 pt-8 text-center">
-                  <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF3FA]">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0B538D]">
-                      <HelpCircle className="h-6 w-6 text-white" strokeWidth={2.2} />
-                    </span>
-                  </span>
-                  <AlertDialogHeader className="space-y-0">
-                    <AlertDialogTitle className="poppins-semibold mt-5 text-center text-[22px] leading-snug text-[#0B2B4E]">
-                      {t("common.areYouSure")}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription className="poppins-regular mx-auto mt-2 max-w-[300px] text-center text-[15px] leading-relaxed text-[#6F7682]">
-                      {t("common.switchToTipperConfirmation")}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter className="mt-6 flex w-full flex-col-reverse gap-3 sm:flex-col-reverse sm:space-x-0">
-                    <AlertDialogCancel className="mt-0 h-12 w-full rounded-[12px] border border-[#E4E9F0] text-[15px] font-medium text-[#1B1B1B] hover:bg-[#F5F7FA]">
-                      {t("common.no")}
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      className="h-12 w-full rounded-[12px] bg-[#0B538D] text-[15px] font-medium text-white hover:bg-[#0077B6]"
-                      onClick={() => handleSwitchAccount("tp")}
-                    >
-                      {t("common.yes")}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </div>
-              </AlertDialogContent>
-            </AlertDialog>
+        <button
+          type="button"
+          onClick={() => requestSwitch("tp")}
+          aria-pressed={isTipper}
+          className={`poppins-semibold flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[12px] leading-none transition-all duration-200 sm:gap-2 sm:px-3.5 sm:text-[13px] ${
+            isTipper
+              ? isNavbar
+                ? "bg-white text-[#0B538D] shadow-sm"
+                : "bg-[#0B538D] text-white shadow-sm"
+              : isNavbar
+                ? "text-white/75 hover:bg-white/10 hover:text-white"
+                : "text-[#6F7682] hover:bg-[#F0F4F8] hover:text-[#0B538D] dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-[#93C5FD]"
+          }`}
+        >
+          <User className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" strokeWidth={2.2} />
+          <span>{t("userSelection.tipper")}</span>
+        </button>
 
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <div>
-                  <AccountCard
-                    selected={roleType === "sp"}
-                    variant="sp"
-                    title={t("userSelection.serviceProvider")}
-                  />
-                </div>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="w-full max-w-[400px] gap-0 rounded-[20px] border-none p-0">
-                <div className="flex flex-col items-center px-6 pb-6 pt-8 text-center">
-                  <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FBEDED]">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#9E2A2B]">
-                      <HelpCircle className="h-6 w-6 text-white" strokeWidth={2.2} />
-                    </span>
-                  </span>
-                  <AlertDialogHeader className="space-y-0">
-                    <AlertDialogTitle className="poppins-semibold mt-5 text-center text-[22px] leading-snug text-[#0B2B4E]">
-                      {t("common.areYouSure")}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription className="poppins-regular mx-auto mt-2 max-w-[300px] text-center text-[15px] leading-relaxed text-[#6F7682]">
-                      {t("common.switchToServiceProviderConfirmation")}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter className="mt-6 flex w-full flex-col-reverse gap-3 sm:flex-col-reverse sm:space-x-0">
-                    <AlertDialogCancel className="mt-0 h-12 w-full rounded-[12px] border border-[#E4E9F0] text-[15px] font-medium text-[#1B1B1B] hover:bg-[#F5F7FA]">
-                      {t("common.no")}
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      className="h-12 w-full rounded-[12px] bg-[#9E2A2B] text-[15px] font-medium text-white hover:bg-[#ce260b]"
-                      onClick={() => handleSwitchAccount("sp")}
-                    >
-                      {t("common.yes")}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </div>
-              </AlertDialogContent>
-            </AlertDialog>
+        <button
+          type="button"
+          onClick={() => requestSwitch("sp")}
+          aria-pressed={isServiceProvider}
+          className={`poppins-semibold flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[12px] leading-none transition-all duration-200 sm:gap-2 sm:px-3.5 sm:text-[13px] ${
+            isServiceProvider
+              ? isNavbar
+                ? "bg-white text-[#9E2A2B] shadow-sm"
+                : "bg-[#9E2A2B] text-white shadow-sm"
+              : isNavbar
+                ? "text-white/75 hover:bg-white/10 hover:text-white"
+                : "text-[#6F7682] hover:bg-[#F0F4F8] hover:text-[#9E2A2B] dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-red-300"
+          }`}
+        >
+          <Store className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" strokeWidth={2.2} />
+          <span className="sm:hidden">{t("userSelection.providerShort")}</span>
+          <span className="hidden sm:inline">
+            {t("userSelection.serviceProvider")}
+          </span>
+        </button>
+      </div>
+
+      {/* Switch confirmation */}
+      <AlertDialog
+        open={pendingRole !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingRole(null);
+        }}
+      >
+        <AlertDialogContent className="w-full max-w-[400px] gap-0 overflow-hidden rounded-[20px] border-none bg-card p-0 dark:bg-[#0a1629]">
+          <div className="flex flex-col items-center px-6 pb-6 pt-8 text-center">
+            <span
+              className={`flex h-16 w-16 items-center justify-center rounded-full ${
+                isConfirmingTipper
+                  ? "bg-[#EAF3FA] dark:bg-[#0B538D]/30"
+                  : "bg-[#FBEDED] dark:bg-[#9E2A2B]/30"
+              }`}
+            >
+              <span
+                className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                  isConfirmingTipper ? "bg-[#0B538D]" : "bg-[#9E2A2B]"
+                }`}
+              >
+                <HelpCircle className="h-6 w-6 text-white" strokeWidth={2.2} />
+              </span>
+            </span>
+            <AlertDialogHeader className="space-y-0">
+              <AlertDialogTitle className="poppins-semibold mt-5 text-center text-[22px] leading-snug text-[#0B2B4E] dark:!text-white">
+                {t("common.areYouSure")}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="poppins-regular mx-auto mt-2 max-w-[300px] text-center text-[15px] leading-relaxed text-[#6F7682] dark:!text-slate-400">
+                {isConfirmingTipper
+                  ? t("common.switchToTipperConfirmation")
+                  : t("common.switchToServiceProviderConfirmation")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="mt-6 flex w-full flex-col-reverse gap-3 sm:flex-col-reverse sm:space-x-0">
+              <AlertDialogCancel className="mt-0 h-12 w-full rounded-[12px] border border-border text-[15px] font-medium text-app hover:bg-[#F5F7FA] dark:border-white/20 dark:!text-slate-200 dark:hover:bg-white/10">
+                {t("common.no")}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className={`h-12 w-full rounded-[12px] text-[15px] font-medium !text-white ${
+                  isConfirmingTipper
+                    ? "bg-[#0B538D] hover:bg-[#0077B6]"
+                    : "bg-[#9E2A2B] hover:bg-[#ce260b]"
+                }`}
+                onClick={() => confirmRole && handleSwitchAccount(confirmRole)}
+              >
+                {t("common.yes")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
           </div>
-        ) : (
-          <RegisterAccountCard
-            onClick={() => {
-              setTimeout(() => {
-                handleRegisterAccount();
-              }, 1000);
-            }}
-            title={
-              role === t("userSelection.tipper")
-                ? t("userSelection.serviceProvider")
-                : t("userSelection.tipper")
-            }
-          />
-        )}
-      </PopoverContent>
-    </Popover>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Register other role confirmation */}
+      <AlertDialog open={showRegisterConfirm} onOpenChange={setShowRegisterConfirm}>
+        <AlertDialogContent className="w-full max-w-[400px] gap-0 overflow-hidden rounded-[20px] border-none bg-card p-0 dark:bg-[#0a1629]">
+          <div className="flex flex-col items-center px-6 pb-6 pt-8 text-center">
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#F0F4F8] dark:bg-[#0B538D]/30">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0B538D]">
+                <HelpCircle className="h-6 w-6 text-white" strokeWidth={2.2} />
+              </span>
+            </span>
+            <AlertDialogHeader className="space-y-0">
+              <AlertDialogTitle className="poppins-semibold mt-5 text-center text-[22px] leading-snug text-[#0B2B4E] dark:!text-white">
+                {t("common.areYouSure")}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="poppins-regular mx-auto mt-2 max-w-[300px] text-center text-[15px] leading-relaxed text-[#6F7682] dark:!text-slate-400">
+                {t("common.signInAsRoleConfirmation", { role: registerTarget })}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="mt-6 flex w-full flex-col-reverse gap-3 sm:flex-col-reverse sm:space-x-0">
+              <AlertDialogCancel className="mt-0 h-12 w-full rounded-[12px] border border-border text-[15px] font-medium text-app hover:bg-[#F5F7FA] dark:border-white/20 dark:!text-slate-200 dark:hover:bg-white/10">
+                {t("common.no")}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="h-12 w-full rounded-[12px] bg-[#0B538D] text-[15px] font-medium !text-white hover:bg-[#0077B6]"
+                onClick={handleRegisterAccount}
+              >
+                {t("common.yes")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 

@@ -50,6 +50,7 @@ import AboutUs from "./page/common/about";
 import PageNotAvailable from "./page/common/page-not-available";
 import ContactUsPage from "./page/common/contact-us";
 import { UserProvider } from "./contexts/UserContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import HowItWorksPage from "./page/common/how-it-works";
 import OnboardingPage from "./page/service-provider/onboarding";
 import useAuth from "./hooks/useAuth";
@@ -356,17 +357,24 @@ function App() {
   }, []);
 
   return (
-    <CurrencyContext.Provider
-      value={{ currency, setCurrency, currencySymbol, conversionRates }}
-    >
-      <QueryClientProvider client={queryClient}>
-        <UserProvider>
-          <RouterProvider router={router} />
-          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-          <Toaster position="top-center" />
-        </UserProvider>
-      </QueryClientProvider>
-    </CurrencyContext.Provider>
+    <ThemeProvider>
+      <CurrencyContext.Provider
+        value={{ currency, setCurrency, currencySymbol, conversionRates }}
+      >
+        <QueryClientProvider client={queryClient}>
+          <UserProvider>
+            <RouterProvider router={router} />
+            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                className: "dark:!bg-slate-800 dark:!text-slate-100 dark:!border-slate-700",
+              }}
+            />
+          </UserProvider>
+        </QueryClientProvider>
+      </CurrencyContext.Provider>
+    </ThemeProvider>
   );
 }
 

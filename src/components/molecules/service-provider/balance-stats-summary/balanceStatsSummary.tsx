@@ -43,13 +43,13 @@ const StatItem = ({
   currencySymbol,
 }: StatItemProps) => {
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-10 rounded-[12px] border border-[#E0E0E0] bg-white px-12 py-11">
-      <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-[#F9EBEB] text-[12px] text-[#8B1A1A]">
+    <div className="flex min-w-0 flex-1 items-center gap-10 rounded-[12px] border border-border bg-card px-12 py-11 dark:border-white/10 dark:bg-[#121e36]">
+      <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-[#F9EBEB] text-[12px] text-[#8B1A1A] dark:bg-[#9E2A2B]/30 dark:text-[#FCA5A5]">
         {icon}
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="poppins-regular text-[11px] leading-tight text-[#707070] sm:text-[12px]">
+        <p className="poppins-regular text-[11px] leading-tight text-[#707070] sm:text-[12px] dark:text-slate-400">
           {label}
         </p>
 
@@ -58,7 +58,7 @@ const StatItem = ({
             <BounceLoader color="#8B1A1A" loading size={14} />
           </div>
         ) : (
-          <p className="mt-3 whitespace-nowrap text-[17px] poppins-semibold leading-tight text-[#8B1A1A] sm:text-[18px]">
+          <p className="mt-3 whitespace-nowrap text-[17px] poppins-semibold leading-tight text-[#8B1A1A] sm:text-[18px] dark:text-[#FCA5A5]">
             {currencySymbol}&nbsp;{formatNumber(value, false)}
           </p>
         )}

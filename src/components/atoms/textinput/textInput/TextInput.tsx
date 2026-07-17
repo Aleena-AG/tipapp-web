@@ -105,13 +105,13 @@ const TextInput: FunctionComponent<TextInputProps> = ({
         {({ field, form }: { field: FieldInputProps<any>; form: any }) => (
           <div
             className={`flex flex-row items-center justify-center  ${containerStyles} border rounded-[7px] h-10   relative ${
-              isFocused ? "border-black border-[2px]" : "border-gray-300"
+              isFocused ? "border-ring border-[2px]" : "border-border"
             }`}
           >
             {iconLeft && (
               <div
                 className="ml-[14px]  w-full min-w-4 max-w-4
-               bg-white bg-bu rounded-[7px] flex items-center"
+               bg-background rounded-[7px] flex items-center"
               >
                 {iconLeft}
               </div>
@@ -121,7 +121,7 @@ const TextInput: FunctionComponent<TextInputProps> = ({
               placeholder={placeholder}
               className={`h-full w-full text-input-font rounded-r-[7px] ${
                 iconLeft ? "" : "rounded-l-[7px]"
-              } !border-0 !border-transparent   bg-white px-[10px] py-2.5 font-sans text-base font-normal text-blue-gray-700 outline-none placeholder:text-custom-gray ${
+              } !border-0 !border-transparent bg-[#F8FAFC] text-[#0B2C4A] px-[10px] py-2.5 font-sans text-base font-normal outline-none placeholder:text-muted-foreground dark:bg-[#121e36] dark:text-white ${
                 isFocused ? "focus:outline-none" : ""
               } ${inputStyles} ${
                 type === "date" ? "date-input-no-calendar" : ""

@@ -27,7 +27,7 @@ export const Policy = () => {
       <h2>Privacy Policy</h2>
       <p><strong>Last Updated: December 24, 2025</strong></p>
 
-      <p>This Privacy Policy describes how TipApp ("we," "us," or "our") collects, uses, discloses, and safeguards your information when you use our mobile application and website (collectively, the "Service"). By using the Service, you agree to the collection and use of information in accordance with this policy.</p>
+      <p>This Privacy Policy describes how TipTapp ("we," "us," or "our") collects, uses, discloses, and safeguards your information when you use our mobile application and website (collectively, the "Service"). By using the Service, you agree to the collection and use of information in accordance with this policy.</p>
 
       <h3>1. Information We Collect</h3>
 
@@ -170,14 +170,14 @@ export const Policy = () => {
       <h3>13. Data Protection Officer</h3>
       <p>For GDPR-related inquiries, you can contact our Data Protection Officer at dpo@tiptapthetippingapp.com.</p>
 
-      <p><strong>By using TipApp, you acknowledge that you have read and understood this Privacy Policy.</strong></p>
+      <p><strong>By using TipTapp, you acknowledge that you have read and understood this Privacy Policy.</strong></p>
     `
   };
 
   return (
     <div className="bg-primary-hex xl:min-h-screen pt-26 pb-80 ">
       <div className="flex mx-auto w-full justify-center md:p-20 xl:p-0">
-        <div className="rounded-16 sm:bg-white min-h-[704px] max-h-[704px] max-w-[843px] w-full mx-70 overflow-y-auto lg:p-32 p-20 gap-y-24 mt-8 flex flex-col sm:shadow-xl">
+        <div className="rounded-16 sm:bg-card min-h-[704px] max-h-[704px] max-w-[843px] w-full mx-70 overflow-y-auto lg:p-32 p-20 gap-y-24 mt-8 flex flex-col sm:shadow-xl">
           <h1 className="text-[28px] text-black font-[600]">{policyContent?.name}</h1>
           <div
             dangerouslySetInnerHTML={{

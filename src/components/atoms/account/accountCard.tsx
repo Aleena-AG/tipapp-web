@@ -20,7 +20,7 @@ export const AccountCard = ({
       className={`group relative flex w-full items-center gap-3 rounded-[12px] px-3.5 py-3 text-left transition-all duration-200 ${
         selected
           ? "text-white shadow-[0_10px_24px_rgba(0,0,0,0.14)]"
-          : "border border-[#E7ECF3] bg-white text-[#1B1B1B] hover:-translate-y-[1px] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)]"
+          : "border border-[#E7ECF3] bg-white text-app hover:-translate-y-[1px] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)]"
       }`}
       style={selected ? { backgroundColor: baseColor } : undefined}
     >

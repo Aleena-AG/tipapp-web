@@ -27,5 +27,5 @@ $ npm run dev
 $ npm run build
 ```
 
-# TipApp frontend
-# tipapp-web
+# TipTapp frontend
+# TipTapp-web

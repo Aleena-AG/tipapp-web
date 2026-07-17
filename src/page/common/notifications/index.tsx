@@ -68,7 +68,7 @@ const Notifications = () => {
   return (
     <div className="bg-primary-hex xl:min-h-screen pt-26 pb-80">
       <div className="flex mx-auto w-full justify-center md:p-20 xl:p-0">
-        <div className={`rounded-16 sm:bg-white min-h-[704px] max-h-[704px] max-w-[843px] w-full mx-70 overflow-y-auto lg:p-32 p-20 gap-y-24 mt-8 flex flex-col sm:${roleClassesBorder}`}>
+        <div className={`rounded-16 sm:bg-card min-h-[704px] max-h-[704px] max-w-[843px] w-full mx-70 overflow-y-auto lg:p-32 p-20 gap-y-24 mt-8 flex flex-col sm:${roleClassesBorder}`}>
           
           <div className="flex items-center justify-between">
             <button

@@ -43,7 +43,7 @@ const FAQsContainer = () => {
   }, {});
 
   return (
-    <div className="sm:bg-white max-w-[1200px] mx-auto rounded-lg px-38 pt-10 h-fit pb-20">
+    <div className="sm:bg-card max-w-[1200px] mx-auto rounded-lg px-38 pt-10 h-fit pb-20">
       {groupedFAQs ? (
         Object.keys(groupedFAQs).map((category) => (
           <div key={category}>
@@ -54,7 +54,7 @@ const FAQsContainer = () => {
               {groupedFAQs[category].map((faq: FAQ, index: number) => (
                 <li
                   key={faq.id}
-                  className={`bg-white border border-gray-300 ${
+                  className={`bg-card border border-border ${
                     index === 0 ? "rounded-t-lg" : ""
                   } ${
                     index === groupedFAQs[category].length - 1
@@ -78,16 +78,16 @@ const FAQsContainer = () => {
                   </div>
                   {expandedFAQs.includes(faq.id) && (
                     <>
-                      <hr className="border-t border-gray-300 my-0" />
+                      <hr className="border-t border-border my-0" />
                       <div
-                        className={`bg-[#F3F2F2] px-4 py-4 border-gray-300 ${
+                        className={`bg-[#F3F2F2] px-4 py-4 border-border ${
                           index === groupedFAQs[category].length - 1
                             ? "rounded-b-lg"
                             : ""
                         }`}
                       >
                         <div
-                          className={`font-medium text-[#6F6F6F] text-sm pl-18 py-13 ${
+                          className={`font-medium text-app-muted text-sm pl-18 py-13 ${
                             index === 0 ? "rounded-t-lg" : ""
                           }`}
                         >

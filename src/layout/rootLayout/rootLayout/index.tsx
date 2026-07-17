@@ -65,7 +65,7 @@ const RootLayout = () => {
   );
 
   return (
-    <div className="bg-white min-h-screen flex flex-col">
+    <div className="app-shell flex flex-col">
       {!hideChrome && <Navbar />}
       <main className={`flex flex-col flex-grow ${hideChrome ? "min-h-screen" : ""}`}>
         <Outlet />

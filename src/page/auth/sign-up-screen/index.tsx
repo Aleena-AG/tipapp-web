@@ -2,7 +2,7 @@ import SignUpContainer from "@/components/organisms/auth/signUpContainer/SignUpC
 
 const SignUpScreen = () => {
   return (
-    <div className="bg-white flex-1 flex flex-col min-h-screen">
+    <div className="bg-background flex-1 flex flex-col min-h-screen">
       <SignUpContainer />
     </div>
   );

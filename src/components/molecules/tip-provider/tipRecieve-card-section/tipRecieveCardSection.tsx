@@ -77,7 +77,7 @@ const ViewHistoryCardSection = () => {
       <div className="mb-24 flex items-center gap-12">
         <button
           onClick={handleBack}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#E4EDF5] bg-white text-[#0B538D] shadow-sm transition-colors hover:bg-[#EAF3FA]"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#E4EDF5] bg-card text-[#0B538D] shadow-sm transition-colors hover:bg-[#EAF3FA]"
           aria-label={t("buttons.back")}
         >
           <FaArrowLeft className="text-[14px]" />
@@ -86,7 +86,7 @@ const ViewHistoryCardSection = () => {
           <h1 className="poppins-semibold text-[22px] text-[#0B538D] sm:text-[26px]">
             {t("common.totalTipsGiven")}
           </h1>
-          <p className="poppins-regular mt-2 text-[13px] text-[#7A7A7A]">
+          <p className="poppins-regular mt-2 text-[13px] text-[#7A7A7A] dark:text-slate-400">
             {t("common.viewYourPastTips")}
           </p>
         </div>
@@ -108,25 +108,25 @@ const ViewHistoryCardSection = () => {
               </p>
             </div>
           </div>
-          <div className="rounded-[14px] border border-[#E4EDF5] bg-white p-16 shadow-sm sm:p-20">
+          <div className="rounded-[14px] border border-[#E4EDF5] bg-card p-16 shadow-sm sm:p-20">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#EAF3FA]">
               <Users className="h-4 w-4 text-[#0B538D]" />
             </span>
-            <p className="poppins-medium mt-12 text-[11px] text-[#7A7A7A]">
+            <p className="poppins-medium mt-12 text-[11px] text-[#7A7A7A] dark:text-slate-400">
               Total Transactions
             </p>
-            <p className="poppins-semibold mt-4 text-[18px] text-[#141414] sm:text-[20px]">
+            <p className="poppins-semibold mt-4 text-[18px] text-app sm:text-[20px]">
               {totalItems}
             </p>
           </div>
-          <div className="rounded-[14px] border border-[#E4EDF5] bg-white p-16 shadow-sm sm:p-20">
+          <div className="rounded-[14px] border border-[#E4EDF5] bg-card p-16 shadow-sm sm:p-20">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#EAF3FA]">
               <TrendingUp className="h-4 w-4 text-[#0B538D]" />
             </span>
-            <p className="poppins-medium mt-12 text-[11px] text-[#7A7A7A]">
+            <p className="poppins-medium mt-12 text-[11px] text-[#7A7A7A] dark:text-slate-400">
               {t("common.tipsThisMonth")}
             </p>
-            <p className="poppins-semibold mt-4 text-[18px] text-[#141414] sm:text-[20px]">
+            <p className="poppins-semibold mt-4 text-[18px] text-app sm:text-[20px]">
               {currency}&nbsp;{formatNumber(tipsThisMonth)}
             </p>
           </div>
@@ -157,7 +157,7 @@ const ViewHistoryCardSection = () => {
       )}
 
       {/* Table — full width, flat */}
-      <div className="overflow-hidden rounded-[12px] border border-[#E0E8F0] bg-white">
+      <div className="overflow-hidden rounded-[12px] border border-[#E0E8F0] bg-card dark:border-slate-700">
         {!isLoading && totalItems > 0 && (
           <div className="hidden border-b border-[#0B538D]/20 bg-[#0B538D] px-24 py-14 lg:grid lg:grid-cols-[2fr_1fr_1fr_1.2fr] lg:gap-24">
             <span className="poppins-semibold text-[11px] uppercase tracking-wider text-white/90">

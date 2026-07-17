@@ -77,7 +77,7 @@ const DetailRow = ({
   highlight?: boolean;
 }) => (
   <div className="flex items-center justify-between gap-16 py-10 border-b border-[#F0F0F0] last:border-b-0">
-    <SecondaryTypo typo={label} styles="text-sm text-[#6F6F6F]" />
+    <SecondaryTypo typo={label} styles="text-sm text-app-muted" />
     <PrimaryTypo
       typo={value}
       styles={`text-sm text-right ${highlight ? "!text-[#9E2A2B]" : ""}`}
@@ -99,14 +99,14 @@ const WithdrawInvoiceSuccessCard = ({
 
   return (
     <div className="w-full max-w-[420px] mx-auto mt-8 px-20">
-      <div className="rounded-2xl border border-[#d71921] bg-white shadow-[0_0_15px_0_rgba(215,25,33,0.5)] px-24 py-24">
+      <div className="rounded-2xl border border-[#d71921] bg-card shadow-[0_0_15px_0_rgba(215,25,33,0.5)] px-24 py-24">
         <PrimaryTypo
           typo={message || t("payments.invoiceCreated")}
           styles="text-center !text-[18px] text-[#9E2A2B] mb-4"
         />
         <SecondaryTypo
           typo={t("payments.withdrawalInvoiceDetails")}
-          styles="text-center text-sm text-[#6F6F6F] mb-16"
+          styles="text-center text-sm text-app-muted mb-16"
         />
 
         <DetailRow

@@ -90,8 +90,8 @@ const OnboardingPage = () => {
   }) => (
     <div className="bg-primary-hex min-h-screen w-full pt-80 pb-50 flex flex-col justify-center sm:justify-start">
       {showSwitchAccount ? (
-        <div className="fixed right-3 top-[64px] z-30 sm:right-4 sm:top-[70px] lg:right-8 lg:top-[76px]">
-          <SwitchAccount role={t("userSelection.serviceProvider")} />
+        <div className="fixed right-3 top-[72px] z-30 sm:right-4 sm:top-[76px] lg:right-8 lg:top-[80px]">
+          <SwitchAccount variant="floating" />
         </div>
       ) : null}
       <div
@@ -378,7 +378,7 @@ const OnboardingPage = () => {
     showProfileHint?: boolean;
     buttonLabel: string;
   }) => (
-    <div className="bg-white rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center">
+    <div className="bg-card rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center">
       <SecondaryTypo typo={title} styles="text-center text-[18px] mb-4" />
       <div className="text-center w-full">
         <SecondaryTypo
@@ -431,7 +431,7 @@ const OnboardingPage = () => {
     showReopenLink?: boolean;
     showStartButton?: boolean;
   }) => (
-    <div className="bg-white rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center gap-4">
+    <div className="bg-card rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center gap-4">
       <SpinLoaderButton isLoading={true} />
       <SecondaryTypo typo={title} styles="text-center text-[18px]" />
       <SecondaryTypo
@@ -472,7 +472,7 @@ const OnboardingPage = () => {
   if (isOnboarded) {
     return (
       <OnboardingShell showSwitchAccount={false}>
-        <div className="bg-white rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center gap-4">
+        <div className="bg-card rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center gap-4">
           <SecondaryTypo
             typo={t("onboarding.onboardingComplete")}
             styles="text-center text-[18px] text-[#0B538D]"
@@ -543,7 +543,7 @@ const OnboardingPage = () => {
   if (userQueryError || !user) {
     return (
       <OnboardingShell>
-        <div className="bg-white rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center gap-4">
+        <div className="bg-card rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center gap-4">
           <SecondaryTypo
             typo="We could not load your account."
             styles="text-center text-[18px]"
@@ -569,7 +569,7 @@ const OnboardingPage = () => {
   if (!canAccessServiceProviderStripeUi(user)) {
     return (
       <OnboardingShell>
-        <div className="bg-white rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center gap-4">
+        <div className="bg-card rounded-2xl p-6 min-h-[311px] flex flex-col justify-center items-center gap-4">
           <SecondaryTypo
             typo={t("onboarding.enableSpTitle")}
             styles="text-center text-[18px]"

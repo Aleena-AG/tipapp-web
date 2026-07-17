@@ -63,10 +63,10 @@ const RoleCard = ({
         />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="poppins-semibold block text-base leading-6 text-[#1A1A1A]">
+        <span className="poppins-semibold block text-base leading-6 text-app">
           {title}
         </span>
-        <span className="poppins-regular mt-0.5 block text-[13px] leading-snug text-[#6F6F6F]">
+        <span className="poppins-regular mt-0.5 block text-[13px] leading-snug text-app-muted">
           {description}
         </span>
       </span>
@@ -137,7 +137,7 @@ const UserDeciderContainer = () => {
       onClick={handleLogoutClick}
       className={
         variant === "mobile"
-          ? "flex items-center gap-2 rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-[#5C5C5C] shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-[#1A1A1A]"
+          ? "flex items-center gap-2 rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-app-muted shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-app"
           : "flex items-center gap-2 text-[#0B538D] transition-colors duration-200 hover:text-[#083c66]"
       }
       type="button"
@@ -150,24 +150,24 @@ const UserDeciderContainer = () => {
   return (
     <>
       {/* Mobile layout */}
-      <div className="mx-auto w-full max-w-[431px] overflow-hidden rounded-[24px] border border-white/80 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.08)] lg:hidden">
+      <div className="mx-auto w-full max-w-[431px] overflow-hidden rounded-[24px] border border-white/80 bg-card shadow-[0_20px_60px_rgba(0,0,0,0.08)] lg:hidden">
         <div className="relative overflow-hidden bg-gradient-to-b from-[#FFF0F2] via-[#FDEEF0] to-[#FCE7EB] px-4 pb-2 pt-14 sm:px-6 sm:pb-4">
           <div className="absolute -left-10 top-8 h-32 w-32 rounded-full bg-[#9E2A2B]/10 blur-3xl" />
           <div className="absolute -right-8 top-16 h-28 w-28 rounded-full bg-[#0B538D]/10 blur-3xl" />
           <div className="absolute left-4 top-4 z-10">{logoutButton("mobile")}</div>
           <img
             src={AuthIllustration}
-            alt="Scan, tip and receive with TipApp"
+            alt="Scan, tip and receive with TipTapp"
             className="relative z-[1] mx-auto w-full max-w-[300px] object-contain drop-shadow-[0_20px_40px_rgba(158,42,43,0.1)] sm:max-w-[340px]"
           />
         </div>
 
-        <div className="relative -mt-5 rounded-t-[28px] bg-white px-4 pb-10 pt-7 sm:px-6">
+        <div className="relative -mt-5 rounded-t-[28px] bg-card px-4 pb-10 pt-7 sm:px-6">
           <div className="flex flex-col gap-2 text-center">
-            <h1 className="poppins-semibold text-2xl leading-8 text-[#1A1A1A]">
+            <h1 className="poppins-semibold text-2xl leading-8 text-app">
               {t("userSelection.welcome")}
             </h1>
-            <p className="poppins-regular mx-auto max-w-[340px] text-sm leading-relaxed text-[#6F6F6F]">
+            <p className="poppins-regular mx-auto max-w-[340px] text-sm leading-relaxed text-app-muted">
               {t("userSelection.welcomeMessage")}
             </p>
           </div>
@@ -179,8 +179,8 @@ const UserDeciderContainer = () => {
             </p>
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-[#EBE9F5] bg-[#F8F7FF] px-4 py-4 sm:gap-3">
-            <span className="poppins-semibold text-base text-[#1A1A1A]">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-[#EBE9F5] bg-app-page px-4 py-4 sm:gap-3">
+            <span className="poppins-semibold text-base text-app">
               {t("userSelection.iAmThe")}
             </span>
             <span className="text-[#D0D0D0]">&bull;</span>
@@ -209,7 +209,7 @@ const UserDeciderContainer = () => {
       </div>
 
       {/* Desktop / website layout */}
-      <div className="relative hidden min-h-screen w-full flex-col overflow-hidden bg-[#F4F3FA] lg:flex">
+      <div className="relative hidden min-h-screen w-full flex-col overflow-hidden bg-app-page lg:flex">
         {/* Decorative background */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -left-32 top-20 h-[420px] w-[420px] rounded-full bg-[#0B538D]/[0.04]" />
@@ -219,14 +219,14 @@ const UserDeciderContainer = () => {
         </div>
 
         {/* Header */}
-        <header className="relative z-10 flex items-center justify-between bg-white px-10 py-4 shadow-[0_1px_0_rgba(0,0,0,0.04)] xl:px-16">
-          <img src={AppLogo} alt="TipApp" className="h-10 w-auto object-contain" />
+        <header className="relative z-10 flex items-center justify-between bg-card px-10 py-4 shadow-[0_1px_0_rgba(0,0,0,0.04)] xl:px-16">
+          <img src={AppLogo} alt="TipTapp" className="h-10 w-auto object-contain" />
           {logoutButton("desktop")}
         </header>
 
         {/* Centered card */}
         <div className="relative z-10 flex flex-1 items-center justify-center px-6 py-10">
-          <div className="w-full max-w-[900px] rounded-[32px] bg-white px-12 py-14 pb-16 shadow-[0_24px_64px_rgba(30,27,75,0.10)] xl:px-20 xl:py-16 xl:pb-20">
+          <div className="w-full max-w-[900px] rounded-[32px] bg-card px-12 py-14 pb-16 shadow-[0_24px_64px_rgba(30,27,75,0.10)] xl:px-20 xl:py-16 xl:pb-20">
             {/* Hero row — characters flank welcome text */}
             <div className="relative mx-auto max-w-[760px]">
               <div className="grid grid-cols-[150px_1fr_150px] items-center gap-4 xl:grid-cols-[175px_1fr_175px] xl:gap-6">
@@ -244,9 +244,9 @@ const UserDeciderContainer = () => {
                 {/* Center text */}
                 <div className="flex flex-col items-center px-1 text-center xl:px-2">
                   <div className="mb-4 flex items-center justify-center">
-                    <img src={AppLogo} alt="TipApp" className="h-16 w-auto object-contain xl:h-20" />
+                    <img src={AppLogo} alt="TipTapp" className="h-16 w-auto object-contain xl:h-20" />
                   </div>
-                  <h1 className="poppins-semibold text-[38px] leading-none text-[#141414] xl:text-[42px] mt-[20px]">
+                  <h1 className="poppins-semibold text-[38px] leading-none text-app xl:text-[42px] mt-[20px]">
                     {t("userSelection.welcome")}
                   </h1>
                   <p className="poppins-semibold mt-3 text-[17px] text-[#3B5BDB]">
@@ -273,7 +273,7 @@ const UserDeciderContainer = () => {
             {/* I am a divider */}
             <div className="mx-auto mb-10 mt-12 flex max-w-[620px] items-center gap-5">
               <div className="h-px flex-1 bg-[#E8E8E8]" />
-              <span className="poppins-semibold whitespace-nowrap text-[15px] text-[#141414]">
+              <span className="poppins-semibold whitespace-nowrap text-[15px] text-app">
                 {t("userSelection.iAmA")}
               </span>
               <div className="h-px flex-1 bg-[#E8E8E8]" />
@@ -291,7 +291,7 @@ const UserDeciderContainer = () => {
                   <span className="absolute inset-0 bg-white/0 transition duration-300 group-hover:bg-white/5" />
 
                   <span className="relative flex items-center gap-4">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.18] shadow-inner backdrop-blur">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-card/[0.18] shadow-inner backdrop-blur">
                       <User className="h-6 w-6" strokeWidth={2.2} />
                     </span>
 
@@ -305,7 +305,7 @@ const UserDeciderContainer = () => {
                     </span>
                   </span>
 
-                  <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.16] transition-all duration-300 group-hover:translate-x-1 group-hover:bg-white/[0.24]">
+                  <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-card/[0.16] transition-all duration-300 group-hover:translate-x-1 group-hover:bg-card/[0.24]">
                     <ArrowRight className="h-5 w-5" />
                   </span>
                 </button>
@@ -319,7 +319,7 @@ const UserDeciderContainer = () => {
               <div className="flex items-start justify-center">
                 <div className="flex items-center gap-3 md:h-[76px] md:flex-col">
                   <span className="h-px w-20 bg-[#E7E7E7] md:h-full md:w-px" />
-                  <span className="poppins-medium flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#ECECEC] bg-white text-[11px] text-[#9A9A9A] shadow-[0_6px_18px_rgba(0,0,0,0.06)]">
+                  <span className="poppins-medium flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#ECECEC] bg-card text-[11px] text-[#9A9A9A] shadow-[0_6px_18px_rgba(0,0,0,0.06)]">
                     {t("userSelection.or")}
                   </span>
                   <span className="h-px w-20 bg-[#E7E7E7] md:h-full md:w-px" />
@@ -336,7 +336,7 @@ const UserDeciderContainer = () => {
                   <span className="absolute inset-0 bg-white/0 transition duration-300 group-hover:bg-white/5" />
 
                   <span className="relative flex items-center gap-4">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.18] shadow-inner backdrop-blur">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-card/[0.18] shadow-inner backdrop-blur">
                       <Briefcase className="h-6 w-6" strokeWidth={2.2} />
                     </span>
 
@@ -350,7 +350,7 @@ const UserDeciderContainer = () => {
                     </span>
                   </span>
 
-                  <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.16] transition-all duration-300 group-hover:translate-x-1 group-hover:bg-white/[0.24]">
+                  <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-card/[0.16] transition-all duration-300 group-hover:translate-x-1 group-hover:bg-card/[0.24]">
                     <ArrowRight className="h-5 w-5" />
                   </span>
                 </button>

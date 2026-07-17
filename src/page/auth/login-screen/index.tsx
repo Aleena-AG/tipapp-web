@@ -2,7 +2,7 @@ import LoginContainer from "@/components/organisms/auth/loginContainer/loginCont
 
 const LoginScreen = () => {
   return (
-    <div className="bg-white flex-1 flex flex-col min-h-screen">
+    <div className="bg-background flex-1 flex flex-col min-h-screen">
       <LoginContainer />
     </div>
   );

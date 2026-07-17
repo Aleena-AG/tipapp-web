@@ -38,7 +38,7 @@ const TPReviewHistoryContainer = () => {
       <div className="mb-24 flex items-center gap-12">
         <button
           onClick={handleBack}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#E4EDF5] bg-white text-[#0B538D] shadow-sm transition-colors hover:bg-[#EAF3FA]"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#E4EDF5] bg-card text-[#0B538D] shadow-sm transition-colors hover:bg-[#EAF3FA]"
           aria-label={t("buttons.back")}
         >
           <FaArrowLeft className="text-[14px]" />
@@ -47,14 +47,14 @@ const TPReviewHistoryContainer = () => {
           <h1 className="poppins-semibold text-[22px] text-[#0B538D] sm:text-[26px]">
             {t("common.yourReviews")}
           </h1>
-          <p className="poppins-regular mt-2 text-[13px] text-[#7A7A7A]">
+          <p className="poppins-regular mt-2 text-[13px] text-[#7A7A7A] dark:text-slate-400">
             {t("common.seeReviewsYouLeft") || "Reviews you left for others"}
           </p>
         </div>
       </div>
 
       {/* List card */}
-      <div className="overflow-hidden rounded-[16px] border border-[#E4EDF5] bg-white shadow-sm">
+      <div className="overflow-hidden rounded-[16px] border border-[#E4EDF5] bg-card shadow-sm">
         <div
           id="review-history-scroll"
           ref={containerRef}

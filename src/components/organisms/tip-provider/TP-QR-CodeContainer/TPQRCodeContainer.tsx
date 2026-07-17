@@ -197,15 +197,13 @@ const TPQRCodeContainer = () => {
 
   return (
     <div className="relative w-full">
-      {/* Switch account */}
-      <div className="fixed right-3 top-[64px] z-30 rounded-lg border border-[#0B538D]/20 bg-white shadow-[0_4px_12px_rgba(11,83,141,0.12)] sm:right-4 sm:top-[70px] lg:right-8 lg:top-[76px] [&_button]:py-4 [&_button]:pr-12 [&_img]:mx-4 [&_img]:my-0 [&_img]:h-6 [&_img]:w-6 [&_span]:text-[11px] sm:[&_button]:pr-16 sm:[&_img]:h-7 sm:[&_img]:w-7 sm:[&_span]:text-xs">
-        <SwitchAccount role={t("userSelection.tipper")} />
+      <div className="fixed right-3 top-[72px] z-30 sm:right-4 sm:top-[76px] lg:right-8 lg:top-[80px]">
+        <SwitchAccount variant="floating" />
       </div>
-
       {/* Validation overlay */}
       {isValidating && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50">
-          <div className="flex flex-col items-center rounded-2xl bg-white p-32 shadow-2xl">
+          <div className="flex flex-col items-center rounded-2xl bg-card p-32 shadow-2xl">
             <BounceLoader
               color="#0B538D"
               loading={isValidating}
@@ -213,7 +211,7 @@ const TPQRCodeContainer = () => {
               aria-label="Validating QR Code"
               data-testid="validation-loader"
             />
-            <span className="poppins-regular mt-16 text-sm text-gray-600">
+            <span className="poppins-regular mt-16 text-sm text-muted-foreground">
               Validating QR code...
             </span>
           </div>
@@ -257,26 +255,26 @@ const TPQRCodeContainer = () => {
     <div className="mx-auto w-full max-w-[590px] lg:mx-0">
       {/* Header */}
       <div>
-        <span className="inline-flex items-center gap-8 rounded-full border border-[#0B538D]/10 bg-white px-16 py-8 shadow-[0_8px_24px_rgba(11,83,141,0.08)]">
-          <span className="h-2 w-2 rounded-full bg-[#0B538D]" />
-          <span className="poppins-semibold text-[11px] uppercase tracking-[0.18em] text-[#0B538D]">
+        <span className="inline-flex items-center gap-8 rounded-full border border-[#0B538D]/15 bg-card px-16 py-8 shadow-[0_8px_24px_rgba(11,83,141,0.08)] dark:border-[#3B82F6]/25 dark:bg-[#0a1629]/90 dark:shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+          <span className="h-2 w-2 rounded-full bg-[#0B538D] dark:bg-[#60A5FA]" />
+          <span className="poppins-semibold text-[11px] uppercase tracking-[0.18em] text-[#0B538D] dark:text-[#93C5FD]">
             {t("userSelection.tipper")}
           </span>
         </span>
 
-        <h1 className="poppins-semibold mt-16 text-[34px] leading-[1.05] tracking-[-0.04em] text-[#0B2B4E] sm:text-[42px] xl:text-[52px]">
-          Ready <span className="text-[#0B538D]">to</span> Tip?
+        <h1 className="poppins-semibold mt-16 text-[34px] leading-[1.05] tracking-[-0.04em] text-[#0B2B4E] sm:text-[42px] xl:text-[52px] dark:text-slate-50">
+          Ready <span className="text-[#0B538D] dark:text-[#60A5FA]">to</span> Tip?
         </h1>
 
-        <p className="poppins-regular mt-12 max-w-[470px] text-[15px] leading-relaxed text-[#6F7682] sm:text-[16px]">
+        <p className="poppins-regular mt-12 max-w-[470px] text-[15px] leading-relaxed text-[#6F7682] sm:text-[16px] dark:text-slate-400">
           Scan a service provider&apos;s QR code and send appreciation instantly.
         </p>
       </div>
 
       {/* QR Scan Card */}
-      <div className="mt-24 rounded-[24px] border border-[#E5EEF7] bg-white p-20 shadow-[0_22px_60px_rgba(11,83,141,0.12)] sm:p-24">
+      <div className="mt-24 rounded-[24px] border border-[#E5EEF7] bg-card p-20 shadow-[0_22px_60px_rgba(11,83,141,0.12)] sm:p-24 dark:border-white/10 dark:bg-[#0a1629]/95 dark:shadow-[0_22px_60px_rgba(0,0,0,0.45)]">
         {open ? (
-          <div className="h-[240px] overflow-hidden rounded-[22px] border border-[#E5EEF7] bg-black sm:h-[280px] [&_section]:!h-full [&_section]:!p-0 [&_video]:!h-full [&_video]:!object-contain">
+          <div className="h-[240px] overflow-hidden rounded-[22px] border border-[#E5EEF7] bg-black sm:h-[280px] dark:border-white/10 [&_section]:!h-full [&_section]:!p-0 [&_video]:!h-full [&_video]:!object-contain">
             <QrScanner
               constraints={{ facingMode: "environment" }}
               audio={false}
@@ -296,7 +294,7 @@ const TPQRCodeContainer = () => {
           </div>
         ) : timeoutReached ? (
           <div className="flex flex-col items-center text-center sm:flex-row sm:text-left">
-            <div className="flex h-[120px] w-[120px] shrink-0 items-center justify-center rounded-[28px] bg-[#F1F7FD]">
+            <div className="flex h-[120px] w-[120px] shrink-0 items-center justify-center rounded-[28px] bg-[#F1F7FD] dark:bg-[#121e36]">
               <img
                 src={tryAgainIcon}
                 alt="Try Again"
@@ -306,17 +304,17 @@ const TPQRCodeContainer = () => {
             </div>
 
             <div className="mt-20 sm:ml-24 sm:mt-0">
-              <h3 className="poppins-semibold text-[24px] text-[#0B2B4E]">
+              <h3 className="poppins-semibold text-[24px] text-[#0B2B4E] dark:text-white">
                 Try Again
               </h3>
-              <p className="poppins-regular mt-8 text-[15px] leading-relaxed text-[#7A7A7A]">
+              <p className="poppins-regular mt-8 text-[15px] leading-relaxed text-[#7A7A7A] dark:text-slate-400">
                 We could not detect a QR code. Please scan again.
               </p>
             </div>
           </div>
         ) : (
           <div className="flex flex-col items-center text-center sm:flex-row sm:text-left">
-            <div className="flex h-[128px] w-[128px] shrink-0 items-center justify-center rounded-[32px] bg-[#F1F7FD]">
+            <div className="flex h-[128px] w-[128px] shrink-0 items-center justify-center rounded-[32px] bg-[#F1F7FD] dark:bg-[#121e36]">
               <img
                 src={QRCode}
                 alt="QR code"
@@ -325,10 +323,10 @@ const TPQRCodeContainer = () => {
             </div>
 
             <div className="mt-20 sm:ml-24 sm:mt-0">
-              <h3 className="poppins-semibold text-[24px] text-[#0B2B4E]">
+              <h3 className="poppins-semibold text-[24px] text-[#0B2B4E] dark:text-white">
                 {t("common.scanCardTitle")}
               </h3>
-              <p className="poppins-regular mt-8 max-w-[300px] text-[15px] leading-relaxed text-[#7A7A7A]">
+              <p className="poppins-regular mt-8 max-w-[300px] text-[15px] leading-relaxed text-[#7A7A7A] dark:text-slate-400">
                 {t("common.scanCardDesc")}
               </p>
             </div>
@@ -346,7 +344,7 @@ const TPQRCodeContainer = () => {
               </span>
             )
           }
-          styles="mt-20 w-full bg-[#0B538D] hover:bg-[#094878] !rounded-2xl text-white text-[16px] poppins-semibold h-[52px] shadow-[0_14px_28px_rgba(11,83,141,0.28)] transition-all duration-300 hover:-translate-y-0.5"
+          styles="mt-20 w-full !bg-[#0B538D] hover:!bg-[#094878] dark:!bg-[#2563EB] dark:hover:!bg-[#1D4ED8] !rounded-2xl !text-white text-[16px] poppins-semibold h-[52px] shadow-[0_14px_28px_rgba(11,83,141,0.28)] dark:shadow-[0_14px_28px_rgba(37,99,235,0.35)] transition-all duration-300 hover:-translate-y-0.5"
           handleOnClick={() => {
             if (open) {
               setOpen(false);
@@ -360,26 +358,26 @@ const TPQRCodeContainer = () => {
       {/* Stats */}
       <div className="mt-16 grid grid-cols-1 gap-16 sm:grid-cols-2">
         {/* Balance */}
-        <div className="rounded-[20px] border border-[#E5EEF7] bg-white p-16 shadow-[0_14px_36px_rgba(11,83,141,0.08)]">
+        <div className="rounded-[20px] border border-[#E5EEF7] bg-card p-16 shadow-[0_14px_36px_rgba(11,83,141,0.08)] dark:border-white/10 dark:bg-[#0a1629]/95 dark:shadow-[0_14px_36px_rgba(0,0,0,0.35)]">
           <div className="flex items-center gap-16">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF4FF]">
-              <Wallet className="h-6 w-6 text-[#0B538D]" />
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF4FF] dark:bg-[#0B538D]/30">
+              <Wallet className="h-6 w-6 text-[#0B538D] dark:text-[#93C5FD]" />
             </span>
 
             <div>
-              <p className="poppins-medium text-[13px] text-[#6F7682]">
+              <p className="poppins-medium text-[13px] text-[#6F7682] dark:text-slate-400">
                 {t("common.accountBalance")}
               </p>
 
               {isBalanceLoading ? (
                 <BounceLoader color="#0B538D" loading size={16} />
               ) : (
-                <h3 className="poppins-semibold mt-4 text-[24px] leading-none text-[#0B538D]">
+                <h3 className="poppins-semibold mt-4 text-[24px] leading-none text-[#0B538D] dark:text-[#93C5FD]">
                   {currency} {formatNumber(tipBalance?.balance ?? 0)}
                 </h3>
               )}
 
-              <p className="poppins-regular mt-4 text-[12px] text-[#9A9A9A]">
+              <p className="poppins-regular mt-4 text-[12px] text-[#9A9A9A] dark:text-slate-500">
                 {t("common.availableToUse")}
               </p>
             </div>
@@ -387,21 +385,21 @@ const TPQRCodeContainer = () => {
         </div>
 
         {/* Tips this month */}
-        <div className="rounded-[20px] border border-[#D8F0E3] bg-[#F0FBF5] p-16 shadow-[0_14px_36px_rgba(30,158,106,0.08)]">
+        <div className="rounded-[20px] border border-[#D8F0E3] bg-[#F0FBF5] p-16 shadow-[0_14px_36px_rgba(30,158,106,0.08)] dark:border-emerald-400/20 dark:bg-[#071a14]/90 dark:shadow-[0_14px_36px_rgba(0,0,0,0.35)]">
           <div className="flex items-center gap-16">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#D9F3E6]">
-              <TrendingUp className="h-6 w-6 text-[#1E9E6A]" />
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#D9F3E6] dark:bg-emerald-500/20">
+              <TrendingUp className="h-6 w-6 text-[#1E9E6A] dark:text-emerald-400" />
             </span>
 
             <div>
-              <p className="poppins-medium text-[13px] text-[#5E7E6F]">
+              <p className="poppins-medium text-[13px] text-[#5E7E6F] dark:text-emerald-200/70">
                 {t("common.tipsThisMonth")}
               </p>
 
               {isTipsLoading ? (
                 <BounceLoader color="#1E9E6A" loading size={16} />
               ) : (
-                <h3 className="poppins-semibold mt-4 text-[24px] leading-none text-[#12855A]">
+                <h3 className="poppins-semibold mt-4 text-[24px] leading-none text-[#12855A] dark:text-emerald-300">
                   {currency} {formatNumber(tipsThisMonth)}
                 </h3>
               )}
@@ -410,8 +408,8 @@ const TPQRCodeContainer = () => {
                 <p
                   className={`poppins-medium mt-4 flex items-center gap-4 text-[12px] ${
                     monthChangePercent >= 0
-                      ? "text-[#1E9E6A]"
-                      : "text-[#D14343]"
+                      ? "text-[#1E9E6A] dark:text-emerald-400"
+                      : "text-[#D14343] dark:text-red-400"
                   }`}
                 >
                   {monthChangePercent >= 0 ? (
@@ -429,7 +427,7 @@ const TPQRCodeContainer = () => {
 
       {/* Quick actions */}
       <div className="mt-16">
-        <h2 className="poppins-semibold mb-12 text-[17px] text-[#0B2B4E]">
+        <h2 className="poppins-semibold mb-12 text-[17px] text-[#0B2B4E] dark:text-white">
           {t("common.quickActions")}
         </h2>
 
@@ -437,43 +435,43 @@ const TPQRCodeContainer = () => {
           <button
             type="button"
             onClick={goToTipHistory}
-            className="group flex items-center gap-16 rounded-[18px] border border-[#E5EEF7] bg-white p-16 text-left shadow-[0_12px_34px_rgba(11,83,141,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(11,83,141,0.12)]"
+            className="group flex items-center gap-16 rounded-[18px] border border-[#E5EEF7] bg-card p-16 text-left shadow-[0_12px_34px_rgba(11,83,141,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(11,83,141,0.12)] dark:border-white/10 dark:bg-[#0a1629]/95 dark:shadow-[0_12px_34px_rgba(0,0,0,0.3)] dark:hover:border-white/20 dark:hover:bg-[#121e36]"
           >
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#EAF4FF]">
-              <History className="h-6 w-6 text-[#0B538D]" />
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#EAF4FF] dark:bg-[#0B538D]/30">
+              <History className="h-6 w-6 text-[#0B538D] dark:text-[#93C5FD]" />
             </span>
 
             <span className="min-w-0 flex-1">
-              <span className="poppins-semibold block text-[15px] text-[#0B2B4E]">
+              <span className="poppins-semibold block text-[15px] text-[#0B2B4E] dark:text-white">
                 {t("common.tipHistory")}
               </span>
-              <span className="poppins-regular mt-4 block text-[12px] text-[#8A8A8A]">
+              <span className="poppins-regular mt-4 block text-[12px] text-[#8A8A8A] dark:text-slate-400">
                 {t("common.viewRecentTips")}
               </span>
             </span>
 
-            <ChevronRight className="h-5 w-5 text-[#C5CED8] transition-transform group-hover:translate-x-1" />
+            <ChevronRight className="h-5 w-5 text-[#C5CED8] transition-transform group-hover:translate-x-1 dark:text-slate-500" />
           </button>
 
           <button
             type="button"
             onClick={goToReviews}
-            className="group flex items-center gap-16 rounded-[18px] border border-[#E5EEF7] bg-white p-16 text-left shadow-[0_12px_34px_rgba(11,83,141,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(11,83,141,0.12)]"
+            className="group flex items-center gap-16 rounded-[18px] border border-[#E5EEF7] bg-card p-16 text-left shadow-[0_12px_34px_rgba(11,83,141,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(11,83,141,0.12)] dark:border-white/10 dark:bg-[#0a1629]/95 dark:shadow-[0_12px_34px_rgba(0,0,0,0.3)] dark:hover:border-white/20 dark:hover:bg-[#121e36]"
           >
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#EAF4FF]">
-              <Star className="h-6 w-6 text-[#0B538D]" />
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#EAF4FF] dark:bg-[#0B538D]/30">
+              <Star className="h-6 w-6 text-[#0B538D] dark:text-[#93C5FD]" />
             </span>
 
             <span className="min-w-0 flex-1">
-              <span className="poppins-semibold block text-[15px] text-[#0B2B4E]">
+              <span className="poppins-semibold block text-[15px] text-[#0B2B4E] dark:text-white">
                 {t("common.reviews")}
               </span>
-              <span className="poppins-regular mt-4 block text-[12px] text-[#8A8A8A]">
+              <span className="poppins-regular mt-4 block text-[12px] text-[#8A8A8A] dark:text-slate-400">
                 {t("common.checkFeedbackRatings")}
               </span>
             </span>
 
-            <ChevronRight className="h-5 w-5 text-[#C5CED8] transition-transform group-hover:translate-x-1" />
+            <ChevronRight className="h-5 w-5 text-[#C5CED8] transition-transform group-hover:translate-x-1 dark:text-slate-500" />
           </button>
         </div>
       </div>
@@ -482,30 +480,30 @@ const TPQRCodeContainer = () => {
     {/* RIGHT MASCOT SECTION */}
     <div className="hidden lg:block">
       <div className="relative mx-auto flex h-[440px] max-w-[650px] items-center justify-center">
-        <div className="absolute h-[380px] w-[380px] rounded-full bg-gradient-to-br from-[#EAF4FF] via-[#D7EAF9] to-[#CFE4F6]" />
-        <div className="absolute h-[430px] w-[430px] rounded-full border border-[#0B538D]/10" />
-        <div className="absolute bottom-12 h-8 w-[280px] rounded-full bg-[#0B538D]/15 blur-xl" />
+        <div className="absolute h-[380px] w-[380px] rounded-full bg-gradient-to-br from-[#EAF4FF] via-[#D7EAF9] to-[#CFE4F6] dark:from-[#0B538D]/35 dark:via-[#051630]/60 dark:to-[#010816]/80" />
+        <div className="absolute h-[430px] w-[430px] rounded-full border border-[#0B538D]/10 dark:border-[#60A5FA]/20" />
+        <div className="absolute bottom-12 h-8 w-[280px] rounded-full bg-[#0B538D]/15 blur-xl dark:bg-[#3B82F6]/25" />
 
         <img
           src={CharacterTipper}
           alt="Tipper mascot"
-          className="relative z-10 h-[410px] w-auto object-contain drop-shadow-[0_26px_50px_rgba(11,83,141,0.18)]"
+          className="relative z-10 h-[410px] w-auto object-contain drop-shadow-[0_26px_50px_rgba(11,83,141,0.18)] dark:drop-shadow-[0_26px_50px_rgba(0,0,0,0.5)]"
         />
 
         {/* Floating chips */}
-        <div className="absolute right-6 top-24 z-20 rounded-2xl bg-white px-16 py-12 shadow-[0_12px_30px_rgba(11,83,141,0.12)]">
+        <div className="absolute right-6 top-24 z-20 rounded-2xl border border-transparent bg-card px-16 py-12 shadow-[0_12px_30px_rgba(11,83,141,0.12)] dark:border-white/10 dark:bg-[#0a1629] dark:shadow-[0_12px_30px_rgba(0,0,0,0.4)]">
           <div className="flex items-center gap-8">
-            <ShieldCheck className="h-5 w-5 text-[#0B538D]" />
-            <span className="poppins-semibold text-[13px] text-[#0B2B4E]">
+            <ShieldCheck className="h-5 w-5 text-[#0B538D] dark:text-[#93C5FD]" />
+            <span className="poppins-semibold text-[13px] text-[#0B2B4E] dark:text-white">
               Secure
             </span>
           </div>
         </div>
 
-        <div className="absolute bottom-24 left-8 z-20 rounded-2xl bg-white px-16 py-12 shadow-[0_12px_30px_rgba(11,83,141,0.12)]">
+        <div className="absolute bottom-24 left-8 z-20 rounded-2xl border border-transparent bg-card px-16 py-12 shadow-[0_12px_30px_rgba(11,83,141,0.12)] dark:border-white/10 dark:bg-[#0a1629] dark:shadow-[0_12px_30px_rgba(0,0,0,0.4)]">
           <div className="flex items-center gap-8">
-            <Zap className="h-5 w-5 text-[#0B538D]" />
-            <span className="poppins-semibold text-[13px] text-[#0B2B4E]">
+            <Zap className="h-5 w-5 text-[#0B538D] dark:text-[#93C5FD]" />
+            <span className="poppins-semibold text-[13px] text-[#0B2B4E] dark:text-white">
               Instant
             </span>
           </div>
@@ -533,16 +531,16 @@ const TPQRCodeContainer = () => {
         ].map(({ icon: Icon, title, desc }) => (
           <div
             key={title}
-            className="rounded-[18px] border border-[#E5EEF7] bg-white/90 p-16 shadow-[0_10px_28px_rgba(11,83,141,0.08)] backdrop-blur"
+            className="rounded-[18px] border border-[#E5EEF7] bg-card/90 p-16 shadow-[0_10px_28px_rgba(11,83,141,0.08)] backdrop-blur dark:border-white/10 dark:bg-[#0a1629]/95 dark:shadow-[0_10px_28px_rgba(0,0,0,0.35)]"
           >
-            <span className="mb-12 flex h-11 w-11 items-center justify-center rounded-full bg-[#0B538D]">
+            <span className="mb-12 flex h-11 w-11 items-center justify-center rounded-full bg-[#0B538D] dark:bg-[#2563EB]">
               <Icon className="h-5 w-5 text-white" />
             </span>
 
-            <h3 className="poppins-semibold text-[14px] text-[#0B2B4E]">
+            <h3 className="poppins-semibold text-[14px] text-[#0B2B4E] dark:text-white">
               {title}
             </h3>
-            <p className="poppins-regular mt-4 text-[11px] leading-relaxed text-[#8A8A8A]">
+            <p className="poppins-regular mt-4 text-[11px] leading-relaxed text-[#8A8A8A] dark:text-slate-400">
               {desc}
             </p>
           </div>

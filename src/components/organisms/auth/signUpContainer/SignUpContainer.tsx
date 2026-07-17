@@ -56,7 +56,7 @@ const SignupContainer = () => {
       <h1 className="poppins-semibold text-[24px] sm:text-[28px] text-center leading-tight">
         {t("auth.createAccount")}
       </h1>
-      <p className="poppins-regular text-[#6F6F6F] text-sm text-center mt-2">
+      <p className="poppins-regular text-app-muted text-sm text-center mt-2">
         {t("auth.loginSubtitle")}
       </p>
 
@@ -107,7 +107,7 @@ const SignupContainer = () => {
 
             <div className="flex w-full items-center justify-center gap-4 my-5 sm:my-7">
               <div className="h-px w-full bg-[#E4E4E4]" />
-              <span className="text-[#6F6F6F] text-sm poppins-medium">
+              <span className="text-app-muted text-sm poppins-medium">
                 {t("auth.or")}
               </span>
               <div className="h-px w-full bg-[#E4E4E4]" />
@@ -141,7 +141,7 @@ const SignupContainer = () => {
             </div>
 
             <div className="flex w-full items-center justify-center gap-2 mt-6 sm:mt-8">
-              <span className="text-[#6F6F6F] text-sm poppins-medium">
+              <span className="text-app-muted text-sm poppins-medium">
                 {t("auth.alreadyHaveAccount")}
               </span>
               <a

@@ -96,7 +96,7 @@ const EmirateIDContainer = () => {
   return (
     <>
       {IdUpload ? (
-        <div className="md:bg-white max-w-[335px] md:max-w-[477px] md:min-w-[477px] mx-auto sm:px-[60px]  rounded-2xl py-[40px] px-[20px] flex flex-col justify-between sm:shadow-xl">
+        <div className="md:bg-card max-w-[335px] md:max-w-[477px] md:min-w-[477px] mx-auto sm:px-[60px]  rounded-2xl py-[40px] px-[20px] flex flex-col justify-between sm:shadow-xl">
           <div className="flex flex-col">
             <PrimaryTypo
               typo="Emirates ID"
@@ -113,7 +113,7 @@ const EmirateIDContainer = () => {
             />
           </div>
           <div className="flex flex-col">
-            <p className="  text-center mt-4 text-[#6F6F6F]">
+            <p className="  text-center mt-4 text-app-muted">
               Your Emirates ID is not updated in our sustem. Kindlyy upload your
               Emirates ID to keep using the tipping app services
             </p>
@@ -136,7 +136,7 @@ const EmirateIDContainer = () => {
             onSubmit={handleSubmit}
           >
             {() => (
-              <Form className="md:bg-white max-w-[335px] md:max-w-[477px] md:min-w-[477px] mx-auto sm:px-[60px]  rounded-2xl py-[40px] px-[20px] flex flex-col justify-between sm:shadow-xl">
+              <Form className="md:bg-card max-w-[335px] md:max-w-[477px] md:min-w-[477px] mx-auto sm:px-[60px]  rounded-2xl py-[40px] px-[20px] flex flex-col justify-between sm:shadow-xl">
                 <div className="flex flex-col">
                   <PrimaryTypo
                     typo="Emirates ID"
@@ -200,7 +200,7 @@ const EmirateIDContainer = () => {
                           alt="upload icon"
                           className="mr-2 "
                         />
-                        <span className="text-[#6F6F6F] text-sm poppins-medium leading-[21px]">
+                        <span className="text-app-muted text-sm poppins-medium leading-[21px]">
                           Front
                         </span>
                       </button>
@@ -230,7 +230,7 @@ const EmirateIDContainer = () => {
                           alt="upload icon"
                           className="mr-2 "
                         />
-                        <span className="text-[#6F6F6F] text-sm poppins-medium leading-[21px]">
+                        <span className="text-app-muted text-sm poppins-medium leading-[21px]">
                           Back
                         </span>
                       </button>
@@ -257,7 +257,7 @@ const EmirateIDContainer = () => {
       >
         <AlertDialogContent className="z-[9999]  w-full max-w-[350px] rounded-xl md:max-w-[200px] lg:max-w-[350px] lg:p-8">
           <div className="relative">
-            <div className="absolute transform bg-white p-8 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 max-w-[84.363px] min-h-[84.363px] mih-h-[84.363px] max-h-[84.363px] h-full w-full rounded-full">
+            <div className="absolute transform bg-card p-8 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 max-w-[84.363px] min-h-[84.363px] mih-h-[84.363px] max-h-[84.363px] h-full w-full rounded-full">
               <div className="bg-black h-full w-full rounded-full justify-center items-center flex">
                 <img src={UploadConfirmationIcon} alt="Confirmation" />
               </div>

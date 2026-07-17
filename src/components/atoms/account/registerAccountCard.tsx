@@ -17,7 +17,7 @@ export const RegisterAccountCard = ({
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#EAF3FA] transition-colors group-hover:bg-[#0B538D]">
         <Plus className="h-[18px] w-[18px] text-[#0B538D] transition-colors group-hover:text-white" />
       </span>
-      <span className="poppins-semibold flex-1 text-[14px] leading-tight text-[#1B1B1B]">
+      <span className="poppins-semibold flex-1 text-[14px] leading-tight text-app">
         Sign in as a {title}
       </span>
     </button>

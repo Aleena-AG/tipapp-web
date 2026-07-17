@@ -5,16 +5,41 @@
     "contact": "Contact Us",
     "howItWorks": "How it works"
   },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
+  },
   "howItWorks": {
     "title": "How it works",
-    "subtitle": "Learn how to use Tip App on the web. Follow simple steps for tippers and service providers.",
+    "titlePrefix": "How",
+    "brandTip": "Tip",
+    "brandApp": "App",
+    "titleSuffix": "Works?",
+    "subtitle": "See how Service Providers and Tippers connect in seconds.",
+    "clickForPreview": "Click on the circles for preview",
+    "imageComingSoon": "Preview coming soon",
+    "previewAlt": "App screen step {{step}}",
+    "steps": {
+      "generatesQr": "Generates QR Code",
+      "receivesTip": "Receives Tip Instantly",
+      "tracksWithdrawals": "Tracks Earnings & Withdrawals",
+      "scansCode": "Scans code",
+      "sendsPayment": "Sends payment",
+      "leavesReview": "Leaves review"
+    },
     "tabs": {
       "web": "Web App",
       "mobile": "Mobile App"
     },
     "sections": {
       "tipper": "Tipper (Web)",
-      "serviceProvider": "Service Provider (Web)"
+      "serviceProvider": "Service Provider (Web)",
+      "tipperMobile": "Tipper (Mobile)",
+      "serviceProviderMobile": "Service Provider (Mobile)"
     },
     "comingSoon": "Coming soon"
   },
@@ -34,7 +59,7 @@
       "press": "Press",
       "jobs": "Jobs"
     },
-    "moreFromTipApp": {
+    "moreFromTipTapp": {
       "title": "MORE FROM TIP APP",
       "newsletters": "Newsletters",
       "magazine": "Magazine",
@@ -280,6 +305,7 @@
     "deleteCardConfirmation": "Do you really want to delete this card?",
     "switchToTipperConfirmation": "Do you really want to switch to Tipper?",
     "switchToServiceProviderConfirmation": "Do you really want to switch to Service Provider?",
+    "signInAsRoleConfirmation": "Do you want to sign in as a {{role}}?",
     "scanQRCode": "Scan QR Code",
     "tipHistory": "Tip History",
     "reviews": "Reviews",
@@ -319,6 +345,26 @@
     "trustInstantDesc": "Tips are sent instantly",
     "trustEasy": "Easy",
     "trustEasyDesc": "Simple steps, big impact",
+    "spHeroNewTipPrefix": "You've received a",
+    "spHeroNewTipHighlight": "new tip!",
+    "spHeroWelcomePrefix": "Share your",
+    "spHeroWelcomeHighlight": "QR",
+    "spHeroSubtext": "Tips from happy customers help you grow. Keep up the great work!",
+    "spHeroEmptySubtext": "Show your QR code to customers and receive tips instantly and securely.",
+    "spQrCardDesc": "Share or download your QR code so customers can tip you instantly.",
+    "availableToWithdraw": "Available to withdraw",
+    "viewHistory": "View History",
+    "todaysTips": "Today's Tips",
+    "vsYesterday": "vs yesterday",
+    "totalCustomers": "Total Customers",
+    "recentTips": "Recent Tips",
+    "viewAll": "View all",
+    "noRecentTips": "No tips received yet. Share your QR code to get started!",
+    "youReceivedATip": "You received a tip!",
+    "thankYouEmoji": "Thank you! 😊",
+    "spTrustSecureDesc": "Your data & tips are protected",
+    "spTrustInstantDesc": "Receive tips instantly",
+    "spTrustEasyDesc": "Track & withdraw with ease",
     "qrCode": "QR Code",
     "scanToTip": "Scan to send a tip",
     "shareQRCode": "Share",
@@ -328,7 +374,7 @@
     "yourReviews": "Your Reviews",
     "youHaveSeenItAll": "Yay! You have seen it all",
     "age": "Age",
-    "tipAppId": "Tip App ID",
+    "TipTappId": "Tip App ID",
     "description": "Description",
     "noDescriptionYet": "No description yet",
     "aboutMe": "About Me",
@@ -404,6 +450,7 @@
     "tipperDescription": "Tip generously and leave feedback",
     "tipperAction": "Send a tip",
     "tipperActionDescription": "Tip for great service",
+    "providerShort": "Provider",
     "serviceProvider": "Service Provider",
     "serviceProviderDescription": "Receive tips and reviews from clients",
     "serviceProviderAction": "Receive tips",

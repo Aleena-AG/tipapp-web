@@ -60,7 +60,7 @@
    ```yaml
    version: '3.8'
    services:
-     tipapp-fe:
+     TipTapp-fe:
        build: .
        ports:
          - "8080:80"
@@ -84,12 +84,12 @@
 
 1. Build the Docker image:
    ```bash
-   docker build -t tipapp-fe-users .
+   docker build -t TipTapp-fe-users .
    ```
 
 2. Run the container:
    ```bash
-   docker run -p 8080:80 tipapp-fe-users
+   docker run -p 8080:80 TipTapp-fe-users
    ```
 
 3. The application will be available at `http://localhost:8080`.

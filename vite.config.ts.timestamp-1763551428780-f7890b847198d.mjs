@@ -1,8 +1,8 @@
 // vite.config.ts
-import { defineConfig } from "file:///C:/Users/CAKI/Documents/tipping/new/New%20folder%20(2)/TipApp-Client-Frontend/node_modules/vite/dist/node/index.js";
-import react from "file:///C:/Users/CAKI/Documents/tipping/new/New%20folder%20(2)/TipApp-Client-Frontend/node_modules/@vitejs/plugin-react-swc/index.mjs";
+import { defineConfig } from "file:///C:/Users/CAKI/Documents/tipping/new/New%20folder%20(2)/TipTapp-Client-Frontend/node_modules/vite/dist/node/index.js";
+import react from "file:///C:/Users/CAKI/Documents/tipping/new/New%20folder%20(2)/TipTapp-Client-Frontend/node_modules/@vitejs/plugin-react-swc/index.mjs";
 import path from "path";
-var __vite_injected_original_dirname = "C:\\Users\\CAKI\\Documents\\tipping\\new\\New folder (2)\\TipApp-Client-Frontend";
+var __vite_injected_original_dirname = "C:\\Users\\CAKI\\Documents\\tipping\\new\\New folder (2)\\TipTapp-Client-Frontend";
 var vite_config_default = defineConfig({
   plugins: [react()],
   server: {

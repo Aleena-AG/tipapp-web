@@ -95,7 +95,7 @@ const PaymentContainer = () => {
 
   return (
     <div>
-      <div className="sm:max-w-[617px] sm:min-w-[617px] min-w-[310px] w-full py-[40px] px-[20px] md:py-[40px] md:px-[70px] flex flex-col gap-[32px] mx-auto md:bg-white md:rounded-[16px] md:border md:border-[#0B538D] md:shadow-[0_0_15px_0_rgba(11,83,141,0.5)]">
+      <div className="sm:max-w-[617px] sm:min-w-[617px] min-w-[310px] w-full py-[40px] px-[20px] md:py-[40px] md:px-[70px] flex flex-col gap-[32px] mx-auto md:bg-card md:rounded-[16px] md:border md:border-[#0B538D] md:shadow-[0_0_15px_0_rgba(11,83,141,0.5)]">
         <PrimaryTypo
           typo={t("common.payment")}
           styles="text-center text-[24px] leading-[21px]"

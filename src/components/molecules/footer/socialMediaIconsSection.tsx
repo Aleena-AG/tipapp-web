@@ -8,7 +8,7 @@ const SocialMediaIconsSection = () => {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-40 lg:flex-row w-full justify-between items-start lg:items-center pt-22 pb-17 border-b border-b-[#C8C8C8]">
-      <div className="poppins-medium text-sm leading-5 text-[#6F6F6F]">
+      <div className="poppins-medium text-sm leading-5 text-app-muted">
         {t("footer.copyright")}
       </div>
       <div className="flex flex-col gap-40 sm:flex-row sm:gap-40 items-start sm:items-center">

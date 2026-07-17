@@ -540,7 +540,8 @@ export const useSignUpAndRegisterTipper = () => {
 export const useUpdateUser = () => {
   return useMutation<any, any, any>({
     mutationFn: async (data) => {
-      return await authFetch.patch("/user-details", data);
+      const { Gender: _gender, ...payload } = data || {};
+      return await authFetch.patch("/user-details", payload);
     },
   });
 };

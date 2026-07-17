@@ -11,6 +11,7 @@ import {
 } from "../../../components/ui/navigation-menu";
 import Logo from "@/assets/images/appLogo.png";
 import { MenuIcon } from "lucide-react";
+import ThemeToggle from "@/components/molecules/common/ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -135,7 +136,7 @@ export const Navbar = () => {
       ? "bg-[#0B538D] shadow-[0_0_15px_0_rgba(11,83,141,0.5)]"
       : role === "sp"
         ? "bg-[#9E2A2B] shadow-[0_0_15px_0_rgba(215,25,33,0.5)]"
-        : "bg-white";
+        : "bg-background border-b border-border";
 
   return (
     <div
@@ -158,8 +159,8 @@ export const Navbar = () => {
                 <NavigationMenuList key={path.name}>
                   <NavigationMenuItem
                     // className={`${isScrolled
-                    // ? "bg-[#F3F1FB] hover:bg-white"
-                    // : "bg-white hover:bg-[#F3F1FB]"
+                    // ? "bg-app-surface-muted hover:bg-white"
+                    // : "bg-white hover:bg-app-surface-muted"
                     // } duration-300 poppins-regular text-[15px] text-black rounded-4`}
                     className="poppins-regular text-[15px] text-white rounded-4"
                   >
@@ -180,13 +181,13 @@ export const Navbar = () => {
               <NavigationMenuList>
                 <NavigationMenuItem
                   className={`${isScrolled
-                    ? "bg-[#F3F1FB] hover:bg-white"
-                    : "bg-white hover:bg-[#F3F1FB]"
-                    } duration-300 poppins-regular text-[15px] text-black rounded-4`}
+                    ? "bg-[#F3F1FB] hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700"
+                    : "bg-white hover:bg-[#F3F1FB] dark:bg-slate-900 dark:hover:bg-slate-800"
+                    } duration-300 poppins-regular text-[15px] text-black dark:text-white rounded-4`}
                 >
                   <NavigationMenuLink
                     className={
-                      navigationMenuTriggerStyle() + " text-black px-[10px]"
+                      navigationMenuTriggerStyle() + " text-black dark:text-white px-[10px]"
                     }
                     onClick={() => {
                       navigate("/sign-in");
@@ -200,6 +201,7 @@ export const Navbar = () => {
             )}
           </NavigationMenu>
         </div>
+        <ThemeToggle variant={role ? "onColor" : "default"} />
         {isAuthenticated() && (
           <>
             <Popover>
@@ -228,7 +230,7 @@ export const Navbar = () => {
 
             <Popover>
               <PopoverTrigger asChild className="">
-                <Avatar className="hidden md:block hover:cursor-pointer">
+                <Avatar className="hidden h-9 w-9 md:block hover:cursor-pointer ring-[2.5px] ring-[#E8B923] ring-offset-2 ring-offset-[#0B538D] shadow-[0_0_0_1px_rgba(232,185,35,0.55)] dark:ring-offset-[#0A4A7A]">
                   <AvatarImage
                     src={
                       resolveProfileImageSrc(currentUser?.ProfilePictureURL)
@@ -246,10 +248,10 @@ export const Navbar = () => {
                   </AvatarFallback>
                 </Avatar>
               </PopoverTrigger>
-              <PopoverContent className="w-full  pt-8 px-12 mt-15 transform -translate-x-2">
+              <PopoverContent className="mt-15 w-full -translate-x-2 transform px-12 pt-8 dark:border-white/10 dark:bg-[#0a1629] dark:shadow-[0_0_20px_0_rgba(215,25,33,0.35)]">
                 <div className="flex flex-col gap-7">
                   <div className="flex items-center gap-12">
-                    <Avatar className="hidden md:block">
+                    <Avatar className="hidden h-9 w-9 md:block ring-[2.5px] ring-[#E8B923] ring-offset-2 ring-offset-background dark:ring-offset-[#0a1629]">
                       <AvatarImage
                         src={resolveProfileImageSrc(currentUser?.ProfilePictureURL)}
                         alt="@shadcn"
@@ -265,10 +267,10 @@ export const Navbar = () => {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <div className="text-[#144524] text-[14px] poppins-semibold leading-[29px]">
+                      <div className="text-[#144524] dark:text-white text-[14px] poppins-semibold leading-[29px]">
                         {currentUser?.FirstName} {currentUser?.LastName}
                       </div>
-                      <div className="text-sm text-[#000] poppins-medium leading-normal opacity-40">
+                      <div className="text-sm text-[#000] poppins-medium leading-normal opacity-40 dark:text-slate-400 dark:opacity-100">
                         {currentUser?.Role === "tp" && "Tip Provider"}
                         {currentUser?.Role === "sp" &&
                           t("userSelection.serviceProvider")}
@@ -281,7 +283,7 @@ export const Navbar = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="h-px bg-[#D9D9D9] w-full" />
+                  <div className="h-px bg-[#D9D9D9] w-full dark:bg-white/10" />
                 </div>
                 <div className="flex items-start w-full flex-col px-20 pt-14 pb-17 gap-10">
                   <div
@@ -291,8 +293,12 @@ export const Navbar = () => {
                       handleNavigateProfile();
                     }}
                   >
-                    <img src={ProfileIcon} alt="" />
-                    <div className="text-[14px] poppins-medium leading-[29px] text-[#144524]">
+                    <img
+                      src={ProfileIcon}
+                      alt=""
+                      className="dark:brightness-0 dark:invert"
+                    />
+                    <div className="text-[14px] poppins-medium leading-[29px] text-[#144524] dark:text-white">
                       {t("profile.profileSettings")}
                     </div>
                   </div>
@@ -303,8 +309,12 @@ export const Navbar = () => {
                       handleSignOutClick();
                     }}
                   >
-                    <img src={SignOutIcon} alt="" />
-                    <div className="text-[14px] poppins-medium leading-[29px] text-[#144524]">
+                    <img
+                      src={SignOutIcon}
+                      alt=""
+                      className="dark:brightness-0 dark:invert"
+                    />
+                    <div className="text-[14px] poppins-medium leading-[29px] text-[#144524] dark:text-white">
                       {t("buttons.signOut")}
                     </div>
                   </div>
@@ -329,7 +339,7 @@ export const Navbar = () => {
                       <DropdownMenuLabel className="poppins-regular text-xs">
                         <div className="flex items-center gap-7">
                           <div className="flex flex-col">
-                            <div className="text-xs poppins-medium leading-[29px] text-[#144524]">
+                            <div className="text-xs poppins-medium leading-[29px] text-[#144524] dark:text-white">
                               {currentUser?.Username}
                             </div>
                             <div className="text-xs text-[#000] poppins-medium leading-normal opacity-40">
@@ -398,7 +408,7 @@ export const Navbar = () => {
       >
         <AlertDialogContent className="z-[9999]  w-full max-w-[350px] rounded-xl md:max-w-[500px] lg:max-w-[650px] lg:p-8">
           <div className="relative">
-            <div className="absolute transform bg-white p-8 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 max-w-[84.363px] min-h-[84.363px] mih-h-[84.363px] max-h-[84.363px] h-full w-full rounded-full">
+            <div className="absolute transform bg-card p-8 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 max-w-[84.363px] min-h-[84.363px] mih-h-[84.363px] max-h-[84.363px] h-full w-full rounded-full">
               <div className="bg-black h-full w-full rounded-full justify-center items-center flex">
                 <img src={SignOutConfirmation} alt="Confirmation" />
               </div>

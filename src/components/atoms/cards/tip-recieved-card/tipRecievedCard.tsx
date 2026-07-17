@@ -29,8 +29,8 @@ const PaymentMethodBadge = ({ type }: { type?: string }) => {
     <span
       className={`poppins-medium inline-flex items-center rounded-full px-12 py-4 text-[11px] ${
         isBalance
-          ? "bg-[#E8F5EE] text-[#1A7A4A]"
-          : "bg-[#EAF3FA] text-[#0B538D]"
+          ? "bg-[#E8F5EE] text-[#1A7A4A] dark:bg-emerald-500/20 dark:text-emerald-300"
+          : "bg-[#EAF3FA] text-[#0B538D] dark:bg-[#0B538D]/30 dark:text-[#93C5FD]"
       }`}
     >
       {getPaymentMethodLabel(type)}
@@ -71,7 +71,7 @@ const TipRecievedCard = (props: Props) => {
         }
         endMessage={
           isScrollable && (
-            <p className="poppins-medium border-t border-[#E8EEF4] py-20 text-center text-[13px] text-[#9A9A9A]">
+            <p className="poppins-medium border-t border-[#E8EEF4] py-20 text-center text-[13px] text-[#9A9A9A] dark:border-slate-700 dark:text-slate-400">
               {t("common.youHaveSeenItAll")}
             </p>
           )
@@ -85,8 +85,10 @@ const TipRecievedCard = (props: Props) => {
 
               return (
                 <div
-                  className={`flex w-full flex-row items-center justify-between gap-12 border-b border-[#E8EEF4] px-16 py-16 transition-colors last:border-b-0 hover:bg-[#F0F7FC] sm:px-24 sm:py-16 lg:grid lg:grid-cols-[2fr_1fr_1fr_1.2fr] lg:items-center lg:gap-24 ${
-                    isEven ? "bg-white" : "bg-[#FAFCFE]"
+                  className={`flex w-full flex-row items-center justify-between gap-12 border-b border-[#E8EEF4] px-16 py-16 transition-colors last:border-b-0 hover:bg-[#F0F7FC] sm:px-24 sm:py-16 lg:grid lg:grid-cols-[2fr_1fr_1fr_1.2fr] lg:items-center lg:gap-24 dark:border-slate-700/80 dark:hover:bg-slate-700/40 ${
+                    isEven
+                      ? "bg-white dark:bg-slate-900/40"
+                      : "bg-[#F7FAFC] dark:bg-slate-800/50"
                   }`}
                   key={index}
                 >
@@ -117,26 +119,26 @@ const TipRecievedCard = (props: Props) => {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex min-w-0 flex-col">
-                      <span className="poppins-semibold truncate text-[14px] text-[#141414]">
+                      <span className="poppins-semibold truncate text-[14px] text-[#141414] dark:text-white">
                         {item.serviceProvider?.FirstName &&
                         item.serviceProvider?.LastName
                           ? `${item.serviceProvider.FirstName} ${item.serviceProvider.LastName}`
                           : "N.A"}
                       </span>
-                      <span className="poppins-medium text-[12px] text-[#9A9A9A] lg:hidden">
+                      <span className="poppins-medium text-[12px] text-[#9A9A9A] lg:hidden dark:text-slate-400">
                         {getDateValueFormated(item.createdAt || "N.A")}
                       </span>
                     </div>
                   </div>
 
                   {/* Date — desktop */}
-                  <span className="poppins-medium hidden text-[13px] text-[#5A6570] lg:block">
+                  <span className="poppins-medium hidden text-[13px] text-[#5A6570] lg:block dark:text-slate-400">
                     {getDateValueFormated(item.createdAt || "N.A")}
                   </span>
 
                   {/* Amount + Method — mobile */}
                   <div className="flex shrink-0 flex-col items-end gap-4 lg:hidden">
-                    <span className="poppins-semibold text-[14px] text-[#0B538D]">
+                    <span className="poppins-semibold text-[14px] text-[#0B538D] dark:text-[#93C5FD]">
                       {formatNumber(
                         item.Amount,
                         true,
@@ -148,7 +150,7 @@ const TipRecievedCard = (props: Props) => {
                   </div>
 
                   {/* Amount — desktop */}
-                  <span className="poppins-semibold hidden text-[14px] text-[#0B538D] lg:block lg:text-right">
+                  <span className="poppins-semibold hidden text-[14px] text-[#0B538D] lg:block lg:text-right dark:text-[#93C5FD]">
                     {formatNumber(
                       item.Amount,
                       true,

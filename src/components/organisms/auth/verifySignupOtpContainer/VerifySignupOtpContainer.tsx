@@ -99,7 +99,7 @@ const VerifySignupOtpContainer = () => {
       <button
         type="button"
         onClick={() => navigate("/sign-up")}
-        className="mb-4 flex items-center gap-1 text-sm poppins-medium text-[#6F6F6F] hover:text-[#1A1A1A] transition-colors"
+        className="mb-4 flex items-center gap-1 text-sm poppins-medium text-app-muted hover:text-app transition-colors"
       >
         ← {t("buttons.back")}
       </button>
@@ -107,15 +107,15 @@ const VerifySignupOtpContainer = () => {
       <h1 className="poppins-semibold text-[24px] sm:text-[28px] text-center leading-tight">
         {t("auth.verifyYourEmail")}
       </h1>
-      <p className="poppins-regular text-[#6F6F6F] text-sm text-center mt-2">
+      <p className="poppins-regular text-app-muted text-sm text-center mt-2">
         {t("auth.signupOtpSubtitle")}
       </p>
       {email && (
-        <p className="poppins-medium text-[#1A1A1A] text-sm text-center mt-2 break-all">
+        <p className="poppins-medium text-app text-sm text-center mt-2 break-all">
           {email}
         </p>
       )}
-      <p className="poppins-regular text-[#6F6F6F] text-xs text-center mt-2">
+      <p className="poppins-regular text-app-muted text-xs text-center mt-2">
         {t("auth.otpValidFor10Minutes")}
       </p>
 
@@ -131,7 +131,7 @@ const VerifySignupOtpContainer = () => {
             inputMode="numeric"
             autoComplete={index === 0 ? "one-time-code" : "off"}
             maxLength={OTP_LENGTH}
-            className="h-12 w-11 sm:h-14 sm:w-12 rounded-8 border border-[#E4E4E4] text-center text-lg poppins-semibold text-[#1A1A1A] focus:outline-none focus:border-[#9E2A2B] focus:ring-2 focus:ring-[#9E2A2B]/15 transition-colors"
+            className="h-12 w-11 sm:h-14 sm:w-12 rounded-8 border border-[#E4E4E4] text-center text-lg poppins-semibold text-app focus:outline-none focus:border-[#9E2A2B] focus:ring-2 focus:ring-[#9E2A2B]/15 transition-colors"
             value={digit}
             onChange={(e) => handleOtpChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
@@ -156,7 +156,7 @@ const VerifySignupOtpContainer = () => {
         )}
       </button>
 
-      <p className="text-center mt-5 text-sm text-[#6F6F6F] poppins-regular">
+      <p className="text-center mt-5 text-sm text-app-muted poppins-regular">
         {t("auth.didntGetOtp")}{" "}
         <button
           type="button"

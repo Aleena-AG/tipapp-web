@@ -4,6 +4,7 @@ import spLogo from "@/assets/images/sp_logo.png";
 import appLogo from "@/assets/images/appLogo.png";
 import tipperAvatar from "@/assets/images/tp-avatar.png";
 import spAvatar from "@/assets/images/character-1.png";
+import { resolveAvatarDisplaySrc } from "@/utils/constants/ProfileAvatars";
 
 export const DEFAULT_PROFILE_IMAGE = defaultProfileImage;
 export const TIPPER_AVATAR = tipperAvatar;
@@ -42,5 +43,5 @@ export function resolveProfileImageSrc(
 ): string {
   if (!url?.trim()) return fallback;
   if (isLegacyFirebaseImageUrl(url)) return fallback;
-  return url;
+  return resolveAvatarDisplaySrc(url) || fallback;
 }

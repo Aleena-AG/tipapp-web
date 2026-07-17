@@ -83,7 +83,7 @@ const BalanceTransferHistoryCard = ({
             return (
               <div
                 key={item.TipId ?? `${pageIndex}-${_index}`}
-                className="flex items-center justify-between gap-12 rounded-xl border border-gray-100 bg-gray-50/60 px-14 py-13 transition-colors hover:border-[#9E2A2B]/20 hover:bg-white"
+                className="flex items-center justify-between gap-12 rounded-xl border border-gray-100 bg-gray-50/60 px-14 py-13 transition-colors hover:border-[#9E2A2B]/20 hover:bg-card"
               >
                 <div className="flex min-w-0 items-center gap-12">
                   <div className="flex h-38 w-38 shrink-0 items-center justify-center rounded-full bg-[#9E2A2B]/10 text-[#9E2A2B]">

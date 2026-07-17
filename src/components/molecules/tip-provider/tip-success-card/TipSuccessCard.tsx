@@ -42,7 +42,7 @@ const TipSuccessCard = ({ summary }: Props) => {
       </div>
 
       {/* Main card */}
-      <div className="ta-animate-slide-up ta-delay-1 -mt-40 rounded-[24px] border border-[#E8EEF4]/80 bg-white px-28 pb-28 pt-[52px] shadow-[0_12px_48px_rgba(11,83,141,0.12)]">
+      <div className="ta-animate-slide-up ta-delay-1 -mt-40 rounded-[24px] border border-[#E8EEF4]/80 bg-card px-28 pb-28 pt-[52px] shadow-[0_12px_48px_rgba(11,83,141,0.12)]">
         <div className="flex flex-col items-center text-center">
           {/* Avatar */}
           <div className="relative">
@@ -83,7 +83,7 @@ const TipSuccessCard = ({ summary }: Props) => {
           </p>
 
           {/* Subtitle */}
-          <p className="ta-animate-fade ta-delay-3 poppins-medium mt-12 text-[14px] leading-snug text-[#5A6A7A]">
+          <p className="ta-animate-fade ta-delay-3 poppins-medium mt-12 text-[14px] leading-snug text-[#5A6A7A] dark:text-slate-400">
             {t("payments.tipSuccessSubtitle")}
           </p>
 

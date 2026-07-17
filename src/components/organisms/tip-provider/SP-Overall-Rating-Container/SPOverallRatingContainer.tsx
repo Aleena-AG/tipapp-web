@@ -55,7 +55,7 @@ const SPOverallRatingSection = ({ userID }: { userID: string }) => {
       <div className="mb-24 flex items-center gap-12">
         <button
           onClick={handleNavigateHome}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#E4EDF5] bg-white text-[#0B538D] shadow-sm transition-colors hover:bg-[#EAF3FA]"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#E4EDF5] bg-card text-[#0B538D] shadow-sm transition-colors hover:bg-[#EAF3FA]"
           aria-label={t("buttons.back")}
         >
           <FaArrowLeft className="text-[14px]" />
@@ -64,7 +64,7 @@ const SPOverallRatingSection = ({ userID }: { userID: string }) => {
           <h1 className="poppins-semibold text-[22px] text-[#0B538D] sm:text-[26px]">
             {t("common.overallRating")}
           </h1>
-          <p className="poppins-regular mt-2 text-[13px] text-[#7A7A7A]">
+          <p className="poppins-regular mt-2 text-[13px] text-[#7A7A7A] dark:text-slate-400">
             {t("common.customerRatings")}
           </p>
         </div>

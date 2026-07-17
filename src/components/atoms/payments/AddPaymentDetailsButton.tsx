@@ -13,24 +13,28 @@ const AddPaymentDetailsButton = (props: Props) => {
      <div
        className={`w-full ${props.containerStyles} flex flex-col gap-9 minw-[229px] group`}
      >
-       <div className="poppins-regular text-black text-sm leading-normal">
+       <div className="poppins-regular text-sm leading-normal text-foreground">
          {props.label}
        </div>
        <button
-         className={`bg-[#FBFCFF] w-full min-h-[42px] max-h-[42px] rounded-8 border border-[#E0E0E0] outline-none px-15 py-10 placeholder:text-[14px] placeholder:poppins-medium placeholder:leading-normal placeholder:text-black ${props.Styles} flex items-center justify-between hover:border-black`}
+         className={`w-full min-h-[42px] max-h-[42px] rounded-8 border border-border bg-[#FBFCFF] outline-none px-15 py-10 text-foreground placeholder:text-[14px] placeholder:poppins-medium placeholder:leading-normal placeholder:text-muted-foreground dark:bg-[#121e36] dark:border-white/10 dark:hover:border-white/25 hover:border-black ${props.Styles} flex items-center justify-between`}
          onClick={() => {
            props.onClick && props.onClick();
          }}
        >
          {props.type === "add-payment-details-btn" && (
            <span
-             className={`${props.selected ? "text-black" : "text-[#A5A6A8]"}`}
+             className={`${
+               props.selected
+                 ? "text-foreground"
+                 : "text-[#A5A6A8] dark:text-slate-500"
+             }`}
            >
              {props.placeholder}
            </span>
          )}
          {props.type === "add-new-card-btn" && (
-           <span className="group-hover:text-black text-[#A5A6A8]">
+           <span className="text-[#A5A6A8] group-hover:text-foreground dark:text-slate-500 dark:group-hover:text-slate-200">
              Add New Card
            </span>
          )}

@@ -73,7 +73,7 @@ const WithdrawHistoryCardSection = () => {
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-2xl sm:border sm:border-[#d71921]/30 sm:bg-white sm:shadow-[0_4px_24px_0_rgba(158,42,43,0.12)]">
+      <div className="overflow-hidden rounded-2xl sm:border sm:border-[#d71921]/30 sm:bg-card sm:shadow-[0_4px_24px_0_rgba(158,42,43,0.12)]">
         <div
           className="border-b border-gray-100 bg-gradient-to-b from-[#fdf8f8] to-white px-12 py-14 sm:px-16"
           role="tablist"

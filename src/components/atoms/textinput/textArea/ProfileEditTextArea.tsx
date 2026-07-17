@@ -23,7 +23,7 @@ export const ProfileEditTextArea = (props: Props) => {
     <div className={`w-full ${props.containerStyles} flex flex-col gap-9`}>
       <div className="poppins-medium text-[14px]">{props.label}</div>
       <textarea
-        className={`bg-[#FBFCFF] w-full min-h-[108px] max-h-[108px] rounded-8 border border-[#E0E0E0] outline-none px-15 py-10 placeholder:text-[14px] placeholder:poppins-medium placeholder:leading-normal placeholder:text-black ${props.inputStyles} placeholder:opacity-40`}
+        className={`w-full min-h-[108px] max-h-[108px] rounded-8 border border-border bg-[#F8FAFC] outline-none focus:border-ring text-[#0B2C4A] px-15 py-10 placeholder:text-[14px] placeholder:poppins-medium placeholder:leading-normal placeholder:text-muted-foreground placeholder:opacity-40 dark:border-white/10 dark:bg-[#121e36] dark:text-white dark:focus:border-[#3B82F6] ${props.inputStyles}`}
         placeholder={props.placeholder}
         value={props.value}
         name={props.name}

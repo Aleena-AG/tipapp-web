@@ -1,74 +1,112 @@
-import ScanIcon from "@/assets/svg/QRCode.svg";
-import ReviewIcon from "@/assets/svg/review.svg";
-import TipIcon from "@/assets/svg/tip-history.svg";
-import PaymentIcon from "@/assets/svg/mastercard.svg";
-import HistoryIcon from "@/assets/svg/tip-history.svg";
-import ProfileIcon from "@/assets/svg/profile-icon.svg";
+import type { LucideIcon } from "lucide-react";
+import { HandCoins, QrCode, Star } from "lucide-react";
 
-export const howItWorks = {
-  web: {
-    tipper: [
+export type HowItWorksStepId = 1 | 2 | 3 | 4 | 5 | 6;
+
+export type HowItWorksInteractiveStep = {
+  id: HowItWorksStepId;
+  /** i18n key under howItWorks.steps */
+  labelKey: string;
+  image: string;
+  Icon?: LucideIcon;
+};
+
+export const serviceProviderSteps: HowItWorksInteractiveStep[] = [
+  {
+    id: 1,
+    labelKey: "generatesQr",
+    image: "/how-it-works/sp-1-generate-qr.png",
+  },
+  {
+    id: 2,
+    labelKey: "receivesTip",
+    image: "/how-it-works/sp-2-tips-balance.png",
+  },
+  {
+    id: 3,
+    labelKey: "tracksWithdrawals",
+    image: "/how-it-works/sp-3-withdrawal.png",
+  },
+];
+
+export const tipperSteps: HowItWorksInteractiveStep[] = [
+  {
+    id: 4,
+    labelKey: "scansCode",
+    image: "/how-it-works/tp-1-scan-qr.png",
+    Icon: QrCode,
+  },
+  {
+    id: 5,
+    labelKey: "sendsPayment",
+    image: "/how-it-works/tp-2-payment.png",
+    Icon: HandCoins,
+  },
+  {
+    id: 6,
+    labelKey: "leavesReview",
+    image: "/how-it-works/tp-3-review.png",
+    Icon: Star,
+  },
+];
+
+export const howItWorksStepImages: Record<HowItWorksStepId, string> = {
+  1: "/how-it-works/sp-1-generate-qr.png",
+  2: "/how-it-works/sp-2-tips-balance.png",
+  3: "/how-it-works/sp-3-withdrawal.png",
+  4: "/how-it-works/tp-1-scan-qr.png",
+  5: "/how-it-works/tp-2-payment.png",
+  6: "/how-it-works/tp-3-review.png",
+};
+
+/** Legacy types kept for any remaining references */
+export type HowItWorksFlowStep = {
+  title: string;
+  description: string;
+};
+
+export type HowItWorksRole = "tipper" | "serviceProvider";
+
+export type HowItWorksFlow = {
+  heroImage?: string;
+  steps: HowItWorksFlowStep[];
+};
+
+export const howItWorksFlows: Record<HowItWorksRole, HowItWorksFlow> = {
+  tipper: {
+    heroImage: "/how-it-works/tipper-flow.png",
+    steps: [
       {
-        icon: ProfileIcon,
-        title: "Sign in",
-        description: "Log in or create an account to get started.",
+        title: "Provider shares QR",
+        description:
+          "The service provider displays their unique TipApp QR code for customers.",
       },
       {
-        icon: ScanIcon,
-        title: "Scan QR",
-        description: "Tap Scan and point your camera at the QR code.",
+        title: "Customer scans",
+        description:
+          "Scan the QR with your phone and review the provider details.",
       },
       {
-        icon: ReviewIcon,
-        title: "Review",
-        description: "Check the service provider profile and details.",
-      },
-      {
-        icon: TipIcon,
-        title: "Rate & Tip",
-        description: "Give a star rating, leave feedback and set tip amount.",
-      },
-      {
-        icon: PaymentIcon,
-        title: "Pay Securely",
-        description: "Choose a saved card or add a new one and proceed.",
-      },
-      {
-        icon: HistoryIcon,
-        title: "History",
-        description: "View your tips and reviews any time from history.",
+        title: "Tip sent & review",
+        description:
+          "Send your tip securely and leave a quick rating with feedback.",
       },
     ],
-    serviceProvider: [
+  },
+  serviceProvider: {
+    heroImage: "/how-it-works/sp-flow.png",
+    steps: [
       {
-        icon: ProfileIcon,
-        title: "Sign in as Service Provider",
-        description: "Access your dashboard to manage tips and reviews.",
+        title: "Share Your QR",
+        description: "Service provider shares unique QR code with the customer",
       },
       {
-        icon: ScanIcon,
-        title: "Show QR",
-        description: "Display or share your QR code with customers.",
+        title: "Customer Tips",
+        description: "Customer scans and sends tip to the service provider",
       },
       {
-        icon: TipIcon,
-        title: "Receive Tips",
-        description: "Customers scan and send tips with ratings.",
-      },
-      {
-        icon: ReviewIcon,
-        title: "See Reviews",
-        description: "View ratings and feedback to improve your service.",
-      },
-      {
-        icon: HistoryIcon,
-        title: "Track Balance",
-        description: "Monitor your total received tips and activity.",
-      },
-      {
-        icon: PaymentIcon,
-        title: "Withdraw",
-        description: "Request withdrawals according to limits and policies.",
+        title: "Earn Instantly",
+        description: "Tip is received instantly and balance is updated",
       },
     ],
   },

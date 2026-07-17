@@ -30,7 +30,7 @@ const ReviewsFeedbacksCardSection = () => {
   return (
     <div
       ref={containerRef}
-      className={`rounded-16 sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)] sm:bg-white min-h-[420px] max-h-[420px] sm:min-w-[663px] max-w-[663px] overflow-y-auto mt-12 sm:p-32 gap-y-24 flex flex-col ${
+      className={`rounded-16 sm:border sm:border-[#d71921] sm:shadow-[0_0_15px_0_rgba(215,25,33,0.5)] sm:bg-card min-h-[420px] max-h-[420px] sm:min-w-[663px] max-w-[663px] overflow-y-auto mt-12 sm:p-32 gap-y-24 flex flex-col ${
         isLoading ? "justify-center items-center" : ""
       }`}
     >

@@ -3,8 +3,8 @@ import { ProfileDetailCard } from "@/components/atoms/cards/profile-detail-card/
 import { SafeImage } from "@/components/atoms/images/SafeImage";
 import { truncateEmail } from "@/hooks/hooks";
 import { useTranslation } from "react-i18next";
+
 interface Props {
-  // userName: string;
   email: string;
   address: string;
   phone: string;
@@ -19,278 +19,121 @@ interface Props {
   city: string;
   whatsapp: string;
   accNumber?: string;
-  //paypal?: string;
   role: string;
 }
 
 export const ProfileDetailsSection = (props: Props) => {
   const { t } = useTranslation();
-  // const userType = localStorage.getItem("userType");
+  const roleType =
+    typeof window !== "undefined" ? localStorage.getItem("userType") : null;
+  const isSp = roleType === "sp";
+  const accent = isSp ? "#d71921" : "#0B538D";
+  const softBg = isSp
+    ? "bg-[#FDECED] dark:bg-[#d71921]/25"
+    : "bg-[#E8F2FA] dark:bg-[#0B538D]/30";
+  /** Dull gold ring for profile avatar */
+  const goldRing =
+    "ring-[#E8B923] ring-offset-2 ring-offset-white dark:ring-[#E8B923] dark:ring-offset-[#0a1629]";
+
+  const roleLabel =
+    props.role === "sp" || (props.role === "both" && isSp)
+      ? t("userSelection.serviceProvider")
+      : t("userSelection.tipper");
+
+  const fullName = [props.name, props.lname]
+    .filter((part) => part && part !== "Not provided yet" && part.trim())
+    .join(" ");
+
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-center sm:pt-46 sm:pb-31 py-20  ">
-      <div className="flex justify-center mb-20">
-        <SafeImage
-          src={props.imageUrl}
-          alt="profile picture"
-          className="w-full h-full object-cover rounded-4 min-w-[150px] min-h-[150px] max-w-[150px] max-h-[150px] sm:hidden block"
-        />
+    <div className="flex flex-col gap-24 py-8">
+      {/* Avatar + identity */}
+      <div className="flex flex-col items-center gap-12 text-center">
+        <div
+          className={`relative h-[120px] w-[120px] overflow-hidden rounded-full ring-[3px] ${goldRing} shadow-[0_8px_24px_rgba(232,185,35,0.25)] sm:h-[140px] sm:w-[140px] dark:shadow-[0_8px_24px_rgba(232,185,35,0.2)]`}
+        >
+          <SafeImage
+            src={props.imageUrl}
+            alt="profile picture"
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <div className="flex flex-col items-center gap-6">
+          <h2 className="poppins-semibold text-[20px] text-[#0B2C4A] dark:text-white sm:text-[22px]">
+            {fullName || "—"}
+          </h2>
+          <span
+            className={`poppins-medium rounded-full px-12 py-4 text-[11px] sm:text-[12px] ${softBg}`}
+            style={{ color: accent }}
+          >
+            {roleLabel}
+          </span>
+          {props.bio && props.bio !== "Not provided yet" && (
+            <p className="poppins-regular max-w-[420px] text-[13px] leading-[20px] text-[#5A6A7A] dark:text-slate-400 sm:text-[14px] sm:leading-[22px]">
+              {props.bio}
+            </p>
+          )}
+        </div>
       </div>
-      <div className="flex flex-col w-full ">
-        <div className="flex flex-row w-full justify-between gap-50">
-          <div className="flex flex-col w-full gap-40">
-            <div className="flex flex-row ">
-              <div className="flex flex-[1]">
-                {/* <ProfileDetailCard
-                  title="User Name"
-                  detail={props.userName ? props.userName : " "}
-                /> */}
-                <ProfileDetailCard
-                  title={t("forms.firstName")}
-                  detail={props.name ? props.name : " "}
-                />
-              </div>
-              <div className="flex flex-[1] items-start">
-                <ProfileDetailCard
-                  title={t("forms.lastName")}
-                  detail={props.lname ? props.lname : " "}
-                />
-              </div>
-            </div>
-            <div className="flex flex-row mb-50 ">
-              <div className="flex flex-[1]">
-                <ProfileDetailCard
-                  title={t("forms.email")}
-                  detail={props.email ? truncateEmail(props.email) : " "}
-                />
-              </div>
-              <div className="flex flex-[1] items-start">
-                <ProfileDetailCard
-                  title="Bio"
-                  detail={props.bio ? props.bio : " "}
-                  size={"short"}
-                  maxLength={41}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="min-w-[184px] min-h-[189px] max-w-[184px] max-h-[189px] hidden sm:block rounded-4 ">
-            <div className="w-[189px] h-[189px] flex items-center justify-center overflow-hidden rounded-4">
-              <SafeImage
-                src={props.imageUrl}
-                alt="profile picture"
-                className="w-full h-full object-cover rounded-4"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-row w-full justify-between gap-50 mb-50 ">
-          <div className="flex flex-col w-full gap-40">
-            <div className="flex flex-row ">
-              <div className="flex flex-[1]">
-                <ProfileDetailCard
-                  title="Address"
-                  detail={props.address ? props.address : " "}
-                />
-              </div>
-              <div className="flex flex-[1] items-start">
-                <ProfileDetailCard
-                  title="Date of Birth"
-                  detail={props.DateOfBirth ? props.DateOfBirth : " "}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="min-w-[184px] hidden sm:block rounded-4 " />
-        </div>
-        <div className="flex flex-row w-full justify-between gap-50">
-          <div className="flex flex-col w-full gap-40">
-            <div className="flex flex-row ">
-              <div className="flex flex-[1]">
-                <ProfileDetailCard
-                  title={t("forms.phoneNumber")}
-                  detail={props.phone ? props.phone : " "}
-                />
-              </div>
-              <div className="flex flex-[1] items-start">
-                <ProfileDetailCard
-                  title="WhatsApp"
-                  detail={props.whatsapp ? props.whatsapp : " "}
-                />
-              </div>
-            </div>
-            <div className="flex flex-row ">
-              <div className="flex flex-[1]">
-                <ProfileDetailCard
-                  title={t("forms.country")}
-                  detail={props.country ? props.country : " "}
-                />
-              </div>
-              <div className="flex flex-[1] items-start">
-                <ProfileDetailCard
-                  title={t("forms.city")}
-                  detail={props.city ? props.city : " "}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="min-w-[184px] hidden sm:block rounded-4 " />
-        </div>
-        {/* <div className="flex flex-row w-full justify-between gap-50 mt-33 mb-46">
-          <div className="flex flex-col w-full gap-40">
-            <div className="flex flex-row ">
-              <div className="flex flex-[1]">
-                {props.role === "sp" && (
-                  <>
-                    <ProfileDetailCard
-                      title="Bank Name"
-                      detail={
-                        props.bankName ? props.bankName : "Not provided yet"
-                      }
-                    />
-                  </>
-                )}
-                {props.role === "both" && userType === "sp" && (
-                  <>
-                    <ProfileDetailCard
-                      title="Bank Name"
-                      detail={
-                        props.bankName ? props.bankName : "Not provided yet"
-                      }
-                    />
-                  </>
-                )}
 
-                {props.role === "tp" && (
-                  <>
-                    {props.accNumber && (
-                      <ProfileDetailCard
-                        title="Card Details"
-                        detail={
-                          props.accNumber ? props.accNumber : "Not provided yet"
-                        }
-                      />
-                    )}
-                  </>
-                )}
-                {props.role === "both" && userType === "tp" && (
-                  <>
-                    {props.accNumber && (
-                      <ProfileDetailCard
-                        title="Card Details"
-                        detail={
-                          props.accNumber ? props.accNumber : "Not provided yet"
-                        }
-                      />
-                    )}
-                  </>
-                )}
-              </div>
-              <div className="flex flex-[1] items-start">
-                {props.role === "sp" && (
-                  <>
-                    <ProfileDetailCard
-                      title="Account Number"
-                      detail={
-                        props.accNumber ? props.accNumber : "Not provided yet"
-                      }
-                    />
-                  </>
-                )}
-                {props.role === "both" && userType === "sp" && (
-                  <>
-                    <ProfileDetailCard
-                      title="Account Number"
-                      detail={
-                        props.accNumber ? props.accNumber : "Not provided yet"
-                      }
-                    />
-                  </>
-                )}
+      {/* Personal info */}
+      <section className="rounded-[14px] border border-[#E4EAF2] border-l-[4px] border-l-[#0B538D] bg-card p-16 shadow-[0_6px_20px_rgba(11,83,141,0.06)] sm:p-20 dark:border-white/10 dark:bg-[#0a1629]/80 dark:shadow-[0_6px_20px_rgba(0,0,0,0.35)]">
+        <h3 className="poppins-semibold mb-14 text-[15px] text-[#0B2C4A] dark:text-white sm:mb-16 sm:text-[16px]">
+          {t("profile.personalInformation")}
+        </h3>
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
+          <ProfileDetailCard
+            title={t("forms.firstName")}
+            detail={props.name ? props.name : " "}
+          />
+          <ProfileDetailCard
+            title={t("forms.lastName")}
+            detail={props.lname ? props.lname : " "}
+          />
+          <ProfileDetailCard
+            title="Date of Birth"
+            detail={props.DateOfBirth ? props.DateOfBirth : " "}
+          />
+          <ProfileDetailCard
+            title="Bio"
+            detail={props.bio ? props.bio : " "}
+            size="short"
+            maxLength={80}
+          />
+        </div>
+      </section>
 
-                {props.role === "tp" && (
-//                  <>
-//                    {props.paypal && (
-///                      <ProfileDetailCard
-//                        title="Paypal"
-//                        detail={
-//                          props.paypal
-//                            ? truncateEmail(props.paypal)
-//                            : "Not provided yet"
-//                        }
-//                      />
-//</>                    )}
-//                  </>
-<></>
-                )}
-                 {props.role === "both" && userType === "tp" && (
-//                  <>
-//                     {props.paypal && (
-//                       <ProfileDetailCard
-//                         title="Paypal"
-//                         detail={
-//                           props.paypal
-//                             ? truncateEmail(props.paypal)
-//                             : "Not provided yet"
-//                         }
-//                       />
-//                     )}
-//                   </>
-<></>
-                )}
-              </div>
-            </div>
-            {props.role === "sp" && (
-              <>
-                <div className="flex flex-row ">
-                  <div className="flex flex-[1]">
-                    <ProfileDetailCard
-                      title="IBAN Number"
-                      detail={
-                        props.ibanNumber ? props.ibanNumber : "Not provided yet"
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-[1] items-start">
-                    <ProfileDetailCard
-                      title="Paypal"
-                      detail={
-                        props.paypal
-                          ? truncateEmail(props.paypal)
-                          : "Not provided yet"
-                      }
-                    />
-                  </div>
-                </div>
-              </>
-            )}
-            {props.role === "both" && userType === "sp" && (
-              <>
-                <div className="flex flex-row ">
-                  <div className="flex flex-[1]">
-                    <ProfileDetailCard
-                      title="IBAN Number"
-                      detail={
-                        props.ibanNumber ? props.ibanNumber : "Not provided yet"
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-[1] items-start">
-                    <ProfileDetailCard
-                      title="Paypal"
-                      detail={
-                        props.paypal
-                          ? truncateEmail(props.paypal)
-                          : "Not provided yet"
-                      }
-                    />
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="min-w-[184px] hidden sm:block rounded-4 " />
-        </div> */}
-      </div>
+      {/* Contact info */}
+      <section className="rounded-[14px] border border-[#E4EAF2] border-l-[4px] border-l-[#d71921] bg-card p-16 shadow-[0_6px_20px_rgba(11,83,141,0.06)] sm:p-20 dark:border-white/10 dark:bg-[#0a1629]/80 dark:shadow-[0_6px_20px_rgba(0,0,0,0.35)]">
+        <h3 className="poppins-semibold mb-14 text-[15px] text-[#0B2C4A] dark:text-white sm:mb-16 sm:text-[16px]">
+          {t("profile.contactInformation")}
+        </h3>
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
+          <ProfileDetailCard
+            title={t("forms.email")}
+            detail={props.email ? truncateEmail(props.email) : " "}
+          />
+          <ProfileDetailCard
+            title={t("forms.phoneNumber")}
+            detail={props.phone ? props.phone : " "}
+          />
+          <ProfileDetailCard
+            title="WhatsApp"
+            detail={props.whatsapp ? props.whatsapp : " "}
+          />
+          <ProfileDetailCard
+            title="Address"
+            detail={props.address ? props.address : " "}
+          />
+          <ProfileDetailCard
+            title={t("forms.country")}
+            detail={props.country ? props.country : " "}
+          />
+          <ProfileDetailCard
+            title={t("forms.city")}
+            detail={props.city ? props.city : " "}
+          />
+        </div>
+      </section>
     </div>
   );
 };

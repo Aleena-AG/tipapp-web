@@ -49,7 +49,7 @@ const DisplayCardDetails: React.FC<DisplayCardDetailsProps> = ({
           className={`flex items-center border rounded-[7px] px-10 py-2.5 gap-10 my-10 w-full cursor-pointer ${
             selectedPaymentMethodId === method.id
               ? "border-black scale-105 duration-300 bg-secondary"
-              : "border-gray-300"
+              : "border-border"
           }`}
           onClick={() => onSelectPaymentMethod(method.id)}
         >

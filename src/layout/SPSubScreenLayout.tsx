@@ -18,7 +18,7 @@ const SPSubScreenLayout = ({
   className = "",
 }: SPSubScreenLayoutProps) => (
   <div
-    className={`relative min-h-screen overflow-x-hidden bg-primary-hex px-4 pb-28 pt-6 sm:px-8 sm:pt-10 lg:px-12 lg:pb-12 ${className}`}
+    className={`relative min-h-screen overflow-x-hidden bg-app-atmosphere px-4 pb-28 pt-6 sm:px-8 sm:pt-10 lg:px-12 lg:pb-12 ${className}`}
   >
     <SPScreenBackground />
     <div className={`relative mx-auto w-full ${maxWidthClasses[maxWidth]}`}>

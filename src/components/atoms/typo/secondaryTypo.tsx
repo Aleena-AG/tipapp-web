@@ -48,7 +48,7 @@ export const SecondaryTypo = (props: Props) => {
 
   return (
     <div
-      className={`poppins-medium text-sm text-[#6F6F6F] leading-[21px] ${props.styles}`}
+      className={`poppins-medium text-sm text-app-muted leading-[21px] ${props.styles}`}
     >
       {renderText()}
     </div>

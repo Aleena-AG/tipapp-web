@@ -252,7 +252,7 @@ const PaymentSucessScreen = () => {
             <button
               type="button"
               onClick={handleSecondaryAction}
-              className="flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-2 border-[#0B538D]/20 bg-white text-[#0B538D] transition-colors hover:bg-[#EAF3FA] active:scale-[0.98]"
+              className="flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-2 border-[#0B538D]/20 bg-card text-[#0B538D] transition-colors hover:bg-[#EAF3FA] active:scale-[0.98]"
             >
               <Star className="h-[18px] w-[18px]" />
               <span className="poppins-semibold text-[15px]">
