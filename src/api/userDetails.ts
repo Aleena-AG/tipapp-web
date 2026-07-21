@@ -104,6 +104,27 @@ export const useUpdateUser = (
   });
 };
 
+export const useDeleteCurrentUser = (
+  onSuccess: (message: string) => void,
+  onError: (error: string) => void
+) => {
+  return useMutation({
+    mutationFn: async () => {
+      const response = await authFetch.delete("/auth/user", {
+        data: { confirmDeletion: true },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      onSuccess(data?.message || "User deleted successfully");
+    },
+    onError: (error) => {
+      //@ts-expect-error access API error response
+      onError(error.response?.data?.message || "Could not delete account");
+    },
+  });
+};
+
 export const useCreateStripeAccount = () => {
   return useMutation(async () => {
     const response = await authFetch.post("/user-details/create-stripe-account");

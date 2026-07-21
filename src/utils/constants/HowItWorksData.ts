@@ -79,7 +79,7 @@ export const howItWorksFlows: Record<HowItWorksRole, HowItWorksFlow> = {
       {
         title: "Provider shares QR",
         description:
-          "The service provider displays their unique TipApp QR code for customers.",
+          "The service provider displays their unique TipTapp QR code for customers.",
       },
       {
         title: "Customer scans",

@@ -295,7 +295,7 @@ export const Navbar = () => {
         <img
           src={navLogo}
           className="h-[64px] w-[64px] rounded-xl object-cover shadow-sm sm:h-[70px] sm:w-[70px]"
-          alt="tip-app-logo"
+          alt="TipTapp logo"
         />
       </button>
 

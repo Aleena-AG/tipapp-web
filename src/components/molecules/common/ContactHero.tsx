@@ -35,7 +35,7 @@ const highlights: {
   {
     Icon: Headphones,
     title: "Tippers & providers",
-    text: "Support for both sides of TipApp.",
+    text: "Support for both sides of TipTapp.",
     accent: "red",
   },
 ];

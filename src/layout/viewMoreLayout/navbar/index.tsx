@@ -145,7 +145,7 @@ export const Navbar = () => {
       <img
         src={Logo}
         className="h-[40px] w-auto shrink-0 object-contain"
-        alt="tip-app-logo"
+        alt="TipTapp logo"
       />
       <div className="w-fit flex items-center gap-20 sm:gap-[57px]">
         <div className="hidden md:block">

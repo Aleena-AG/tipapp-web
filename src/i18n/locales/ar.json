@@ -17,7 +17,7 @@
     "title": "كيف يعمل",
     "titlePrefix": "كيف يعمل",
     "brandTip": "Tip",
-    "brandApp": "App",
+    "brandApp": "Tapp",
     "titleSuffix": "",
     "subtitle": "شاهد كيف يتواصل مقدمو الخدمة ومقدمو الإكرامية في ثوانٍ.",
     "clickForPreview": "اضغط على الدوائر للمعاينة",
@@ -44,7 +44,7 @@
     "comingSoon": "قريباً"
   },
   "footer": {
-    "copyright": "تطبيق TIP TAP للإكراميات © 2024",
+    "copyright": "TipTapp © 2024",
     "support": {
       "title": "الدعم",
       "helpCenter": "مركز المساعدة",
@@ -60,7 +60,7 @@
       "jobs": "الوظائف"
     },
     "moreFromTipTapp": {
-      "title": "المزيد من تطبيق TIP",
+      "title": "المزيد من TipTapp",
       "newsletters": "النشرات الإخبارية",
       "magazine": "المجلة",
       "mobileApps": "تطبيقات الجوال",
@@ -76,7 +76,7 @@
       "androidTop": "احصل عليه من",
       "androidBottom": "Google Play"
     },
-    "tagline": "تطبيق الإكراميات",
+    "tagline": "إكراميات رقمية، ببساطة",
     "followUs": "تابعنا",
     "documents": {
       "trustAndSafety": "الثقة والأمان",
@@ -373,7 +373,7 @@
     "yourReviews": "تقييماتك",
     "youHaveSeenItAll": "رائع! لقد رأيت كل شيء",
     "age": "العمر",
-    "TipTappId": "معرف تطبيق تيب",
+    "TipTappId": "معرف TipTapp",
     "description": "الوصف",
     "noDescriptionYet": "لا يوجد وصف بعد",
     "aboutMe": "نبذة عني",
@@ -401,7 +401,7 @@
     "subscribing": "جاري الاشتراك...",
     "addCard": "إضافة بطاقة",
     "success": "نجح!",
-    "thankYouForUsingTippingApp": "شكراً لاستخدام تطبيق الإكراميات!",
+    "thankYouForUsingTippingApp": "شكراً لاستخدام TipTapp!",
     "backToHome": "العودة للرئيسية",
     "viewReviews": "عرض التقييمات",
     "downloadQRCode": "تحميل رمز QR",

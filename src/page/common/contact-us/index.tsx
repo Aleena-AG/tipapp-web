@@ -17,7 +17,7 @@ const ContactUsPage: React.FC = () => {
           <span className="h-px w-[64px] border-t border-dashed border-[#C5CED8] sm:w-[100px] dark:border-slate-600" />
           <p className="poppins-regular flex items-center gap-6 text-[12px] text-[#6B7A8A] sm:text-[13px] dark:text-slate-400">
             <Heart className="h-[13px] w-[13px] fill-[#d71921] text-[#d71921]" />
-            Thank you for being part of the TipApp community.
+            Thank you for being part of the TipTapp community.
           </p>
           <span className="h-px w-[64px] border-t border-dashed border-[#C5CED8] sm:w-[100px] dark:border-slate-600" />
         </div>

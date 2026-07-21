@@ -17,7 +17,7 @@
     "title": "How it works",
     "titlePrefix": "How",
     "brandTip": "Tip",
-    "brandApp": "App",
+    "brandApp": "Tapp",
     "titleSuffix": "Works?",
     "subtitle": "See how Service Providers and Tippers connect in seconds.",
     "clickForPreview": "Click on the circles for preview",
@@ -44,7 +44,7 @@
     "comingSoon": "Coming soon"
   },
   "footer": {
-    "copyright": "TIP TAP THE TIPPING APP © 2024",
+    "copyright": "TipTapp © 2024",
     "support": {
       "title": "SUPPORT",
       "helpCenter": "Help Center",
@@ -60,7 +60,7 @@
       "jobs": "Jobs"
     },
     "moreFromTipTapp": {
-      "title": "MORE FROM TIP APP",
+      "title": "MORE FROM TipTapp",
       "newsletters": "Newsletters",
       "magazine": "Magazine",
       "mobileApps": "Mobile Apps",
@@ -76,7 +76,7 @@
       "androidTop": "GET IT ON",
       "androidBottom": "Google Play"
     },
-    "tagline": "The tipping app",
+    "tagline": "Digital tipping, simplified",
     "followUs": "Follow us",
     "documents": {
       "trustAndSafety": "Trust & Safety",
@@ -374,7 +374,7 @@
     "yourReviews": "Your Reviews",
     "youHaveSeenItAll": "Yay! You have seen it all",
     "age": "Age",
-    "TipTappId": "Tip App ID",
+    "TipTappId": "TipTapp ID",
     "description": "Description",
     "noDescriptionYet": "No description yet",
     "aboutMe": "About Me",
@@ -402,7 +402,7 @@
     "subscribing": "Subscribing...",
     "addCard": "Add Card",
     "success": "Success!",
-    "thankYouForUsingTippingApp": "Thank you for using the tipping app!",
+    "thankYouForUsingTippingApp": "Thank you for using TipTapp!",
     "backToHome": "Back to Home",
     "viewReviews": "View Reviews",
     "downloadQRCode": "Download QR Code",

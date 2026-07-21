@@ -19,12 +19,12 @@ const Footer = () => {
           <div className="flex shrink-0 items-center gap-3">
             <img
               src={appLogo}
-              alt="Tip App"
+              alt="TipTapp"
               className="h-10 w-10 rounded-lg object-contain shadow-sm"
             />
             <div className="flex flex-col leading-tight">
               <span className="poppins-semibold whitespace-nowrap text-sm text-app">
-                TIP APP
+                TipTapp
               </span>
               <span className="poppins-regular whitespace-nowrap text-[11px] text-app-muted">
                 {t("footer.tagline")}

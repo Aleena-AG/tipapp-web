@@ -115,7 +115,7 @@ const EmirateIDContainer = () => {
           <div className="flex flex-col">
             <p className="  text-center mt-4 text-app-muted">
               Your Emirates ID is not updated in our sustem. Kindlyy upload your
-              Emirates ID to keep using the tipping app services
+              Emirates ID to keep using TipTapp services
             </p>
           </div>
           <div>

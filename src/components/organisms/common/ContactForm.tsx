@@ -40,7 +40,7 @@ const supportPoints: {
   {
     Icon: Lock,
     title: "Secure & Private",
-    text: "Your details stay safe with TipApp.",
+    text: "Your details stay safe with TipTapp.",
     accent: "blue",
   },
   {
@@ -156,7 +156,7 @@ const ContactForm: React.FC = () => {
             </h3>
             <p className="poppins-regular mt-6 text-[12px] leading-[18px] text-[#6B7A8A] sm:text-[13px] sm:leading-[20px] dark:text-slate-400">
               Our support team is dedicated to helping Tippers and Service
-              Providers get the most out of TipApp.
+              Providers get the most out of TipTapp.
             </p>
           </div>
 

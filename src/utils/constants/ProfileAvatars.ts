@@ -8,8 +8,8 @@ export type ProfileAvatarOption = {
 
 export const PROFILE_AVATARS: Record<AvatarGender, ProfileAvatarOption[]> = {
   male: [
-    { id: "m-tipapp-blue", label: "Tip App Blue", path: "/avatars/male/tipapp-blue.png" },
-    { id: "m-tipapp-red", label: "Tip App Red", path: "/avatars/male/tipapp-red.png" },
+    { id: "m-tipapp-blue", label: "TipTapp Blue", path: "/avatars/male/tipapp-blue.png" },
+    { id: "m-tipapp-red", label: "TipTapp Red", path: "/avatars/male/tipapp-red.png" },
     { id: "m-hoodie-blue", label: "Casual Blue", path: "/avatars/male/hoodie-blue.png" },
     { id: "m-hoodie-red", label: "Casual Red", path: "/avatars/male/hoodie-red.png" },
     { id: "m-blazer", label: "Professional", path: "/avatars/male/blazer.png" },

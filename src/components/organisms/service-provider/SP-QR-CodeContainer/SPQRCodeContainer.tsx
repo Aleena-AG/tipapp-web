@@ -212,7 +212,7 @@ const SPQRCodeContainer = () => {
         appLogo.onload = () => {
           const scaledWidth = appLogo.width * 2;
           const scaledHeight = appLogo.height * 2;
-          const text = "Tip App";
+          const text = "TipTapp";
           const textWidth = context.measureText(text).width;
           const totalWidth = scaledWidth + 40 + textWidth;
           const logoX = (canvas.width - totalWidth) / 2;
@@ -388,7 +388,7 @@ const SPQRCodeContainer = () => {
             title: "My QR Code",
             text: fullName
               ? `Check out this QR Code for ${fullName}!`
-              : "Check out my Tip App QR Code!",
+              : "Check out my TipTapp QR Code!",
             files: [file],
           });
         } catch (error) {

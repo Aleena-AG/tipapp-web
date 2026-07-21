@@ -1,7 +1,7 @@
 import { useUser } from "@/contexts/UserContext";
 import { PrimaryButton } from "@/components/atoms/buttons/primaryButton";
 import { ProfileDetailsSection } from "@/components/molecules/profile/profile-details-section/profileDetailsSection";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import EditIcon from "@/assets/svg/editIcon-profile.svg";
 import EditProfileDetailsSection from "@/components/molecules/profile/profile-details-section/editProfileDetailsSection";
 import { UserDetails } from "@/utils/types/types";
@@ -13,13 +13,34 @@ import ToastProvider from "@/providers/ToastProvider";
 import useAuth from "@/hooks/useAuth";
 import { getUserFromLocalStorage } from "@/utils/localStorageUtils";
 import { resolveAvatarDisplaySrc } from "@/utils/constants/ProfileAvatars";
+import { useDeleteCurrentUser } from "@/api/userDetails";
+import { useGetBalanceAmount } from "@/api/tipManagement";
+import { useQueryClient } from "react-query";
+import { Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const ProfileContainer = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [localUserData, setLocalUserData] = useState<UserDetails | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const { userDetails, isLoading, refetch } = useUser();
-  const { getGoogleProfileData } = useAuth();
+  const { getGoogleProfileData, handleLogout } = useAuth();
+  const queryClient = useQueryClient();
+  const {
+    data: tipBalance,
+    isLoading: isBalanceLoading,
+    refetch: refetchBalance,
+  } = useGetBalanceAmount("GBP");
 
   // Use localStorage data if available, otherwise fallback to API data
   const currentUserData = localUserData || userDetails;
@@ -27,6 +48,37 @@ const ProfileContainer = () => {
 
   // Get Google profile data for display
   const googleProfileData = getGoogleProfileData();
+  const availableBalance = Number(
+    tipBalance?.balance ?? currentUserData?.BalanceOriginal ?? 0
+  );
+  const hasAvailableBalance =
+    Number.isFinite(availableBalance) && availableBalance > 0;
+
+  const { mutate: deleteAccount, isLoading: isDeletingAccount } =
+    useDeleteCurrentUser(
+      (message) => {
+        setDeleteDialogOpen(false);
+        ToastProvider.success(message);
+        queryClient.clear();
+        void handleLogout();
+      },
+      (error) => {
+        ToastProvider.error(error);
+      }
+    );
+
+  const handleOpenDeleteDialog = async () => {
+    setDeleteDialogOpen(true);
+    await refetchBalance();
+  };
+
+  const handleConfirmDelete = (event: MouseEvent<HTMLButtonElement>) => {
+    // Keep the dialog open until the request finishes so failed deletes
+    // still show the confirmation and error toast.
+    event.preventDefault();
+    if (hasAvailableBalance || isDeletingAccount) return;
+    deleteAccount();
+  };
 
   const { verifyUser } = useLocation().state || { verifyUser: "" };
 
@@ -367,6 +419,74 @@ const ProfileContainer = () => {
             />
           )}
         </>
+      )}
+      {!edit && currentUserData && (
+        <div className="mt-32 border-t border-[#E4EAF2] pt-24 dark:border-white/10">
+          <div className="flex flex-col items-center gap-8 text-center">
+            <p className="poppins-semibold text-[14px] text-[#9E2A2B] dark:text-red-400">
+              Delete account
+            </p>
+            <p className="poppins-regular max-w-[440px] text-[12px] leading-[19px] text-[#6B7A8A] dark:text-slate-400">
+              This permanently removes your profile and cannot be undone. Your
+              available balance must be zero before deletion.
+            </p>
+
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+              <button
+                type="button"
+                disabled={isDeletingAccount}
+                onClick={() => {
+                  void handleOpenDeleteDialog();
+                }}
+                className="poppins-medium mt-4 inline-flex h-11 items-center justify-center gap-8 rounded-[12px] border border-[#9E2A2B] px-20 text-[13px] text-[#9E2A2B] transition-colors hover:bg-[#9E2A2B] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-400 dark:text-red-400 dark:hover:bg-red-500 dark:hover:text-white"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete account
+              </button>
+
+              <AlertDialogContent className="max-w-[440px] rounded-[18px] border-[#E4EAF2] bg-card p-24 dark:border-white/10 dark:bg-[#0a1629]">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="poppins-semibold text-[19px] text-[#0B2C4A] dark:text-white">
+                    {isBalanceLoading
+                      ? "Checking account balance"
+                      : hasAvailableBalance
+                        ? "Account cannot be deleted"
+                        : "Delete account permanently?"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="poppins-regular pt-4 text-[13px] leading-[21px] text-[#6B7A8A] dark:text-slate-400">
+                    {isBalanceLoading
+                      ? "Please wait while we verify that your available balance is zero."
+                      : hasAvailableBalance
+                        ? `Your account still has GBP ${availableBalance.toFixed(
+                            2
+                          )}. Withdraw or use the full balance before deleting your account.`
+                        : "Are you sure? Your profile and account data will be permanently deleted. This action cannot be undone."}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <AlertDialogFooter className="mt-12 gap-8">
+                  <AlertDialogCancel
+                    disabled={isDeletingAccount}
+                    className="poppins-medium h-11 rounded-[10px]"
+                  >
+                    {hasAvailableBalance ? "Close" : "Keep account"}
+                  </AlertDialogCancel>
+                  {!isBalanceLoading && !hasAvailableBalance && (
+                    <AlertDialogAction
+                      disabled={isDeletingAccount}
+                      onClick={handleConfirmDelete}
+                      className="poppins-medium h-11 rounded-[10px] bg-[#9E2A2B] text-white hover:bg-[#7E2021]"
+                    >
+                      {isDeletingAccount
+                        ? "Deleting..."
+                        : "Yes, delete permanently"}
+                    </AlertDialogAction>
+                  )}
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </div>
       )}
     </div>
   );

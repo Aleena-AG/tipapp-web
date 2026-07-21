@@ -36,7 +36,7 @@ const PageLoader = ({ message }: PageLoaderProps) => {
 
         <img
           src={Logo}
-          alt="Tip App"
+          alt="TipTapp"
           className="relative h-[68px] w-[68px] object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.28)] ta-float sm:h-[76px] sm:w-[76px]"
         />
 
