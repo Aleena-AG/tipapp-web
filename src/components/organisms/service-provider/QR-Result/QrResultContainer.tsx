@@ -491,11 +491,11 @@ const QrResultContainer = () => {
                   </div>
 
                   <div className="mt-24">
-                    <div className="rounded-[12px] bg-[#F8FBFE] px-16 py-12">
+                    <div className="rounded-[12px] bg-[#F8FBFE] px-16 py-12 dark:bg-[#12233d] dark:ring-1 dark:ring-white/10">
                       <p className="poppins-medium text-[11px] text-[#7A7A7A] dark:text-slate-400">
                         {t("common.description")}
                       </p>
-                      <p className="poppins-regular mt-4 line-clamp-3 text-[13px] leading-[22px] text-app">
+                      <p className="poppins-regular mt-4 line-clamp-3 text-[13px] leading-[22px] text-[#141414] dark:text-white">
                         {user?.Bio && user.Bio !== "--"
                           ? user.Bio.toString()
                           : t("common.noDescriptionYet")}

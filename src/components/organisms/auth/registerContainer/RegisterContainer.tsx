@@ -32,6 +32,14 @@ import SpinLoaderButton from "@/components/atoms/laoder/spin-loader-secondary";
 import { SafeImage } from "@/components/atoms/images/SafeImage";
 import { isLegacyFirebaseImageUrl } from "@/utils/imageUtils";
 import { FaArrowLeft } from "react-icons/fa";
+import AvatarSelectModal from "@/components/molecules/profile/AvatarSelectModal";
+import {
+  type AvatarGender,
+  PROFILE_GENDER_STORAGE_KEY,
+  inferGenderFromAvatarUrl,
+  resolveAvatarDisplaySrc,
+  resolveAvatarStorageUrl,
+} from "@/utils/constants/ProfileAvatars";
 
 interface FormValues {
   // Username: string;
@@ -68,7 +76,7 @@ const initialValues: FormValues = {
   // accountNumber: "",
   // ibanNumber: "GB89370400440532013000",
   // paypal: "",
-  DateOfBirth: "2000-01-01",
+  DateOfBirth: "",
 };
 
 function buildInitialFormValues(): FormValues {
@@ -164,7 +172,16 @@ const RegistrationContainer = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(
     getInitialUploadedImage
   );
-  const [fileInputKey] = useState(0);
+  const initialUploadedImageRef = useRef(uploadedImage);
+  const [avatarChanged, setAvatarChanged] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [avatarGender, setAvatarGender] = useState<AvatarGender>(() => {
+    const saved = localStorage.getItem(PROFILE_GENDER_STORAGE_KEY);
+    const inferred = inferGenderFromAvatarUrl(getInitialUploadedImage());
+    return saved === "male" || saved === "female"
+      ? saved
+      : inferred || "male";
+  });
   const {
     handleRegisterRedirect,
     getCurrentEmail,
@@ -300,21 +317,29 @@ const RegistrationContainer = () => {
         ...registerData,
         KeyCloakID: id,
         Role: resolvedRole,
-        ProfilePictureURL: uploadedImage || "",
+        ProfilePictureURL: uploadedImage
+          ? resolveAvatarStorageUrl(uploadedImage)
+          : "",
         Email: email,
       },
       {
-        onSuccess: () => {
-          // Update localStorage with the updated user data
+        onSuccess: async () => {
           const updatedUser = {
             ...currentUser,
             ...registerData,
             KeyCloakID: id,
             Role: resolvedRole,
-            ProfilePictureURL: uploadedImage || "",
+            ProfilePictureURL: uploadedImage
+              ? resolveAvatarStorageUrl(uploadedImage)
+              : "",
             Email: email,
           };
           setCurrentUser(updatedUser);
+
+          // Prevent the previous cached profile from overwriting the values
+          // while the next screen is mounting.
+          queryClient.setQueryData(["get_current_user", "v2"], updatedUser);
+          await queryClient.invalidateQueries(["get_current_user", "v2"]);
 
           ToastProvider.success("Profile updated successfully!");
           handleRegisterRedirect();
@@ -340,6 +365,8 @@ const RegistrationContainer = () => {
   useEffect(() => {
     if (fileUploadSuccess && uploadData) {
       setUploadedImage(uploadData.fileUrl);
+      setAvatarChanged(uploadData.fileUrl !== initialUploadedImageRef.current);
+      setShowAvatarModal(false);
       ToastProvider.success(
         uploadData.message || "File uploaded successfully!"
       );
@@ -376,6 +403,16 @@ const RegistrationContainer = () => {
     navigate("/user-selection");
   }
 
+  const handleSelectAvatar = (
+    url: string,
+    selectedGender: AvatarGender
+  ) => {
+    setUploadedImage(url);
+    setAvatarChanged(url !== initialUploadedImageRef.current);
+    setAvatarGender(selectedGender);
+    localStorage.setItem(PROFILE_GENDER_STORAGE_KEY, selectedGender);
+  };
+
   {/* Color role handling */ }
   const colorRole = typeof window !== "undefined" ? localStorage.getItem("userType") : null; // "tp" | "sp" | null
   const roleClassesBorder =
@@ -406,18 +443,29 @@ const RegistrationContainer = () => {
               <div className="flex justify-start mb-4">
                 <button
                   onClick={handleBack}
-                  className="flex items-center gap-2 text-gray-800 translation-colors duration-200"
+                  className="inline-flex w-fit items-center gap-8 rounded-full border border-[#E4EDF5] bg-card px-14 py-7 text-app shadow-sm transition-colors hover:bg-[#EAF3FA] dark:border-white/15 dark:hover:bg-white/10"
                   type="button">
-                  <FaArrowLeft className="text-sm" />
-                  <span className="text-sm poppins-medium">
+                  <FaArrowLeft className="text-[12px]" />
+                  <span className="text-[13px] poppins-medium">
                     {t("buttons.back")}
                   </span>
                 </button>
               </div>
-              <PrimaryTypo
-                typo={showBankDetails ? "Bank Details" : "Registration"}
-                styles="text-center   text-[24px] mb-[14px] lg:mb-[45px]"
-              />
+              <div className="mb-[20px] flex flex-col items-center gap-8 text-center lg:mb-[36px]">
+                <PrimaryTypo
+                  typo={showBankDetails ? "Bank Details" : "Registration"}
+                  styles="text-center text-[24px]"
+                />
+                <div className="flex h-[3px] w-[48px] overflow-hidden rounded-full">
+                  <span className="h-full w-1/2 bg-[#0B538D]" />
+                  <span className="h-full w-1/2 bg-[#d71921]" />
+                </div>
+                {!showBankDetails && (
+                  <p className="poppins-regular max-w-[420px] text-[13px] leading-[20px] text-app-muted sm:text-[14px]">
+                    Tell us a little about yourself to set up your account.
+                  </p>
+                )}
+              </div>
               {showBankDetails && role === "sp" ? (
                 <div className="flex flex-col   max-w-5xl gap-[10px]">
                   <TextInput
@@ -468,37 +516,46 @@ const RegistrationContainer = () => {
                 </div>
               ) : (
                 <div className="flex-col flex md:flex-row-reverse  0  items-start gap-[47px]">
-                  <div className="flex max-w-[330px] md:max-w-[184px]  lg:w-full max-lg:w-[200px] max-lg:h-[200px] md:h-[206px] bg-card py-[30px] mx-auto border-[1px] border-[#DBDBDB] rounded-[8px] justify-center items-center relative overflow-hidden">
-                    <input
-                      key={fileInputKey}
-                      type="file"
-                      // Frontend validation: HTML file type restriction - DISABLED
-                      // accept="image/*"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                    />
-                    {uploadedImage ? (
-                      <SafeImage
-                        src={uploadedImage}
-                        alt="Uploaded profile"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <button
-                        type="button"
-                        className="flex flex-col gap-[10px] justify-center items-center"
-                      >
-                        <img
-                          src={UploadIcon}
-                          alt="upload icon"
-                          className="mr-2 h-5"
-                        />
-                        <span className="text-app-muted text-sm poppins-medium leading-[21px]">
-                          Upload Picture <br></br>(64KB-4MB)
+                  <div className="mx-auto flex w-full max-w-[330px] flex-col items-center gap-12 md:max-w-[200px]">
+                    <button
+                      type="button"
+                      onClick={() => setShowAvatarModal(true)}
+                      className="group relative flex h-[150px] w-[150px] items-center justify-center rounded-full transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                      aria-label="Choose profile photo"
+                    >
+                      {uploadedImage ? (
+                        <>
+                          <SafeImage
+                            src={resolveAvatarDisplaySrc(uploadedImage)}
+                            alt="Selected profile"
+                            className="h-full w-full rounded-full object-cover ring-[3px] ring-[#E8B923] ring-offset-2 ring-offset-white shadow-[0_8px_20px_rgba(232,185,35,0.25)] dark:ring-offset-[#0a1629]"
+                          />
+                          <span
+                            className={`absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full text-white shadow-md ring-2 ring-white dark:ring-[#0a1629] ${
+                              colorRole === "sp" ? "bg-[#9E2A2B]" : "bg-[#0B538D]"
+                            }`}
+                          >
+                            <img src={UploadIcon} alt="" className="h-4 w-4 brightness-0 invert" />
+                          </span>
+                        </>
+                      ) : (
+                        <span className="flex h-full w-full flex-col items-center justify-center gap-8 rounded-full border-2 border-dashed border-[#C9D5E4] bg-[#F8FAFC] transition-colors group-hover:border-[#0B538D]/50 dark:border-white/20 dark:bg-[#121e36] dark:group-hover:border-[#60A5FA]/50">
+                          <img src={UploadIcon} alt="" className="h-6 w-6 opacity-60" />
+                          <span className="poppins-medium px-10 text-center text-[12px] leading-[17px] text-app-muted">
+                            Add profile photo
+                          </span>
                         </span>
-                      </button>
-                    )}
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowAvatarModal(true)}
+                      className={`poppins-medium rounded-full px-16 py-7 text-[12px] text-white shadow-sm transition hover:opacity-90 ${
+                        colorRole === "sp" ? "bg-[#9E2A2B]" : "bg-[#0B538D]"
+                      }`}
+                    >
+                      {uploadedImage ? "Change photo" : "Choose avatar"}
+                    </button>
                   </div>
 
                   <div className="flex flex-col max-w-[466px] gap-[16px] w-full mx-auto">
@@ -547,7 +604,7 @@ const RegistrationContainer = () => {
                       inputStyles=""
                       iconLeft={<img src={Dob} alt="calender icon" />}
                       label="Date Of Birth"
-                      className="hidden"
+                      className="flex flex-col gap-[10px]"
                       type="date"
                       isRequired={true}
                       max={getMaxDate()}
@@ -671,7 +728,9 @@ const RegistrationContainer = () => {
                     }
                     styles="max-w-[328px] w-full   mt-[50px] !rounded-md text-white text-base"
                     type="submit"
-                    isDisable={isSubmitting || isUpdating || !dirty}
+                    isDisable={
+                      isSubmitting || isUpdating || (!dirty && !avatarChanged)
+                    }
                   />
                 </div>
               ) : (
@@ -683,7 +742,7 @@ const RegistrationContainer = () => {
                       }`}
                     styles="max-w-[328px] w-full   mt-[30px] !rounded-md text-white text-base"
                     type="submit"
-                    isDisable={!dirty || isUpdating}
+                    isDisable={(!dirty && !avatarChanged) || isUpdating}
                     handleOnClick={() => {
                       scrollTop();
                     }}
@@ -691,6 +750,15 @@ const RegistrationContainer = () => {
                 </div>
               )}
           </Form>
+          <AvatarSelectModal
+            open={showAvatarModal}
+            onClose={() => setShowAvatarModal(false)}
+            gender={avatarGender}
+            selectedUrl={uploadedImage || undefined}
+            onConfirm={handleSelectAvatar}
+            accentColor={role === "sp" ? "#9E2A2B" : "#0B538D"}
+            onUploadFile={handleFileUpload}
+          />
         </div>
       )}
     </Formik>

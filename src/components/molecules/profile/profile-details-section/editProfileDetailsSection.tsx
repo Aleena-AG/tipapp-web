@@ -17,7 +17,6 @@ import { editProfileValidationSchema } from "@/utils/validations";
 import { handleScrollTop } from "@/hooks/hooks";
 import SpinLoaderButton from "@/components/atoms/laoder/spin-loader-secondary";
 import useDateOfBirthValidation from "@/hooks/useDateOfBirthValidation";
-import useAuth from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
 import AvatarSelectModal from "@/components/molecules/profile/AvatarSelectModal";
 import {
@@ -28,6 +27,12 @@ import {
   resolveAvatarStorageUrl,
   toAvatarRelativePath,
 } from "@/utils/constants/ProfileAvatars";
+
+const toDateInputValue = (value?: Date | string | null): string => {
+  if (!value) return "";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
+};
 
 const EditProfileDetailsSection = ({
   isVerified,
@@ -69,18 +74,16 @@ const EditProfileDetailsSection = ({
     ToastProvider.success(t("profile.profileUpdated"));
     toggleEdit();
   };
-  const user = localStorage.getItem("user");
-  const currentUser = JSON.parse(user || "{}");
   const userType = localStorage.getItem("userType");
   const FALSE = false;
 
   const { mutate: updateProfile } = useUpdateUser(onSuccessUpdate, onError);
-  const { getGoogleProfileData } = useAuth();
 
   const {
     values,
     setFieldValue,
     setFieldError,
+    resetForm,
     errors,
     touched,
     handleSubmit,
@@ -134,17 +137,34 @@ const EditProfileDetailsSection = ({
 
   useEffect(() => {
     if (userDetails) {
-      const googleProfileData = getGoogleProfileData();
+      let cachedUser: UserDetails = {};
+      let googleProfileData: {
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        profilePictureUrl?: string;
+      } = {};
+
+      try {
+        cachedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        googleProfileData = JSON.parse(
+          localStorage.getItem("googleProfileData") || "{}"
+        );
+      } catch {
+        // Ignore malformed cached profile data and use the API response.
+      }
+
       const firstName =
-        googleProfileData?.firstName || userDetails?.FirstName || "";
+        userDetails.FirstName || googleProfileData.firstName || "";
       const lastName =
-        googleProfileData?.lastName || userDetails?.LastName || "";
-      const email = googleProfileData?.email || userDetails?.Email || "";
+        userDetails.LastName || googleProfileData.lastName || "";
+      const email = userDetails.Email || googleProfileData.email || "";
       const profilePictureUrl =
-        googleProfileData?.profilePictureUrl ||
-        userDetails?.ProfilePictureURL ||
-        currentUser?.ProfilePictureURL ||
+        userDetails.ProfilePictureURL ||
+        cachedUser.ProfilePictureURL ||
+        googleProfileData.profilePictureUrl ||
         "";
+      const dateOfBirth = toDateInputValue(userDetails.DateOfBirth);
 
       const savedGender = localStorage.getItem(PROFILE_GENDER_STORAGE_KEY);
       const inferred = inferGenderFromAvatarUrl(profilePictureUrl);
@@ -156,32 +176,35 @@ const EditProfileDetailsSection = ({
             : "male";
 
       setAvatarGender(nextGender);
-      setFieldValue("FirstName", firstName);
-      setFieldValue("LastName", lastName);
-      setFieldValue("Email", email);
-      setFieldValue("Address", userDetails?.Address);
-      setFieldValue("Phone", userDetails?.Phone);
-      setFieldValue("Whatsapp", userDetails?.Whatsapp);
-      setFieldValue("Country", userDetails?.Country);
-      setFieldValue("City", userDetails?.City);
-      setFieldValue("Bio", userDetails?.Bio);
-      setFieldValue("bankName", bankDetails?.bankName);
-      setFieldValue("accountNumber", bankDetails?.accountNumber);
-      setFieldValue("ibanNumber", bankDetails?.ibanNumber);
-      setFieldValue("Paypal", userDetails?.Paypal);
-      setFieldValue("DateOfBirth", userDetails?.DateOfBirth);
-      setFieldValue("ProfilePictureURL", profilePictureUrl);
+      setUploadedImage(profilePictureUrl || null);
+      resetForm({
+        values: {
+          FirstName: firstName,
+          LastName: lastName,
+          DateOfBirth: dateOfBirth,
+          Email: email,
+          Address: userDetails.Address || "",
+          Phone: userDetails.Phone || "",
+          Whatsapp: userDetails.Whatsapp || "",
+          Country: userDetails.Country || "",
+          City: userDetails.City || "",
+          Bio: userDetails.Bio || "",
+          bankName: bankDetails?.bankName || "",
+          accountNumber: bankDetails?.accountNumber || "",
+          ibanNumber: bankDetails?.ibanNumber || "",
+          Paypal: userDetails.Paypal || "",
+          ProfilePictureURL: profilePictureUrl,
+        },
+      });
 
       updateLocalStorage(userDetails);
     }
   }, [
     userDetails,
-    setFieldValue,
+    resetForm,
     bankDetails?.bankName,
     bankDetails?.accountNumber,
     bankDetails?.ibanNumber,
-    currentUser?.ProfilePictureURL,
-    getGoogleProfileData,
   ]);
 
   const handleSelectAvatar = async (

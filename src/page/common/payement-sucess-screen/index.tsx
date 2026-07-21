@@ -233,7 +233,7 @@ const PaymentSucessScreen = () => {
 
   if (tipSummary) {
     return (
-      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#EEF3F9] via-[#F8F7FF] to-[#E8EEF6] px-4 py-12 pt-[88px]">
+      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#EEF3F9] via-[#F8F7FF] to-[#E8EEF6] px-4 py-12 pt-[88px] dark:from-[#010816] dark:via-[#061428] dark:to-[#0a1629]">
         <TipSuccessDecorations />
         <div className="relative z-[1] flex w-full max-w-[420px] flex-col items-center">
           <TipSuccessCard summary={tipSummary} />
@@ -242,7 +242,7 @@ const PaymentSucessScreen = () => {
             <button
               type="button"
               onClick={handleRouteHome}
-              className="flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] bg-[#0B538D] text-white shadow-[0_6px_20px_rgba(11,83,141,0.3)] transition-all hover:bg-[#0077B6] active:scale-[0.98]"
+              className="flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] bg-[#0B538D] text-white shadow-[0_6px_20px_rgba(11,83,141,0.3)] transition-all hover:bg-[#0077B6] active:scale-[0.98] dark:shadow-[0_6px_20px_rgba(11,83,141,0.45)]"
             >
               <Home className="h-[18px] w-[18px]" />
               <span className="poppins-semibold text-[15px]">
@@ -252,7 +252,7 @@ const PaymentSucessScreen = () => {
             <button
               type="button"
               onClick={handleSecondaryAction}
-              className="flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-2 border-[#0B538D]/20 bg-card text-[#0B538D] transition-colors hover:bg-[#EAF3FA] active:scale-[0.98]"
+              className="flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-2 border-[#0B538D]/20 bg-card text-[#0B538D] transition-colors hover:bg-[#EAF3FA] active:scale-[0.98] dark:border-[#3D7DB5]/40 dark:bg-[#0a1629]/90 dark:text-[#93C5FD] dark:hover:bg-[#12233d]"
             >
               <Star className="h-[18px] w-[18px]" />
               <span className="poppins-semibold text-[15px]">

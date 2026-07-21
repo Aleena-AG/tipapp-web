@@ -2,18 +2,18 @@
 const TipSuccessDecorations = () => (
   <div className="pointer-events-none absolute inset-0 overflow-hidden">
     {/* Soft gradient blobs */}
-    <div className="absolute -left-24 top-[18%] h-[280px] w-[280px] rounded-full bg-[#0B538D]/[0.04] blur-3xl" />
-    <div className="absolute -right-20 top-[12%] h-[320px] w-[320px] rounded-full bg-[#0077B6]/[0.05] blur-3xl" />
-    <div className="absolute bottom-[10%] left-1/2 h-[200px] w-[400px] -translate-x-1/2 rounded-full bg-[#0B538D]/[0.03] blur-3xl" />
+    <div className="absolute -left-24 top-[18%] h-[280px] w-[280px] rounded-full bg-[#0B538D]/[0.04] blur-3xl dark:bg-[#0B538D]/20" />
+    <div className="absolute -right-20 top-[12%] h-[320px] w-[320px] rounded-full bg-[#0077B6]/[0.05] blur-3xl dark:bg-[#0077B6]/15" />
+    <div className="absolute bottom-[10%] left-1/2 h-[200px] w-[400px] -translate-x-1/2 rounded-full bg-[#0B538D]/[0.03] blur-3xl dark:bg-[#0B538D]/15" />
 
     {/* Large faint rings */}
-    <div className="absolute left-[8%] top-[22%] h-[90px] w-[90px] rounded-full border border-[#0B538D]/10" />
-    <div className="absolute right-[10%] top-[28%] h-[70px] w-[70px] rounded-full border border-[#0077B6]/12" />
-    <div className="absolute right-[18%] bottom-[18%] h-[110px] w-[110px] rounded-full border border-[#0B538D]/8" />
+    <div className="absolute left-[8%] top-[22%] h-[90px] w-[90px] rounded-full border border-[#0B538D]/10 dark:border-white/10" />
+    <div className="absolute right-[10%] top-[28%] h-[70px] w-[70px] rounded-full border border-[#0077B6]/12 dark:border-white/10" />
+    <div className="absolute right-[18%] bottom-[18%] h-[110px] w-[110px] rounded-full border border-[#0B538D]/8 dark:border-white/10" />
 
     {/* Heart in circle — left */}
-    <div className="absolute left-[6%] top-[38%] flex h-12 w-12 items-center justify-center rounded-full border border-[#0B538D]/15 bg-card/60 shadow-sm sm:left-[12%]">
-      <svg viewBox="0 0 24 24" className="h-5 w-5 fill-[#0B538D]/40" aria-hidden>
+    <div className="absolute left-[6%] top-[38%] flex h-12 w-12 items-center justify-center rounded-full border border-[#0B538D]/15 bg-card/60 shadow-sm sm:left-[12%] dark:border-white/10 dark:bg-[#0a1629]/60">
+      <svg viewBox="0 0 24 24" className="h-5 w-5 fill-[#0B538D]/40 dark:fill-[#93C5FD]/50" aria-hidden>
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
       </svg>
     </div>
@@ -45,10 +45,10 @@ const TipSuccessDecorations = () => (
     ))}
 
     {/* Wireframe globe — right */}
-    <div className="absolute right-[8%] top-[20%] hidden h-16 w-16 rounded-full border border-[#0B538D]/15 sm:block">
-      <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-[#0B538D]/12" />
-      <div className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-[#0B538D]/12" />
-      <div className="absolute left-1/2 top-1/2 h-[70%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#0B538D]/12" />
+    <div className="absolute right-[8%] top-[20%] hidden h-16 w-16 rounded-full border border-[#0B538D]/15 dark:border-white/10 sm:block">
+      <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-[#0B538D]/12 dark:bg-white/10" />
+      <div className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-[#0B538D]/12 dark:bg-white/10" />
+      <div className="absolute left-1/2 top-1/2 h-[70%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#0B538D]/12 dark:border-white/10" />
     </div>
 
     {/* Confetti dots & stars */}

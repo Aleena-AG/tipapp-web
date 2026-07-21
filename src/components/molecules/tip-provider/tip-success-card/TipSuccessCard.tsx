@@ -25,7 +25,7 @@ const TipSuccessCard = ({ summary }: Props) => {
     <div className="relative mx-auto w-full max-w-[420px]">
       {/* Green check — overlaps card top */}
       <div className="relative z-[2] flex justify-center">
-        <div className="ta-animate-pop relative flex h-[84px] w-[84px] items-center justify-center rounded-full bg-[#22C55E] shadow-[0_8px_24px_rgba(34,197,94,0.45)] ring-[10px] ring-white">
+        <div className="ta-animate-pop relative flex h-[84px] w-[84px] items-center justify-center rounded-full bg-[#22C55E] shadow-[0_8px_24px_rgba(34,197,94,0.45)] ring-[10px] ring-white dark:ring-[#061428]">
           <span className="ta-ring-pulse absolute inset-0 rounded-full bg-[#22C55E]/40" />
           <svg
             className="h-10 w-10"
@@ -42,11 +42,11 @@ const TipSuccessCard = ({ summary }: Props) => {
       </div>
 
       {/* Main card */}
-      <div className="ta-animate-slide-up ta-delay-1 -mt-40 rounded-[24px] border border-[#E8EEF4]/80 bg-card px-28 pb-28 pt-[52px] shadow-[0_12px_48px_rgba(11,83,141,0.12)]">
+      <div className="ta-animate-slide-up ta-delay-1 -mt-40 rounded-[24px] border border-[#E8EEF4]/80 bg-card px-28 pb-28 pt-[52px] shadow-[0_12px_48px_rgba(11,83,141,0.12)] dark:border-white/10 dark:bg-[#0a1629]/95 dark:shadow-[0_12px_48px_rgba(0,0,0,0.45)]">
         <div className="flex flex-col items-center text-center">
           {/* Avatar */}
           <div className="relative">
-            <div className="rounded-full bg-[#EAF3FA] p-4">
+            <div className="rounded-full bg-[#EAF3FA] p-4 dark:bg-[#12233d]">
               <img
                 src={resolveProfileImageSrc(
                   summary.recipientProfileUrl,
@@ -60,25 +60,25 @@ const TipSuccessCard = ({ summary }: Props) => {
                 }}
               />
             </div>
-            <span className="absolute -bottom-0.5 -right-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-[#0B538D] text-white shadow-md ring-2 ring-white">
+            <span className="absolute -bottom-0.5 -right-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-[#0B538D] text-white shadow-md ring-2 ring-white dark:ring-[#0a1629]">
               <Sparkles className="h-3.5 w-3.5" />
             </span>
           </div>
 
           {/* Title */}
           <div className="ta-animate-fade ta-delay-2 mt-20 flex items-center gap-8">
-            <Sparkles className="h-[18px] w-[18px] text-[#0B538D]" />
-            <h2 className="poppins-semibold text-[19px] leading-tight text-[#0B538D]">
+            <Sparkles className="h-[18px] w-[18px] text-[#0B538D] dark:text-[#93C5FD]" />
+            <h2 className="poppins-semibold text-[19px] leading-tight text-[#0B538D] dark:text-[#93C5FD]">
               {t("payments.tipSuccessTitle")}
             </h2>
-            <Sparkles className="h-[18px] w-[18px] text-[#0B538D]" />
+            <Sparkles className="h-[18px] w-[18px] text-[#0B538D] dark:text-[#93C5FD]" />
           </div>
 
           {/* Heart */}
-          <Heart className="ta-animate-fade ta-delay-2 mt-10 h-4 w-4 fill-[#0B538D] text-[#0B538D]" />
+          <Heart className="ta-animate-fade ta-delay-2 mt-10 h-4 w-4 fill-[#0B538D] text-[#0B538D] dark:fill-[#93C5FD] dark:text-[#93C5FD]" />
 
           {/* Amount */}
-          <p className="ta-animate-pop ta-delay-3 poppins-bold mt-12 text-[38px] leading-none tracking-tight text-[#0B538D]">
+          <p className="ta-animate-pop ta-delay-3 poppins-bold mt-12 text-[38px] leading-none tracking-tight text-[#0B538D] dark:text-white">
             {formattedAmount}
           </p>
 
@@ -89,8 +89,8 @@ const TipSuccessCard = ({ summary }: Props) => {
 
           {/* Paid via */}
           <div className="ta-animate-fade ta-delay-4 mt-12 flex items-center justify-center gap-6">
-            <Wallet className="h-4 w-4 text-[#0B538D]" />
-            <span className="poppins-medium text-[13px] text-[#0B538D]">
+            <Wallet className="h-4 w-4 text-[#0B538D] dark:text-[#93C5FD]" />
+            <span className="poppins-medium text-[13px] text-[#0B538D] dark:text-[#93C5FD]">
               {t("payments.tipSentVia", { method: summary.paymentMethod })}
             </span>
           </div>
@@ -106,7 +106,9 @@ const TipSuccessCard = ({ summary }: Props) => {
                     key={i}
                     style={{ animationDelay: `${0.55 + i * 0.08}s` }}
                     className={`ta-animate-pop h-[22px] w-[22px] ${
-                      filled ? "text-[#FFB800]" : "text-[#D5DCE3]"
+                      filled
+                        ? "text-[#FFB800]"
+                        : "text-[#D5DCE3] dark:text-slate-600"
                     }`}
                   />
                 );
@@ -115,8 +117,8 @@ const TipSuccessCard = ({ summary }: Props) => {
           )}
 
           {/* Footer */}
-          <div className="ta-animate-fade ta-delay-5 mt-20 w-full border-t border-[#EEF2F6] pt-16">
-            <p className="poppins-medium text-[13px] leading-relaxed text-[#0B538D]">
+          <div className="ta-animate-fade ta-delay-5 mt-20 w-full border-t border-[#EEF2F6] pt-16 dark:border-white/10">
+            <p className="poppins-medium text-[13px] leading-relaxed text-[#0B538D] dark:text-[#93C5FD]">
               <span className="mr-4">💙</span>
               {t("payments.tipSuccessEncouragement")}
             </p>
