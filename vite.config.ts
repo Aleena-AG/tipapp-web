@@ -6,7 +6,7 @@ import path from "path";
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const backendOrigin =
-    env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:3003";
+    env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:3002";
 
   return {
     plugins: [react()],

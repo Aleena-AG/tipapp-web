@@ -51,16 +51,17 @@ const LoginContainer = () => {
     }
   }, [isSuccess, data]);
 
+  // Same-origin /api → Vite proxy (dev) or Vercel rewrite (prod)
   const handleGoogleSignIn = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
+    window.location.href = "/api/auth/google";
   };
 
   const handleFacebookSignIn = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/facebook`;
+    window.location.href = "/api/auth/facebook";
   };
 
   const handleAppleSignIn = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/apple`;
+    window.location.href = "/api/auth/apple";
   };
 
   const { getToken, handleRedirectByRole } = useAuth();

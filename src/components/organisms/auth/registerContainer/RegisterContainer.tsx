@@ -11,7 +11,7 @@ import Dob from "@/assets/svg/dob.svg";
 import Bankicon from "@/assets/svg/bank.svg";
 import AccountIcon from "@/assets/svg/account.svg";
 // import PaypalIcon from "@/assets/svg/paypal.svg";
-import { Formik, Form, FormikHelpers, FormikProps } from "formik";
+import { Formik, Form, FormikHelpers, FormikProps, ErrorMessage } from "formik";
 import TextArea from "@/components/atoms/textinput/textArea/TextArea";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "react-query";
@@ -40,6 +40,7 @@ import {
   resolveAvatarDisplaySrc,
   resolveAvatarStorageUrl,
 } from "@/utils/constants/ProfileAvatars";
+import { citiesForCountry } from "@/utils/constants/ukCities";
 
 interface FormValues {
   // Username: string;
@@ -88,9 +89,16 @@ function buildInitialFormValues(): FormValues {
       const googleData = JSON.parse(googleDataString) as {
         firstName?: string;
         lastName?: string;
+        email?: string;
       };
       values.FirstName = googleData.firstName || values.FirstName;
       values.LastName = googleData.lastName || values.LastName;
+      values.Email = googleData.email || values.Email;
+    }
+
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail && !values.Email) {
+      values.Email = storedEmail;
     }
 
     const storedUserString = localStorage.getItem("user");
@@ -155,6 +163,14 @@ const RegistrationContainer = () => {
   const showBankDetails = false;
   const { getMaxDate, getMinDate } = useDateOfBirthValidation();
   const countries = useMemo(() => countryList().getData(), []);
+  const ukCities = useMemo(
+    () =>
+      citiesForCountry({
+        countryCode: initialValues.CountryCode,
+        countryName: initialValues.Country,
+      }),
+    []
+  );
   const validationSchema = useMemo(
     () => generateRegistrationValidationSchema(showBankDetails),
     [showBankDetails]
@@ -432,7 +448,13 @@ const RegistrationContainer = () => {
       validateOnBlur
       onSubmit={handleSubmit}
     >
-      {({ values, setFieldValue, dirty, isSubmitting }) => (
+      {({ values, setFieldValue, dirty, isSubmitting }) => {
+        const cityOptions =
+          values.City && !ukCities.includes(values.City)
+            ? [values.City, ...ukCities]
+            : ukCities;
+
+        return (
         <div className="bg-app-page min-w-[300px] sm:px-[20px] xl:px-[60px]">
           <Form
             className={`max-w-[600px]    ${showBankDetails
@@ -695,16 +717,38 @@ const RegistrationContainer = () => {
                           </select>
                         </div>
                       </div>
-                      <TextInput
-                        name="City"
-                        placeholder="City"
-                        inputStyles=""
-                        iconLeft={<img src={CityIcon} alt="city icon" />}
-                        label="City"
-                        className="flex flex-col gap-[10px]"
-                        isRequired={true}
-                        autoComplete="off"
-                      />
+                      <div className="flex flex-col gap-[10px]">
+                        <label htmlFor="city-select" className="text-sm font-medium text-[#333333]">
+                          City <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative h-10">
+                          <img
+                            src={CityIcon}
+                            alt="city icon"
+                            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none z-10"
+                          />
+                          <select
+                            id="city-select"
+                            name="City"
+                            value={values.City}
+                            onChange={(e) => setFieldValue("City", e.target.value)}
+                            className="w-full h-[40px] pl-[32px] pr-4 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-card"
+                            autoComplete="off"
+                          >
+                            <option value="">Select City</option>
+                            {cityOptions.map((city) => (
+                              <option key={city} value={city}>
+                                {city}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <ErrorMessage
+                          name="City"
+                          component="div"
+                          className="text-red-500 text-xs mt-1"
+                        />
+                      </div>
                     </div>
                     <TextArea
                       name="Bio"
@@ -760,7 +804,8 @@ const RegistrationContainer = () => {
             onUploadFile={handleFileUpload}
           />
         </div>
-      )}
+        );
+      }}
     </Formik>
   );
 };

@@ -176,10 +176,10 @@ export const generateRegistrationValidationSchema = (
       .max(50, "Country can't be more than 50 characters")
       .required("Required"),
     City: Yup.string()
-      // Only letters and spaces allowed, but not spaces-only
+      // Letters, spaces and hyphens (e.g. Stoke-on-Trent), but not spaces-only
       .matches(
-        /^(?=.*[A-Za-z])[A-Za-z\s]+$/,
-        "City should contain only alphabets and cannot be blank spaces"
+        /^(?=.*[A-Za-z])[A-Za-z\s-]+$/,
+        "City should contain only alphabets, spaces or hyphens and cannot be blank spaces"
       )
       .min(1, "City must be at least 1 character")
       .max(50, "City can't be more than 50 characters")
