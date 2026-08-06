@@ -206,7 +206,17 @@ const RegistrationContainer = () => {
     getCurrentUserRole,
   } = useAuth();
   const [isdisable, setdisable] = useState(false);
-  const { role } = useLocation().state || { role: "" };
+  const location = useLocation();
+  const [role] = useState(() => {
+    const fromState = (location.state as { role?: string } | null)?.role;
+    if (fromState) return fromState;
+    const fromSession = sessionStorage.getItem("postAuthRole");
+    if (fromSession) {
+      sessionStorage.removeItem("postAuthRole");
+      return fromSession;
+    }
+    return "";
+  });
   const { mutate: updateUser, isLoading: isUpdating, isSuccess: isUpdateSuccess, data: updateData, isError: isUpdateError, error: updateError } = useUpdateUser();
   const { data: currentUser } = useGetCurrentUser();
   const queryClient = useQueryClient();

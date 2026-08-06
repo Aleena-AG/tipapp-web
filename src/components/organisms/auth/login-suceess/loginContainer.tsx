@@ -1,11 +1,23 @@
 import { useEffect, useRef } from "react";
 import ToastProvider from "@/providers/ToastProvider";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import authFetch from "@/api/axiosInterceptor";
 import { normalizeToCanonicalUserType } from "@/utils/constants/enums";
+import PageLoader from "@/components/atoms/laoder/page-loader";
+
+const POST_AUTH_ROLE_KEY = "postAuthRole";
+
+/** Full navigation after OAuth so App boots cleanly with token already in storage. */
+function redirectAfterAuth(path: string, role?: string) {
+  if (role) {
+    sessionStorage.setItem(POST_AUTH_ROLE_KEY, role);
+  } else {
+    sessionStorage.removeItem(POST_AUTH_ROLE_KEY);
+  }
+  window.location.replace(path);
+}
 
 const LoginSuccess = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const handledRef = useRef(false);
 
@@ -25,7 +37,7 @@ const LoginSuccess = () => {
 
       if (!token || !userid) {
         ToastProvider.error("Login failed. Please try again.");
-        navigate("/sign-in", { replace: true });
+        redirectAfterAuth("/sign-in");
         return;
       }
 
@@ -33,11 +45,11 @@ const LoginSuccess = () => {
         ToastProvider.error(
           "This account is not authorized to access the user application. Please contact your administrator for access to the appropriate system."
         );
-        navigate("/sign-in", { replace: true });
+        redirectAfterAuth("/sign-in");
         return;
       }
 
-      // Persist session from Google OAuth callback (OTP not required)
+      // Persist session from OAuth callback (OTP not required)
       localStorage.setItem("token", token);
       localStorage.setItem("userId", userid);
       localStorage.setItem("selectedCurrency", "GBP");
@@ -60,14 +72,11 @@ const LoginSuccess = () => {
         );
       }
 
-      // New Google user: pick tipper / SP, then complete profile (no OTP)
+      // New OAuth user: pick tipper / SP, then complete profile (no OTP)
       if (role === "not_registered") {
         localStorage.removeItem("userType");
         localStorage.removeItem("displaySwitch");
-        navigate("/user-selection", {
-          replace: true,
-          state: { role: "not_registered" },
-        });
+        redirectAfterAuth("/user-selection", "not_registered");
         return;
       }
 
@@ -89,34 +98,28 @@ const LoginSuccess = () => {
         if (user) {
           localStorage.setItem("user", JSON.stringify(user));
 
-          // Use DB FirstName only — Google OAuth name must not skip profile complete
+          // Use DB FirstName only — OAuth name must not skip profile complete
           if (!user.FirstName?.trim()) {
-            navigate("/register", {
-              replace: true,
-              state: {
-                role:
-                  canonicalRole === "sp" || canonicalRole === "tp"
-                    ? canonicalRole
-                    : "tp",
-              },
-            });
+            const registerRole =
+              canonicalRole === "sp" || canonicalRole === "tp"
+                ? canonicalRole
+                : "tp";
+            redirectAfterAuth("/register", registerRole);
             return;
           }
         }
       } catch (error) {
-        console.error("Failed to load user after Google login:", error);
+        console.error("Failed to load user after OAuth login:", error);
       }
 
-      navigate("/user-selection", {
-        replace: true,
-        state: { role: canonicalRole || role },
-      });
+      redirectAfterAuth("/user-selection", canonicalRole || role || undefined);
     };
 
     void run();
-  }, [location.search, navigate]);
+  }, [location.search]);
 
-  return null;
+  return <PageLoader />;
 };
 
 export default LoginSuccess;
+export { POST_AUTH_ROLE_KEY };

@@ -73,94 +73,92 @@ export const CurrencyContext = React.createContext<CurrencyContextType>({
   conversionRates: {},
 });
 
-function App() {
-  // Root redirect component
-  const RootRedirect = () => {
-    const { getToken, getCurrentUserRole, getCurrentUser } = useAuth();
-    const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(true);
+/** Must live outside App so createBrowserRouter identity stays stable across re-renders. */
+const RootRedirect = () => {
+  const { getToken, getCurrentUserRole, getCurrentUser } = useAuth();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-      const checkAndRedirect = async () => {
-        try {
-          const token = await getToken();
-          const userRole = await getCurrentUserRole();
-          const user = await getCurrentUser();
+  useEffect(() => {
+    const checkAndRedirect = async () => {
+      try {
+        const token = await getToken();
+        const userRole = await getCurrentUserRole();
+        const user = await getCurrentUser();
 
-          if (!token) {
-            navigate("/sign-in");
+        if (!token) {
+          navigate("/sign-in");
+          return;
+        }
+
+        // If we have a user object, check if profile is complete
+        if (user && !user.FirstName && user.Role !== "both" && user.Role !== "unknown") {
+          const userType = localStorage.getItem("userType");
+          if (userType === "tp") {
+            navigate("/register", { state: { role: "tp" } });
             return;
           }
-
-          // If we have a user object, check if profile is complete
-          if (user && !user.FirstName && user.Role !== "both" && user.Role !== "unknown") {
-            const userType = localStorage.getItem("userType");
-            if (userType === "tp") {
-              navigate("/register", { state: { role: "tp" } });
-              return;
-            }
-            const isSp =
-              userType === "sp" ||
-              user.Role === "sp" ||
-              user.Role === UserRoles.SERVICEPROVIDER;
-            if (isSp) {
-              navigate("/register", { state: { role: "sp" } });
-            } else {
-              navigate("/register", { state: { role: "tp" } });
-            }
-            return;
+          const isSp =
+            userType === "sp" ||
+            user.Role === "sp" ||
+            user.Role === UserRoles.SERVICEPROVIDER;
+          if (isSp) {
+            navigate("/register", { state: { role: "sp" } });
+          } else {
+            navigate("/register", { state: { role: "tp" } });
           }
+          return;
+        }
 
-          // User is logged in, redirect based on role
-          if (user && user.Role === "both") {
-            // For "both" users, check the current userType from localStorage
-            const currentUserType = localStorage.getItem("userType");
-            if (currentUserType === "sp") {
-              navigate("/service-provider");
-            } else if (currentUserType === "tp") {
-              navigate("/tip-provider");
-            } else {
-              navigate("/user-selection");
-            }
-          } else if (userRole === UserRoles.SERVICEPROVIDER || userRole === "sp") {
+        // User is logged in, redirect based on role
+        if (user && user.Role === "both") {
+          const currentUserType = localStorage.getItem("userType");
+          if (currentUserType === "sp") {
             navigate("/service-provider");
-          } else if (userRole === UserRoles.TIPER || userRole === "tp") {
+          } else if (currentUserType === "tp") {
             navigate("/tip-provider");
           } else {
             navigate("/user-selection");
           }
-        } catch (error) {
-          console.error("Error in RootRedirect:", error);
-          navigate("/sign-in");
-        } finally {
-          setIsLoading(false);
+        } else if (userRole === UserRoles.SERVICEPROVIDER || userRole === "sp") {
+          navigate("/service-provider");
+        } else if (userRole === UserRoles.TIPER || userRole === "tp") {
+          navigate("/tip-provider");
+        } else {
+          navigate("/user-selection");
         }
-      };
+      } catch (error) {
+        console.error("Error in RootRedirect:", error);
+        navigate("/sign-in");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      checkAndRedirect();
-    }, [getToken, getCurrentUserRole, getCurrentUser, navigate]);
+    checkAndRedirect();
+  }, [getToken, getCurrentUserRole, getCurrentUser, navigate]);
 
-    if (isLoading) {
-      return <PageLoader />;
-    }
+  if (isLoading) {
+    return <PageLoader />;
+  }
 
-    return null;
-  };
+  return null;
+};
 
-  const router = createBrowserRouter(
-    createRoutesFromElements(
-      <>
-        {/* Root redirect for authenticated users */}
-        <Route path="/" element={<RootRedirect />} />
-        
-        {/* Common Routes */}
-        <Route path="/main-screen" element={<RootLayout />}>
-          <Route index element={<MainScreen />} />
-        </Route>
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <>
+      {/* Root redirect for authenticated users */}
+      <Route path="/" element={<RootRedirect />} />
 
-        <Route path="/user-selection" element={<RootLayout />}>
-          <Route index element={<UserSelection />} />
-        </Route>
+      {/* Common Routes */}
+      <Route path="/main-screen" element={<RootLayout />}>
+        <Route index element={<MainScreen />} />
+      </Route>
+
+      <Route path="/user-selection" element={<RootLayout />}>
+        <Route index element={<UserSelection />} />
+      </Route>
         <Route
           path="/my-profile"
           element={
@@ -306,6 +304,7 @@ function App() {
     )
   );
 
+function App() {
   const [currency, setCurrency] = useState<string>(
     // localStorage.getItem("selectedCurrency") || "GBP"
     "GBP"

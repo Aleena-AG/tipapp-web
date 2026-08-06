@@ -3,6 +3,7 @@ import PasswordIcon from "@/assets/svg/password.svg";
 import GoogleIcon from "@/assets/svg/google.svg";
 import AppleIcon from "@/assets/svg/apple.svg";
 import FacebookIcon from "@/assets/svg/facebook.svg";
+import HuaweiIcon from "@/assets/svg/huawei-logo-transparent-2-removebg-preview.png";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useLogin } from "@/api/authApi";
@@ -64,6 +65,10 @@ const LoginContainer = () => {
     window.location.href = "/api/auth/apple";
   };
 
+  const handleHuaweiSignIn = () => {
+    window.location.href = "/api/auth/huawei";
+  };
+
   const { getToken, handleRedirectByRole } = useAuth();
   const location = useLocation();
 
@@ -96,7 +101,7 @@ const LoginContainer = () => {
             <TextInput
               name="email"
               label={t("forms.email")}
-              labelStyles="text-[#333] mb-1 inline-block"
+              labelStyles="text-[#333] dark:text-slate-300 mb-1 inline-block"
               placeholder={t("auth.emailPlaceholder")}
               iconLeft={<img src={EmailIcon} alt="" />}
             />
@@ -106,7 +111,7 @@ const LoginContainer = () => {
                 name="password"
                 type="password"
                 label={t("forms.password")}
-                labelStyles="text-[#333] mb-1 inline-block"
+                labelStyles="text-[#333] dark:text-slate-300 mb-1 inline-block"
                 placeholder={t("auth.passwordPlaceholder")}
                 iconLeft={<img src={PasswordIcon} alt="" />}
               />
@@ -141,26 +146,42 @@ const LoginContainer = () => {
               <button
                 type="button"
                 onClick={handleAppleSignIn}
-                className="flex items-center justify-center gap-3 w-full h-12 rounded-8 border border-[#E4E4E4] hover:bg-[#F7F7F7] transition-colors poppins-medium text-sm"
+                className="flex items-center justify-center gap-3 w-full h-12 rounded-8 border border-[#E4E4E4] hover:bg-[#F7F7F7] transition-colors poppins-medium text-sm dark:border-white/20 dark:hover:bg-white/10"
               >
-                <img src={AppleIcon} alt="" className="h-5 w-5" />
+                <img
+                  src={AppleIcon}
+                  alt=""
+                  className="h-5 w-5 shrink-0 dark:brightness-0 dark:invert"
+                />
                 {t("auth.continueWithApple")}
               </button>
               <button
                 type="button"
                 onClick={handleFacebookSignIn}
-                className="flex items-center justify-center gap-3 w-full h-12 rounded-8 border border-[#E4E4E4] hover:bg-[#F7F7F7] transition-colors poppins-medium text-sm"
+                className="flex items-center justify-center gap-3 w-full h-12 rounded-8 border border-[#E4E4E4] hover:bg-[#F7F7F7] transition-colors poppins-medium text-sm dark:border-white/20 dark:hover:bg-white/10"
               >
-                <img src={FacebookIcon} alt="" className="h-5 w-5" />
+                <img src={FacebookIcon} alt="" className="h-5 w-5 shrink-0" />
                 {t("auth.continueWithFacebook")}
               </button>
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="flex items-center justify-center gap-3 w-full h-12 rounded-8 border border-[#E4E4E4] hover:bg-[#F7F7F7] transition-colors poppins-medium text-sm"
+                className="flex items-center justify-center gap-3 w-full h-12 rounded-8 border border-[#E4E4E4] hover:bg-[#F7F7F7] transition-colors poppins-medium text-sm dark:border-white/20 dark:hover:bg-white/10"
               >
-                <img src={GoogleIcon} alt="" className="h-5 w-5" />
+                <img src={GoogleIcon} alt="" className="h-5 w-5 shrink-0" />
                 {t("auth.continueWithGoogle")}
+              </button>
+              <button
+                type="button"
+                onClick={handleHuaweiSignIn}
+                className="flex items-center justify-center gap-3 w-full h-12 rounded-8 border border-[#E4E4E4] hover:bg-[#F7F7F7] transition-colors poppins-medium text-sm dark:border-white/20 dark:hover:bg-white/10"
+              >
+                <img
+                  src={HuaweiIcon}
+                  alt=""
+                  className="h-5 w-5 shrink-0 object-contain"
+                />
+                {t("auth.continueWithHuawei")}
               </button>
             </div>
 

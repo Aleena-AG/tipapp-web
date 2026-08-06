@@ -109,10 +109,7 @@ const TextInput: FunctionComponent<TextInputProps> = ({
             }`}
           >
             {iconLeft && (
-              <div
-                className="ml-[14px]  w-full min-w-4 max-w-4
-               bg-background rounded-[7px] flex items-center"
-              >
+              <div className="ml-[14px] flex w-full min-w-4 max-w-4 items-center rounded-[7px] bg-[#F8FAFC] dark:bg-[#121e36] dark:[&_img]:brightness-0 dark:[&_img]:invert">
                 {iconLeft}
               </div>
             )}
@@ -149,9 +146,15 @@ const TextInput: FunctionComponent<TextInputProps> = ({
                 onClick={togglePasswordVisibility}
               >
                 {showPassword ? (
-                  <TbEye size={20} className=" bg-blue-300" />
+                  <TbEye
+                    size={20}
+                    className="text-[#0B2C4A] dark:text-white"
+                  />
                 ) : (
-                  <TbEyeClosed size={20} />
+                  <TbEyeClosed
+                    size={20}
+                    className="text-[#0B2C4A] dark:text-white"
+                  />
                 )}
               </div>
             )}

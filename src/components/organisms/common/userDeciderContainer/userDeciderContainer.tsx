@@ -82,10 +82,21 @@ const RoleCard = ({
 const UserDeciderContainer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { role } = location.state || {};
   const { t } = useTranslation();
   const { handleLogout } = useAuth();
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
+
+  // location.state is lost on full reload after OAuth; fall back to sessionStorage
+  const [role] = useState(() => {
+    const fromState = (location.state as { role?: string } | null)?.role;
+    if (fromState) return fromState;
+    const fromSession = sessionStorage.getItem("postAuthRole");
+    if (fromSession) {
+      sessionStorage.removeItem("postAuthRole");
+      return fromSession;
+    }
+    return undefined;
+  });
 
   const handleRouteSPHome = () => {
     localStorage.setItem("userType", "sp");
