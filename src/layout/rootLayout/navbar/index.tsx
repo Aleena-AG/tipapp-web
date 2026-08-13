@@ -278,8 +278,7 @@ export const Navbar = () => {
     !isVerifyOtpPage &&
     !isResetPasswordPage;
 
-  const isLandingPage =
-    location.pathname === "/" || location.pathname === "/main-screen";
+  const isLandingPage = location.pathname === "/";
 
   if (!isAuthenticated() && isLandingPage) {
     return <LandingNavbar />;

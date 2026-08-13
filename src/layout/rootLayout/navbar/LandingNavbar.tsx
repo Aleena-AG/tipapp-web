@@ -41,8 +41,8 @@ export const LandingNavbar = () => {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
-    if (window.location.pathname !== "/main-screen") {
-      navigate(`/main-screen${href}`);
+    if (window.location.pathname !== "/") {
+      navigate({ pathname: "/", hash: id });
     }
   };
 
@@ -63,7 +63,7 @@ export const LandingNavbar = () => {
         <button
           type="button"
           onClick={() => {
-            navigate("/main-screen");
+            navigate("/");
             handleScrollTop();
           }}
           className="landing-nav-logo ta-animate-fade shrink-0 rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#9E2A2B]/40"

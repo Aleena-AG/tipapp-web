@@ -2,8 +2,11 @@
 import {
   createBrowserRouter,
   createRoutesFromElements,
+  Navigate,
   Route,
   RouterProvider,
+  useLocation,
+  useNavigate,
 } from "react-router-dom";
 import RootLayout from "@/layout/rootLayout/rootLayout";
 import {
@@ -55,8 +58,6 @@ import HowItWorksPage from "./page/common/how-it-works";
 import OnboardingPage from "./page/service-provider/onboarding";
 import useAuth from "./hooks/useAuth";
 import PageLoader from "@/components/atoms/laoder/page-loader";
-import { useNavigate } from "react-router-dom";
-
 const queryClient = new QueryClient();
 
 interface CurrencyContextType {
@@ -73,11 +74,12 @@ export const CurrencyContext = React.createContext<CurrencyContextType>({
   conversionRates: {},
 });
 
-/** Must live outside App so createBrowserRouter identity stays stable across re-renders. */
-const RootRedirect = () => {
+/** Landing at `/` for guests; dashboard redirect for signed-in users. */
+const HomePage = () => {
   const { getToken, getCurrentUserRole, getCurrentUser } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [showLanding, setShowLanding] = useState(false);
 
   useEffect(() => {
     const checkAndRedirect = async () => {
@@ -87,11 +89,10 @@ const RootRedirect = () => {
         const user = await getCurrentUser();
 
         if (!token) {
-          navigate("/main-screen");
+          setShowLanding(true);
           return;
         }
 
-        // If we have a user object, check if profile is complete
         if (user && !user.FirstName && user.Role !== "both" && user.Role !== "unknown") {
           const userType = localStorage.getItem("userType");
           if (userType === "tp") {
@@ -110,7 +111,6 @@ const RootRedirect = () => {
           return;
         }
 
-        // User is logged in, redirect based on role
         if (user && user.Role === "both") {
           const currentUserType = localStorage.getItem("userType");
           if (currentUserType === "sp") {
@@ -128,8 +128,8 @@ const RootRedirect = () => {
           navigate("/user-selection");
         }
       } catch (error) {
-        console.error("Error in RootRedirect:", error);
-        navigate("/main-screen");
+        console.error("Error in HomePage:", error);
+        setShowLanding(true);
       } finally {
         setIsLoading(false);
       }
@@ -142,19 +142,26 @@ const RootRedirect = () => {
     return <PageLoader />;
   }
 
+  if (showLanding) {
+    return <MainScreen />;
+  }
+
   return null;
+};
+
+const MainScreenRedirect = () => {
+  const location = useLocation();
+  return <Navigate to={{ pathname: "/", hash: location.hash }} replace />;
 };
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      {/* Root redirect for authenticated users */}
-      <Route path="/" element={<RootRedirect />} />
-
-      {/* Common Routes */}
-      <Route path="/main-screen" element={<RootLayout />}>
-        <Route index element={<MainScreen />} />
+      {/* Landing page at root; legacy /main-screen redirects here */}
+      <Route path="/" element={<RootLayout />}>
+        <Route index element={<HomePage />} />
       </Route>
+      <Route path="/main-screen" element={<MainScreenRedirect />} />
 
       <Route path="/user-selection" element={<RootLayout />}>
         <Route index element={<UserSelection />} />

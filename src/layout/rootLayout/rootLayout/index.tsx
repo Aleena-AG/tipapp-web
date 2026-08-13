@@ -63,8 +63,8 @@ const RootLayout = () => {
   const hideChrome = hideChromeRoutes.some(
     (p) => location.pathname === p || location.pathname.startsWith(`${p}/`)
   );
-  const hideFooter = hideChrome || location.pathname === "/main-screen";
-  const isLanding = location.pathname === "/main-screen";
+  const hideFooter = hideChrome || location.pathname === "/";
+  const isLanding = location.pathname === "/";
 
   return (
     <div
