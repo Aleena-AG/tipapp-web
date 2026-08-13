@@ -87,7 +87,7 @@ const RootRedirect = () => {
         const user = await getCurrentUser();
 
         if (!token) {
-          navigate("/sign-in");
+          navigate("/main-screen");
           return;
         }
 
@@ -129,7 +129,7 @@ const RootRedirect = () => {
         }
       } catch (error) {
         console.error("Error in RootRedirect:", error);
-        navigate("/sign-in");
+        navigate("/main-screen");
       } finally {
         setIsLoading(false);
       }

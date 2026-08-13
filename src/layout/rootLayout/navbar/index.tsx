@@ -56,6 +56,7 @@ import NotificationsDropdown from "@/components/organisms/common/notifications-d
 import { handleScrollTop } from "@/hooks/hooks";
 import SignOutConfirmation from "@/assets/svg/sign-out-secondary.svg";
 import { getUserFromLocalStorage } from "@/utils/localStorageUtils";
+import { LandingNavbar } from "./LandingNavbar";
 
 export const Navbar = () => {
   const { t } = useTranslation();
@@ -276,6 +277,13 @@ export const Navbar = () => {
     !isForgotPasswordPage &&
     !isVerifyOtpPage &&
     !isResetPasswordPage;
+
+  const isLandingPage =
+    location.pathname === "/" || location.pathname === "/main-screen";
+
+  if (!isAuthenticated() && isLandingPage) {
+    return <LandingNavbar />;
+  }
 
   return (
     <div

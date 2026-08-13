@@ -63,14 +63,18 @@ const RootLayout = () => {
   const hideChrome = hideChromeRoutes.some(
     (p) => location.pathname === p || location.pathname.startsWith(`${p}/`)
   );
+  const hideFooter = hideChrome || location.pathname === "/main-screen";
+  const isLanding = location.pathname === "/main-screen";
 
   return (
-    <div className="app-shell flex flex-col">
+    <div
+      className={`app-shell flex flex-col ${isLanding ? "landing-shell" : ""}`}
+    >
       {!hideChrome && <Navbar />}
       <main className={`flex flex-col flex-grow ${hideChrome ? "min-h-screen" : ""}`}>
         <Outlet />
       </main>
-      {!hideChrome && <Footer />}
+      {!hideFooter && <Footer />}
     </div>
   );
 };
