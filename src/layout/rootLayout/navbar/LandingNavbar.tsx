@@ -36,7 +36,10 @@ export const LandingNavbar = () => {
   const scrollToSection = (href: string) => {
     setMobileOpen(false);
     const id = href.replace("#", "");
-    const el = document.getElementById(id);
+    let el = document.getElementById(id);
+    if (id === "features" && window.matchMedia("(max-width: 1023px)").matches) {
+      el = document.getElementById("features-mobile");
+    }
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
@@ -59,7 +62,7 @@ export const LandingNavbar = () => {
       }`}
       style={{ backgroundColor: "var(--landing-bg)" }}
     >
-      <div className="mx-auto flex min-h-[72px] w-full max-w-[1280px] items-center justify-between gap-16 px-16 sm:px-24 lg:min-h-[80px] lg:px-32">
+      <div className="mx-auto flex min-h-[64px] w-full max-w-[1280px] items-center justify-between gap-12 px-16 sm:min-h-[72px] sm:gap-16 sm:px-24 lg:min-h-[80px] lg:px-32">
         <button
           type="button"
           onClick={() => {
@@ -72,12 +75,12 @@ export const LandingNavbar = () => {
           <img
             src={appLogo}
             alt="Tip App"
-            className="landing-nav-logo-img h-[52px] w-[52px] rounded-[12px] object-cover shadow-[0_4px_14px_rgba(158,42,43,0.25)] sm:h-[58px] sm:w-[58px] lg:h-[64px] lg:w-[64px]"
+            className="landing-nav-logo-img h-[44px] w-[44px] rounded-[12px] object-cover shadow-[0_4px_14px_rgba(158,42,43,0.25)] sm:h-[58px] sm:w-[58px] lg:h-[64px] lg:w-[64px]"
           />
         </button>
 
         <nav
-          className="hidden flex-1 items-center justify-center md:flex"
+          className="hidden flex-1 items-center justify-center lg:flex"
           aria-label="Landing"
         >
           <ul className="flex items-center gap-20 lg:gap-28">
@@ -104,7 +107,7 @@ export const LandingNavbar = () => {
           <button
             type="button"
             onClick={handleGetStarted}
-            className="landing-nav-cta ta-animate-pop hidden rounded-[10px] bg-[#B3000C] px-18 py-10 text-[14px] poppins-semibold text-white shadow-[0_6px_18px_rgba(179,0,12,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#99000A] hover:shadow-[0_10px_24px_rgba(179,0,12,0.35)] active:translate-y-0 md:inline-flex lg:px-22 lg:py-11 lg:text-[15px]"
+            className="landing-nav-cta ta-animate-pop hidden rounded-[10px] bg-[#B3000C] px-18 py-10 text-[14px] poppins-semibold text-white shadow-[0_6px_18px_rgba(179,0,12,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#99000A] hover:shadow-[0_10px_24px_rgba(179,0,12,0.35)] active:translate-y-0 lg:inline-flex lg:px-22 lg:py-11 lg:text-[15px]"
             style={{ animationDelay: "420ms" }}
           >
             Get Started
@@ -112,7 +115,7 @@ export const LandingNavbar = () => {
 
           <button
             type="button"
-            className="inline-flex h-[40px] w-[40px] items-center justify-center rounded-[10px] bg-[#EDEFF3] text-[#1A1A2E] transition-colors hover:bg-[#E2E5EB] md:hidden"
+            className="inline-flex h-[40px] w-[40px] items-center justify-center rounded-[10px] bg-[#EDEFF3] text-[#1A1A2E] transition-colors hover:bg-[#E2E5EB] lg:hidden"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((o) => !o)}
@@ -127,7 +130,7 @@ export const LandingNavbar = () => {
       </div>
 
       <div
-        className={`overflow-hidden border-t border-black/[0.06] transition-[max-height,opacity] duration-300 ease-out md:hidden ${
+        className={`overflow-hidden border-t border-black/[0.06] transition-[max-height,opacity] duration-300 ease-out lg:hidden ${
           mobileOpen ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0"
         }`}
         style={{ backgroundColor: "var(--landing-bg)" }}

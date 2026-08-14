@@ -674,6 +674,46 @@ html {
   animation-duration: 4.4s;
 }
 
+@media (max-width: 1023px) {
+  .landing-floater-1 {
+    top: 28%;
+    left: 8%;
+  }
+  .landing-floater-2 {
+    top: 26%;
+    right: 8%;
+  }
+  .landing-floater-3 {
+    top: 34%;
+    left: 18%;
+  }
+  .landing-floater-4 {
+    top: 32%;
+    right: 16%;
+  }
+  .landing-floater-5,
+  .landing-floater-6,
+  .landing-floater-7,
+  .landing-floater-8 {
+    display: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .landing-floater-1 {
+    top: 30%;
+    left: 4%;
+  }
+  .landing-floater-2 {
+    top: 28%;
+    right: 4%;
+  }
+  .landing-floater-3,
+  .landing-floater-4 {
+    display: none;
+  }
+}
+
 /* TipApp is for Everyone — carousel & header floaters */
 .landing-everyone-track {
   scroll-snap-type: x mandatory;
@@ -701,6 +741,19 @@ html {
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .landing-everyone-track {
+    --everyone-carousel-gap: 14px;
+    gap: var(--everyone-carousel-gap);
+    scroll-padding-inline: max(16px, calc(50% - 140px));
+  }
+  .landing-everyone-card-wrap {
+    flex: 0 0 calc((100% - (2 * var(--everyone-carousel-gap))) / 2.35);
+    width: calc((100% - (2 * var(--everyone-carousel-gap))) / 2.35);
+    max-width: 280px;
+  }
+}
+
 @media (min-width: 1024px) {
   .landing-everyone-track {
     --everyone-carousel-gap: 16px;
@@ -714,9 +767,12 @@ html {
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 767px) {
   .landing-everyone-track {
-    scroll-padding-inline: max(16px, calc(50% - 126px));
+    scroll-padding-inline: max(16px, calc(50% - 118px));
+  }
+  .landing-everyone-card-wrap {
+    width: min(236px, 78vw);
   }
 }
 .landing-everyone-floater {

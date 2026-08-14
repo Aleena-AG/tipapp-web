@@ -30,14 +30,14 @@ export const LandingIntro = () => {
   return (
     <section
       id="features"
-      className="relative scroll-mt-[88px] overflow-visible px-16 pb-48 pt-8 sm:px-24 lg:px-32 lg:pb-56"
+      className="relative hidden scroll-mt-[88px] overflow-visible px-16 pb-36 pt-4 sm:px-24 sm:pb-48 sm:pt-8 lg:block lg:px-32 lg:pb-56"
       style={{ backgroundColor: "var(--landing-bg)" }}
     >
       <div
         className="ta-animate-slide-up relative mx-auto max-w-[1180px] overflow-visible"
         style={{ animationDelay: "240ms" }}
       >
-        <div className="relative flex flex-col overflow-visible rounded-[22px] border border-[#E8ECF1] bg-white shadow-[0_10px_32px_rgba(15,23,42,0.06)] sm:flex-row sm:items-stretch sm:pr-[72px] lg:pr-[88px]">
+        <div className="relative flex flex-col overflow-visible rounded-[18px] border border-[#E8ECF1] bg-white shadow-[0_10px_32px_rgba(15,23,42,0.06)] sm:rounded-[22px] md:flex-row md:items-stretch md:pr-[72px] lg:pr-[88px]">
           <div className="grid flex-1 grid-cols-1 divide-y divide-[#EEF1F5] sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
             {TRUST_ITEMS.map((item) => {
               const { title, description, Icon } = item;
@@ -47,7 +47,7 @@ export const LandingIntro = () => {
               return (
                 <div
                   key={title}
-                  className="flex items-start gap-10 px-16 py-18 sm:px-14 sm:py-20 lg:px-16"
+                  className="flex items-start gap-10 px-14 py-16 sm:px-14 sm:py-20 lg:px-16"
                 >
                   <span className="mt-1 flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-[10px] bg-[#FFE5E8] text-[#B3000C]">
                     <Icon
@@ -73,13 +73,12 @@ export const LandingIntro = () => {
             })}
           </div>
 
-          {/* Wallet size: change h/w on img below */}
-          <div className="pointer-events-none absolute -right-[28px] top-1/2 z-10 hidden -translate-y-1/2 sm:block lg:-right-[36px]">
+          <div className="pointer-events-none absolute -right-[20px] top-1/2 z-10 hidden -translate-y-1/2 md:block lg:-right-[36px]">
             <img
               src={imgWallet}
               alt=""
               aria-hidden
-              className="h-[60px] w-[60px] -rotate-[-20deg] object-cover drop-shadow-[0_14px_28px_rgba(179,0,12,0.22)] sm:h-[120px] sm:w-[120px] lg:h-[160px] lg:w-[160px]"
+              className="h-[100px] w-[100px] -rotate-[-20deg] object-cover drop-shadow-[0_14px_28px_rgba(179,0,12,0.22)] lg:h-[160px] lg:w-[160px]"
               draggable={false}
             />
           </div>

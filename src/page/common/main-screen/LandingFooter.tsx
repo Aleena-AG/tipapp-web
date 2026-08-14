@@ -162,25 +162,25 @@ export const LandingFooter = () => {
         />
 
         <div className="relative z-10 mx-auto grid max-w-[1180px] items-center gap-28 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:gap-32">
-          <div className="text-left">
-            <h2 className="max-w-[360px] text-[26px] leading-tight text-white poppins-bold sm:text-[32px] lg:text-[36px]">
+          <div className="text-center lg:text-left">
+            <h2 className="mx-auto max-w-[360px] text-[24px] leading-tight text-white poppins-bold sm:text-[32px] lg:mx-0 lg:text-[36px]">
               Ready to Tip or Get Tipped?
             </h2>
-            <p className="mt-12 max-w-[340px] text-[14px] leading-relaxed text-white/85 poppins-medium sm:text-[15px]">
+            <p className="mx-auto mt-12 max-w-[340px] text-[13px] leading-relaxed text-white/85 poppins-medium sm:text-[15px] lg:mx-0">
               Join thousands of users making every service more rewarding.
             </p>
           </div>
 
-          <div className="flex flex-col items-center gap-16 sm:flex-row sm:gap-20 lg:gap-24">
+          <div className="flex flex-col items-center gap-16 sm:flex-row sm:justify-center sm:gap-20 lg:gap-24">
             <img
               src={footerMascot}
               alt="TipApp wallet mascot"
-              className="h-[200px] w-auto object-contain sm:h-[240px] lg:h-[280px]"
+              className="h-[160px] w-auto object-contain sm:h-[240px] lg:h-[280px]"
               draggable={false}
             />
 
             <div className="flex items-center gap-14 sm:gap-16">
-              <div className="relative flex h-[112px] w-[112px] shrink-0 items-center justify-center rounded-[14px] bg-white p-10 shadow-[0_12px_28px_rgba(0,0,0,0.2)] sm:h-[124px] sm:w-[124px]">
+              <div className="relative flex h-[96px] w-[96px] shrink-0 items-center justify-center rounded-[14px] bg-white p-10 shadow-[0_12px_28px_rgba(0,0,0,0.2)] sm:h-[124px] sm:w-[124px]">
                 <img
                   src={qrCode}
                   alt="QR code to download TipApp"
@@ -199,7 +199,7 @@ export const LandingFooter = () => {
             </div>
           </div>
 
-          <div className="flex w-full flex-col gap-10 sm:w-auto lg:min-w-[180px]">
+          <div className="mx-auto flex w-full max-w-[280px] flex-col gap-10 sm:max-w-none sm:w-auto sm:flex-row sm:justify-center lg:min-w-[180px] lg:flex-col">
             <StoreBadge
               href={APP_STORE_URL}
               top="Download on the"

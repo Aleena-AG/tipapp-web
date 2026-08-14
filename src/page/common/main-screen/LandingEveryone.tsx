@@ -274,7 +274,7 @@ export const LandingEveryone = () => {
   return (
     <section
       id="everyone"
-      className="landing-everyone relative scroll-mt-[88px] px-16 py-48 sm:px-24 lg:px-32 lg:py-64"
+      className="landing-everyone relative scroll-mt-[72px] overflow-x-hidden px-0 py-40 sm:scroll-mt-[88px] sm:px-24 sm:py-48 lg:px-32 lg:py-64"
       style={{ backgroundColor: "var(--landing-bg)" }}
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
@@ -288,9 +288,9 @@ export const LandingEveryone = () => {
         ))}
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[1200px]">
+      <div className="relative z-10 mx-auto max-w-[1200px] px-16 sm:px-0">
         <div className="ta-animate-fade text-center">
-          <h2 className="relative inline-block text-[28px] leading-tight tracking-tight poppins-bold sm:text-[34px] lg:text-[40px]">
+          <h2 className="relative inline-block text-[24px] leading-tight tracking-tight poppins-bold sm:text-[34px] lg:text-[40px]">
             <Sparkles
               className="absolute -left-28 -top-6 hidden h-18 w-18 text-[#B3000C] sm:block"
               strokeWidth={2}
@@ -304,12 +304,12 @@ export const LandingEveryone = () => {
               aria-hidden
             />
           </h2>
-          <p className="mx-auto mt-12 max-w-[420px] text-[14px] leading-relaxed text-[#5B6475] poppins-medium sm:text-[15px]">
+          <p className="mx-auto mt-12 max-w-[420px] px-4 text-[13px] leading-relaxed text-[#5B6475] poppins-medium sm:px-0 sm:text-[15px]">
             Send tips instantly to show your appreciation.
           </p>
 
-          <div className="mx-auto mt-24 flex max-w-[560px] flex-col gap-12 sm:flex-row sm:justify-center">
-            <div className="flex flex-1 items-center gap-12 rounded-[14px] border border-[#E4E7EE] bg-white px-16 py-14 shadow-[0_6px_20px_rgba(15,23,42,0.04)]">
+          <div className="mx-auto mt-20 flex max-w-[560px] flex-col gap-12 sm:mt-24 sm:flex-row sm:justify-center">
+            <div className="flex flex-1 items-center gap-12 rounded-[14px] border border-[#E4E7EE] bg-white px-14 py-12 shadow-[0_6px_20px_rgba(15,23,42,0.04)] sm:px-16 sm:py-14">
               <span className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full bg-[#E8F1FF] text-[#0B538D]">
                 <ShieldCheck className="h-[20px] w-[20px]" strokeWidth={2.25} />
               </span>
@@ -322,7 +322,7 @@ export const LandingEveryone = () => {
                 </p>
               </div>
             </div>
-            <div className="flex flex-1 items-center gap-12 rounded-[14px] border border-[#E4E7EE] bg-white px-16 py-14 shadow-[0_6px_20px_rgba(15,23,42,0.04)]">
+            <div className="flex flex-1 items-center gap-12 rounded-[14px] border border-[#E4E7EE] bg-white px-14 py-12 shadow-[0_6px_20px_rgba(15,23,42,0.04)] sm:px-16 sm:py-14">
               <span className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full bg-[#FFE5E8] text-[#B3000C]">
                 <Heart className="h-[18px] w-[18px]" strokeWidth={2.25} fill="currentColor" />
               </span>
@@ -337,11 +337,11 @@ export const LandingEveryone = () => {
         </div>
       </div>
 
-      <div className="relative z-10 mt-40 w-full lg:mt-48">
-        <div className="mx-auto max-w-[1400px] px-16 sm:px-24 lg:px-32">
+      <div className="relative z-10 mt-32 w-full sm:mt-40 lg:mt-48">
+        <div className="mx-auto max-w-[1400px] sm:px-24 lg:px-32">
             <div
               ref={trackRef}
-              className="landing-everyone-track flex w-full items-center snap-x snap-mandatory gap-12 overflow-x-auto scroll-smooth px-4 [-ms-overflow-style:none] [scrollbar-width:none] lg:gap-[16px] lg:px-0 [&::-webkit-scrollbar]:hidden"
+              className="landing-everyone-track flex w-full items-center snap-x snap-mandatory gap-12 overflow-x-auto scroll-smooth px-16 [-ms-overflow-style:none] [scrollbar-width:none] sm:px-4 lg:gap-[16px] lg:px-0 [&::-webkit-scrollbar]:hidden"
             >
               {PROFESSIONS.map((item, i) => {
                 const isActive = i === scrollIndex;
@@ -361,7 +361,7 @@ export const LandingEveryone = () => {
                       style={{ animationDelay: `${80 + i * 60}ms` }}
                     >
                     <div className="relative shrink-0">
-                      <div className="relative h-[280px] w-full overflow-hidden sm:h-[300px]">
+                      <div className="relative h-[240px] w-full overflow-hidden sm:h-[300px]">
                         <img
                           src={item.image}
                           alt={`${item.title} accepting tips with TipApp`}

@@ -31,11 +31,11 @@ export const LandingHowItWorks = () => {
   return (
     <section
       id="how-it-works"
-      className="scroll-mt-[88px] px-16 py-48 sm:px-24 lg:px-32 lg:py-64"
+      className="scroll-mt-[72px] px-16 py-36 sm:scroll-mt-[88px] sm:px-24 sm:py-48 lg:px-32 lg:py-64"
       style={{ backgroundColor: "var(--landing-bg)" }}
     >
       <div className="mx-auto max-w-[1100px]">
-        <h2 className="ta-animate-fade text-center text-[28px] leading-tight tracking-tight poppins-bold sm:text-[34px] lg:text-[38px]">
+        <h2 className="ta-animate-fade text-center text-[24px] leading-tight tracking-tight poppins-bold sm:text-[34px] lg:text-[38px]">
           <span className="text-[#1A1A2E]">How </span>
           <span className="text-[#1A1A2E]">Tip</span>
           <span className="relative inline-block text-[#B3000C]">
@@ -45,16 +45,14 @@ export const LandingHowItWorks = () => {
           <span className="text-[#1A1A2E]"> Works</span>
         </h2>
 
-        <div className="mt-40 flex flex-col items-stretch gap-20 lg:mt-48 lg:flex-row lg:items-center lg:gap-0">
+        <div className="mt-32 flex flex-col items-stretch gap-16 sm:mt-40 sm:gap-20 md:grid md:grid-cols-3 md:gap-16 lg:mt-48 lg:flex lg:flex-row lg:items-center lg:gap-0">
           {STEPS.map((item, i) => (
             <div key={item.step} className="flex flex-1 items-center">
               <article
-                className="landing-card-from-left relative w-full rounded-[20px] border border-[#E8ECF1] bg-[#F4F5F7] px-16 pb-22 pt-20 text-center shadow-[0_8px_28px_rgba(15,23,42,0.05)]"
+                className="landing-card-from-left relative w-full rounded-[20px] border border-[#E8ECF1] bg-[#F4F5F7] px-14 pb-20 pt-18 text-center shadow-[0_8px_28px_rgba(15,23,42,0.05)] sm:px-16 sm:pb-22 sm:pt-20"
                 style={{ animationDelay: `${120 + i * 120}ms` }}
               >
-               
-
-                <div className="mx-auto mt-8 flex h-[176px] w-full items-center justify-center overflow-hidden rounded-[16px]  sm:h-[190px]">
+                <div className="mx-auto mt-8 flex h-[160px] w-full items-center justify-center overflow-hidden rounded-[16px] sm:h-[190px]">
                   <img
                     src={item.image}
                     alt={item.alt}
@@ -63,10 +61,10 @@ export const LandingHowItWorks = () => {
                   />
                 </div>
 
-                <h3 className="mt-16 text-[16px] text-[#1A1A2E] poppins-bold sm:text-[17px]">
+                <h3 className="mt-14 text-[15px] text-[#1A1A2E] poppins-bold sm:mt-16 sm:text-[17px]">
                   {item.title}
                 </h3>
-                <p className="mx-auto mt-8 max-w-[240px] text-[13px] leading-snug text-[#5B6475] poppins-medium">
+                <p className="mx-auto mt-8 max-w-[240px] text-[12px] leading-snug text-[#5B6475] poppins-medium sm:text-[13px]">
                   {item.description}
                 </p>
               </article>

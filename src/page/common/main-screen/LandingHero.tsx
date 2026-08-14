@@ -66,15 +66,24 @@ const RIGHT_CONTENT: FeatureCard[] = [
   },
 ];
 
+const ALL_FEATURES = [
+  LEFT_CONTENT[0],
+  RIGHT_CONTENT[0],
+  LEFT_CONTENT[1],
+  RIGHT_CONTENT[1],
+  LEFT_CONTENT[2],
+  RIGHT_CONTENT[2],
+];
+
 const FLOATERS = [
-  { emoji: "❤️", className: "landing-floater landing-floater-1", size: "text-[22px] sm:text-[28px]" },
-  { emoji: "⭐", className: "landing-floater landing-floater-2", size: "text-[18px] sm:text-[24px]" },
-  { emoji: "💕", className: "landing-floater landing-floater-3", size: "text-[16px] sm:text-[22px]" },
-  { emoji: "✨", className: "landing-floater landing-floater-4", size: "text-[20px] sm:text-[26px]" },
-  { emoji: "❤️", className: "landing-floater landing-floater-5", size: "text-[14px] sm:text-[20px]" },
-  { emoji: "⭐", className: "landing-floater landing-floater-6", size: "text-[16px] sm:text-[22px]" },
-  { emoji: "💫", className: "landing-floater landing-floater-7", size: "text-[18px] sm:text-[24px]" },
-  { emoji: "💖", className: "landing-floater landing-floater-8", size: "text-[15px] sm:text-[20px]" },
+  { emoji: "❤️", className: "landing-floater landing-floater-1", size: "text-[18px] sm:text-[22px] lg:text-[28px]" },
+  { emoji: "⭐", className: "landing-floater landing-floater-2", size: "text-[14px] sm:text-[18px] lg:text-[24px]" },
+  { emoji: "💕", className: "landing-floater landing-floater-3", size: "text-[14px] sm:text-[18px] lg:text-[22px]" },
+  { emoji: "✨", className: "landing-floater landing-floater-4", size: "text-[16px] sm:text-[20px] lg:text-[26px]" },
+  { emoji: "❤️", className: "landing-floater landing-floater-5", size: "text-[12px] sm:text-[16px] lg:text-[20px]" },
+  { emoji: "⭐", className: "landing-floater landing-floater-6", size: "text-[14px] sm:text-[18px] lg:text-[22px]" },
+  { emoji: "💫", className: "landing-floater landing-floater-7", size: "text-[14px] sm:text-[18px] lg:text-[24px]" },
+  { emoji: "💖", className: "landing-floater landing-floater-8", size: "text-[12px] sm:text-[16px] lg:text-[20px]" },
 ] as const;
 
 function ContentCard({
@@ -128,21 +137,17 @@ function TipNotifyCards() {
 
     const runCycle = async () => {
       while (!cancelled) {
-        // Idle before cards appear
         await wait(2800);
         if (cancelled) break;
 
-        // Sent first
         setSent("in");
         await wait(1600);
         if (cancelled) break;
 
-        // Received second
         setRecv("in");
         await wait(4200);
         if (cancelled) break;
 
-        // Remove one by one
         setSent("out");
         await wait(700);
         if (cancelled) break;
@@ -155,7 +160,6 @@ function TipNotifyCards() {
         if (cancelled) break;
         setRecv("hidden");
 
-        // Pause before next cycle (~few moments)
         await wait(8000);
       }
     };
@@ -169,21 +173,18 @@ function TipNotifyCards() {
   }, []);
 
   return (
-    <div
-      className="pointer-events-none absolute inset-0 z-[8] hidden lg:block"
-      aria-hidden
-    >
+    <div className="pointer-events-none absolute inset-0 z-20 hidden lg:block" aria-hidden>
       {sent !== "hidden" && (
         <div
           className={`landing-tip-toast absolute left-[33%] top-[48%] xl:left-[35%] xl:top-[46%] ${
             sent === "in" ? "landing-tip-toast-in" : "landing-tip-toast-out"
           }`}
         >
-          <div className="landing-tip-toast-float flex max-w-[240px] items-center gap-8 rounded-[14px] border border-white/90 bg-white px-10 py-8 shadow-[0_10px_28px_rgba(40,40,80,0.14)]">
-            <span className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-[#E8F1FF] text-[16px]">
+          <div className="landing-tip-toast-float flex w-[min(240px,calc(100%-32px))] items-center gap-8 rounded-[14px] border border-white/90 bg-white px-10 py-8 shadow-[0_10px_28px_rgba(40,40,80,0.18)] sm:max-w-[240px]">
+            <span className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full bg-[#E8F1FF] text-[14px] sm:h-[36px] sm:w-[36px] sm:text-[16px]">
               🎉
             </span>
-            <p className="text-[12px] leading-snug text-[#1A1A2E] poppins-semibold">
+            <p className="text-[11px] leading-snug text-[#1A1A2E] poppins-semibold sm:text-[12px]">
               You just sent a tip!{" "}
               <span className="poppins-medium text-[#5B6475]">Thank you!</span>
             </p>
@@ -197,18 +198,18 @@ function TipNotifyCards() {
             recv === "in" ? "landing-tip-toast-in" : "landing-tip-toast-out"
           }`}
         >
-          <div className="landing-tip-toast-float flex max-w-[220px] items-center gap-8 rounded-[14px] border border-white/90 bg-white px-10 py-8 shadow-[0_10px_28px_rgba(40,40,80,0.14)]">
-            <span className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-[#FFE5E8] text-[16px]">
+          <div className="landing-tip-toast-float flex w-[min(220px,calc(100%-32px))] items-center gap-8 rounded-[14px] border border-white/90 bg-white px-10 py-8 shadow-[0_10px_28px_rgba(40,40,80,0.18)] sm:max-w-[220px]">
+            <span className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full bg-[#FFE5E8] text-[14px] sm:h-[36px] sm:w-[36px] sm:text-[16px]">
               🎉
             </span>
             <div className="min-w-0">
-              <p className="text-[12px] leading-tight text-[#1A1A2E] poppins-semibold">
+              <p className="text-[11px] leading-tight text-[#1A1A2E] poppins-semibold sm:text-[12px]">
                 Tip Received!
               </p>
-              <p className="mt-1 text-[15px] leading-none text-[#16A34A] poppins-bold">
+              <p className="mt-1 text-[14px] leading-none text-[#16A34A] poppins-bold sm:text-[15px]">
                 + $5.00
               </p>
-              <p className="mt-2 text-[11px] leading-tight text-[#5B6475] poppins-medium">
+              <p className="mt-2 text-[10px] leading-tight text-[#5B6475] poppins-medium sm:text-[11px]">
                 Thank you so much!
               </p>
             </div>
@@ -222,26 +223,16 @@ function TipNotifyCards() {
 export const LandingHero = () => {
   return (
     <section
-      className="landing-hero relative min-h-[calc(100dvh-72px)] w-full overflow-hidden lg:min-h-[calc(100dvh-80px)]"
+      className="landing-hero relative w-full overflow-x-clip overflow-y-visible lg:min-h-[calc(100dvh-80px)]"
       style={{ backgroundColor: "var(--landing-bg)" }}
     >
+      {/* Desktop background illustration */}
       <div className="pointer-events-none absolute inset-x-[160px] inset-y-0 hidden items-center justify-center translate-y-[10%] lg:flex xl:inset-x-[200px] xl:translate-y-[12%]">
         <img
           src={heroTipScan}
           alt=""
           aria-hidden
           className="h-full w-full max-h-[78%] max-w-[980px] object-contain object-center select-none"
-          width={1024}
-          height={602}
-          draggable={false}
-        />
-      </div>
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center translate-y-[8%] lg:hidden">
-        <img
-          src={heroTipScan}
-          alt=""
-          aria-hidden
-          className="h-[62%] w-full max-w-[640px] object-contain object-center opacity-90 select-none"
           width={1024}
           height={602}
           draggable={false}
@@ -261,31 +252,61 @@ export const LandingHero = () => {
         ))}
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-72px)] w-full max-w-[1440px] flex-col px-12 pb-16 pt-28 sm:px-20 sm:pt-32 lg:min-h-[calc(100dvh-80px)] lg:px-20 lg:pt-36 xl:px-28">
-        <div className="relative z-20 ta-animate-fade pb-10 text-center lg:pb-14">
-          <h1 className="text-[28px] leading-tight tracking-tight text-[#1A1A2E] poppins-bold sm:text-[36px] lg:text-[42px]">
-          <span className="text-[#10447c]">Give Tips.</span> <span className="text-[#B3000C]">Get Tipped.</span> All in one place.
+      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col px-16 pb-28 pt-24 sm:px-24 sm:pb-36 sm:pt-28 lg:min-h-[calc(100dvh-80px)] lg:px-20 lg:pb-16 lg:pt-36 xl:px-28">
+        {/* Headline + CTA */}
+        <div className="relative z-20 ta-animate-fade text-center lg:pb-14">
+          <h1 className="mx-auto max-w-[20ch] text-[26px] leading-[1.15] tracking-tight text-[#1A1A2E] poppins-bold sm:max-w-none sm:text-[34px] md:text-[38px] lg:text-[42px]">
+            <span className="text-[#10447c]">Give Tips.</span>{" "}
+            <span className="text-[#B3000C]">Get Tipped.</span> All in one place.
           </h1>
-          <p className="mx-auto mt-10 max-w-[420px] text-[14px] leading-relaxed text-[#5B6475] poppins-medium sm:text-[15px]">
-            The simple way to get paid for great service and get tipped by your customers.
+          <p className="mx-auto mt-12 max-w-[340px] text-[13px] leading-relaxed text-[#5B6475] poppins-medium sm:mt-10 sm:max-w-[420px] sm:text-[15px]">
+            The simple way to get paid for great service and get tipped by your
+            customers.
           </p>
           <button
             type="button"
-            className="landing-download-btn ta-animate-pop relative z-20 mt-16 inline-flex min-h-[52px] items-center justify-center gap-8 rounded-[14px] bg-[#B3000C] px-28 py-14 text-[16px] poppins-semibold text-white shadow-[0_12px_32px_rgba(179,0,12,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#99000A] hover:shadow-[0_16px_36px_rgba(179,0,12,0.42)] sm:min-h-[56px] sm:px-36 sm:text-[17px]"
+            className="landing-download-btn ta-animate-pop relative z-20 mt-18 inline-flex min-h-[48px] items-center justify-center gap-8 rounded-full bg-[#B3000C] px-28 py-12 text-[15px] poppins-semibold text-white shadow-[0_12px_32px_rgba(179,0,12,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#99000A] hover:shadow-[0_16px_36px_rgba(179,0,12,0.42)] sm:mt-16 sm:min-h-[56px] sm:rounded-[14px] sm:px-36 sm:py-14 sm:text-[17px]"
             style={{ animationDelay: "280ms" }}
           >
             Download App
           </button>
         </div>
 
-        <div className="relative z-10 mt-8 grid flex-1 grid-cols-1 items-center gap-14 lg:mt-4 lg:grid-cols-[220px_minmax(0,1fr)_220px] xl:grid-cols-[250px_minmax(0,1fr)_250px]">
+        {/* Mobile / tablet illustration + tip toasts */}
+        <div className="relative z-[15] mx-auto mt-20 w-full max-w-[520px] sm:mt-24 md:max-w-[600px] lg:hidden">
+          <img
+            src={heroTipScan}
+            alt="Customer scanning a TipApp QR code to send a tip"
+            className="landing-hero-art mx-auto h-auto w-full object-contain object-center select-none"
+            width={1024}
+            height={602}
+            draggable={false}
+          />
+        </div>
+
+        {/* Mobile / tablet feature grid */}
+        <div
+          id="features-mobile"
+          className="relative z-10 mt-24 scroll-mt-[72px] grid grid-cols-1 gap-12 sm:mt-28 sm:grid-cols-2 sm:gap-14 sm:scroll-mt-[88px] lg:hidden"
+        >
+          {ALL_FEATURES.map((card, i) => (
+            <ContentCard
+              key={card.title}
+              card={card}
+              side={i % 2 === 0 ? "left" : "right"}
+              index={i}
+            />
+          ))}
+        </div>
+
+        {/* Desktop side cards */}
+        <div className="relative z-10 mt-8 hidden flex-1 grid-cols-[220px_minmax(0,1fr)_220px] items-center gap-14 lg:mt-4 lg:grid xl:grid-cols-[250px_minmax(0,1fr)_250px]">
           <div className="flex flex-col gap-12 self-center">
             {LEFT_CONTENT.map((card, i) => (
               <ContentCard key={card.title} card={card} side="left" index={i} />
             ))}
           </div>
 
-          {/* Center spacer — keeps side cards clear of illustration */}
           <div className="hidden min-h-[80px] lg:block" aria-hidden />
 
           <div className="flex flex-col gap-12 self-center">

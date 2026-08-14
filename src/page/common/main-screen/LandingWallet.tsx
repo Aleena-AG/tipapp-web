@@ -8,8 +8,8 @@ export const LandingWallet = () => {
       className="landing-wallet relative scroll-mt-[88px] px-16 py-48 sm:px-24 lg:px-32 lg:py-64"
       style={{ backgroundColor: "var(--landing-bg)" }}
     >
-      <div className="relative z-10 mx-auto grid max-w-[1180px] items-center gap-28 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)] lg:gap-40">
-        <div className="ta-animate-fade mx-auto w-full">
+      <div className="relative z-10 mx-auto grid max-w-[1180px] items-center gap-20 sm:gap-28 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)] lg:gap-40">
+        <div className="ta-animate-fade mx-auto w-full max-w-[420px] sm:max-w-[520px] lg:max-w-none">
           <img
             src={walletPhone}
             alt="TipApp wallet, tip balance, get tipped and tip others"
@@ -19,14 +19,14 @@ export const LandingWallet = () => {
         </div>
 
         <div
-          className="ta-animate-slide-up text-left"
+          className="ta-animate-slide-up text-center sm:text-left"
           style={{ animationDelay: "160ms" }}
         >
-          <p className="text-[15px] poppins-semibold sm:text-[16px]">
+          <p className="text-[14px] poppins-semibold sm:text-[16px]">
             <span className="text-[#B3000C]">One Wallet.</span>{" "}
             <span className="text-[#0B538D]">Two Ways to Tip.</span>
           </p>
-          <h2 className="mt-14 max-w-[420px] text-[26px] leading-[1.2] tracking-tight text-[#1A1A2E] poppins-bold sm:text-[32px] lg:text-[34px]">
+          <h2 className="mx-auto mt-12 max-w-[420px] text-[24px] leading-[1.2] tracking-tight text-[#1A1A2E] poppins-bold sm:mx-0 sm:mt-14 sm:text-[32px] lg:text-[34px]">
             Get tipped. Keep your balance. Tip someone else.
           </h2>
 
