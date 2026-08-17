@@ -66,6 +66,7 @@
       "mobileApps": "Mobile Apps",
       "research": "Research",
       "downloadForAndroid": "Download for Android",
+      "downloadForAndroidComingSoon": "Google Play — Coming Soon",
       "downloadForiOS": "Download for iOS"
     },
     "download": {
@@ -73,8 +74,8 @@
       "subheading": "Tip, receive and manage everything on the go.",
       "iosTop": "Download on the",
       "iosBottom": "App Store",
-      "androidTop": "GET IT ON",
-      "androidBottom": "Google Play"
+      "androidTop": "Google Play",
+      "androidBottom": "Coming Soon"
     },
     "tagline": "Digital tipping, simplified",
     "followUs": "Follow us",

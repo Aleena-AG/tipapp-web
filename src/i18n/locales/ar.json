@@ -66,6 +66,7 @@
       "mobileApps": "تطبيقات الجوال",
       "research": "البحث",
       "downloadForAndroid": "تحميل لنظام Android",
+      "downloadForAndroidComingSoon": "Google Play — قريبًا",
       "downloadForiOS": "تحميل لنظام iOS"
     },
     "download": {
@@ -73,8 +74,8 @@
       "subheading": "أرسل الإكراميات واستقبلها وأدر كل شيء أثناء تنقلك.",
       "iosTop": "حمّله من",
       "iosBottom": "App Store",
-      "androidTop": "احصل عليه من",
-      "androidBottom": "Google Play"
+      "androidTop": "Google Play",
+      "androidBottom": "قريبًا"
     },
     "tagline": "إكراميات رقمية، ببساطة",
     "followUs": "تابعنا",

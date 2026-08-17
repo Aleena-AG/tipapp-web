@@ -9,6 +9,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import heroTipScan from "@/assets/images/landing/hero-tip-scan.png";
+import { APP_STORE_URL } from "@/utils/constants/FooterData";
 
 type FeatureCard = {
   title: string;
@@ -263,13 +264,15 @@ export const LandingHero = () => {
             The simple way to get paid for great service and get tipped by your
             customers.
           </p>
-          <button
-            type="button"
+          <a
+            href={APP_STORE_URL}
+            target="_blank"
+            rel="noreferrer"
             className="landing-download-btn ta-animate-pop relative z-20 mt-18 inline-flex min-h-[48px] items-center justify-center gap-8 rounded-full bg-[#B3000C] px-28 py-12 text-[15px] poppins-semibold text-white shadow-[0_12px_32px_rgba(179,0,12,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#99000A] hover:shadow-[0_16px_36px_rgba(179,0,12,0.42)] sm:mt-16 sm:min-h-[56px] sm:rounded-[14px] sm:px-36 sm:py-14 sm:text-[17px]"
             style={{ animationDelay: "280ms" }}
           >
             Download App
-          </button>
+          </a>
         </div>
 
         {/* Mobile / tablet illustration + tip toasts */}

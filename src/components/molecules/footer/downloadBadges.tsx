@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { APP_STORE_URL, PLAY_STORE_URL } from "@/utils/constants/FooterData";
+import { APP_STORE_URL, PLAY_STORE_COMING_SOON } from "@/utils/constants/FooterData";
 
 const AppleGlyph = () => (
   <svg
@@ -38,27 +38,47 @@ const StoreBadge = ({
   glyph,
   top,
   bottom,
+  comingSoon = false,
 }: {
-  href: string;
+  href?: string;
   glyph: React.ReactNode;
   top: string;
   bottom: string;
-}) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noreferrer"
-    className="flex h-10 min-w-[128px] items-center gap-2 rounded-lg border border-white/10 bg-gradient-to-b from-[#1c1c22] to-[#0b0b0f] px-3 text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]/50"
-  >
-    {glyph}
-    <span className="flex flex-col items-start leading-none rtl:items-end">
-      <span className="poppins-regular text-[9px] uppercase tracking-wide text-white/60">
-        {top}
+  comingSoon?: boolean;
+}) => {
+  const className =
+    "flex h-10 min-w-[128px] items-center gap-2 rounded-lg border border-white/10 bg-gradient-to-b from-[#1c1c22] to-[#0b0b0f] px-3 text-white shadow-sm";
+  const content = (
+    <>
+      {glyph}
+      <span className="flex flex-col items-start leading-none rtl:items-end">
+        <span className="poppins-regular text-[9px] uppercase tracking-wide text-white/60">
+          {top}
+        </span>
+        <span className="poppins-semibold text-[13px] leading-tight">{bottom}</span>
       </span>
-      <span className="poppins-semibold text-[13px] leading-tight">{bottom}</span>
-    </span>
-  </a>
-);
+    </>
+  );
+
+  if (comingSoon) {
+    return (
+      <div className={`${className} cursor-default opacity-70`} aria-label={`${top} ${bottom}`}>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={`${className} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]/50`}
+    >
+      {content}
+    </a>
+  );
+};
 
 const DownloadBadges = () => {
   const { t } = useTranslation();
@@ -72,10 +92,10 @@ const DownloadBadges = () => {
         bottom={t("footer.download.iosBottom")}
       />
       <StoreBadge
-        href={PLAY_STORE_URL}
         glyph={<PlayGlyph />}
         top={t("footer.download.androidTop")}
         bottom={t("footer.download.androidBottom")}
+        comingSoon={PLAY_STORE_COMING_SOON}
       />
     </div>
   );

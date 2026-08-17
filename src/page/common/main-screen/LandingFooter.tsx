@@ -4,7 +4,7 @@ import { Facebook, Instagram } from "lucide-react";
 import appLogo from "@/assets/images/appLogo.png";
 import footerMascot from "@/assets/images/landing/footer-mascot.png";
 import qrCode from "@/assets/svg/QRCode.svg";
-import { APP_STORE_URL, PLAY_STORE_URL } from "@/utils/constants/FooterData";
+import { APP_STORE_URL } from "@/utils/constants/FooterData";
 
 const QUICK_LINKS = [
   { label: "How It Works", href: "#how-it-works" },
@@ -97,24 +97,45 @@ function StoreBadge({
   top,
   bottom,
   glyph,
+  comingSoon = false,
 }: {
-  href: string;
+  href?: string;
   top: string;
   bottom: string;
   glyph: ReactNode;
+  comingSoon?: boolean;
 }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="flex h-[44px] w-full min-w-[168px] items-center gap-10 rounded-[10px] bg-[#1A1A2E] px-14 text-white shadow-[0_8px_20px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:bg-[#0F0F18]"
-    >
+  const className =
+    "flex h-[44px] w-full min-w-[168px] items-center gap-10 rounded-[10px] bg-[#1A1A2E] px-14 text-white shadow-[0_8px_20px_rgba(0,0,0,0.18)]";
+  const content = (
+    <>
       {glyph}
       <span className="flex flex-col items-start leading-none">
         <span className="text-[10px] text-white/70 poppins-medium">{top}</span>
         <span className="mt-2 text-[14px] poppins-semibold">{bottom}</span>
       </span>
+    </>
+  );
+
+  if (comingSoon) {
+    return (
+      <div
+        className={`${className} cursor-default opacity-70`}
+        aria-label={`${top} ${bottom}`}
+      >
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={`${className} transition hover:-translate-y-0.5 hover:bg-[#0F0F18]`}
+    >
+      {content}
     </a>
   );
 }
@@ -207,10 +228,10 @@ export const LandingFooter = () => {
               glyph={<AppleGlyph />}
             />
             <StoreBadge
-              href={PLAY_STORE_URL}
-              top="GET IT ON"
-              bottom="Google Play"
+              top="Google Play"
+              bottom="Coming Soon"
               glyph={<PlayGlyph />}
+              comingSoon
             />
           </div>
         </div>

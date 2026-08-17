@@ -4,11 +4,9 @@
 // import youTubeIcon from "../../assets/svg/youtube.svg";
 import LinkedInIcon from "../../assets/svg/linkedin.svg";
 
-// TODO: replace the Android package id with the real Play Store listing once published.
 export const APP_STORE_URL =
-  "https://apps.apple.com/us/app/tip-app/id6557064561";
-export const PLAY_STORE_URL =
-  "https://play.google.com/store/apps/details?id=com.TipTapp";
+  "https://apps.apple.com/app/tip-app/id6557064561";
+export const PLAY_STORE_COMING_SOON = true;
 
 export const FooterData = [
   {
@@ -16,7 +14,7 @@ export const FooterData = [
     links: [
       { typo: "footer.moreFromTipTapp.newsletters", href: "/view-more/newsletter" },
       { typo: "footer.moreFromTipTapp.downloadForiOS", href: APP_STORE_URL, blank: true },
-      { typo: "footer.moreFromTipTapp.downloadForAndroid", href: PLAY_STORE_URL, blank: true },
+      { typo: "footer.moreFromTipTapp.downloadForAndroidComingSoon", href: "#" },
       // { typo: "footer.moreFromTipTapp.magazine", href: "/magazine" },
       // { typo: "footer.moreFromTipTapp.mobileApps", href: "/mobile-apps" },
       // { typo: "footer.moreFromTipTapp.research", href: "/research" },
