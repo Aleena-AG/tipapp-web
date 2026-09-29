@@ -227,11 +227,29 @@ export const useForgotPassword = () => {
       handleRedirectToOTP(email);
     },
     onError: (error: any) => {
-      console.error(
-        "Forgot password error:",
-        error.response?.data?.message || error.message
-      );
-      // Do not show "user not found" — keep messaging generic.
+      const status = error?.response?.status;
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Something went wrong";
+
+      console.error("Forgot password error:", message);
+
+      // Anti-enumeration only: treat "user not found" style responses as success UX.
+      // Do NOT redirect on server/network failures (5xx, timeouts) — OTP was never sent.
+      const isServerOrNetworkFailure =
+        !status ||
+        status >= 500 ||
+        error?.code === "ECONNABORTED" ||
+        error?.message?.toLowerCase?.().includes("timeout");
+
+      if (isServerOrNetworkFailure) {
+        ToastProvider.error(
+          "Unable to send OTP right now. Please try again in a moment."
+        );
+        return;
+      }
+
       ToastProvider.success(
         "If an account exists for this email, an OTP has been sent."
       );
