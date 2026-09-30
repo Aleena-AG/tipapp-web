@@ -179,142 +179,97 @@ const SPQRCodeContainer = () => {
     context.stroke();
   };
 
+  const loadCanvasImage = (src: string) =>
+    new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error("Failed to load image"));
+      image.src = src;
+    });
+
+  const paintQrPoster = async (
+    canvas: HTMLCanvasElement,
+    names: { firstName: string; lastName: string }
+  ) => {
+    const context = canvas.getContext("2d");
+    if (!context || !qrCodeDataUrl) return;
+
+    const width = 640;
+    const height = 900;
+    canvas.width = width;
+    canvas.height = height;
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, height);
+
+    context.fillStyle = "#111111";
+    context.textAlign = "center";
+    context.font = "500 36px Poppins, sans-serif";
+    context.fillText(names.firstName, width / 2, 88);
+    context.font = "700 36px Poppins, sans-serif";
+    context.fillText(names.lastName, width / 2, 136);
+
+    context.strokeStyle = "#E8E8E8";
+    context.lineWidth = 1;
+    context.beginPath();
+    context.moveTo(48, 168);
+    context.lineTo(width - 48, 168);
+    context.stroke();
+
+    const logo = await loadCanvasImage(Logo);
+    const logoSize = 148;
+    const logoX = (width - logoSize) / 2;
+    const logoY = 196;
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
+    context.drawImage(logo, logoX, logoY, logoSize, logoSize);
+
+    const qrImage = await loadCanvasImage(qrCodeDataUrl);
+    const qrSize = 320;
+    const platePad = 16;
+    const qrX = (width - qrSize) / 2;
+    const qrY = 372;
+    context.fillStyle = "#ffffff";
+    context.fillRect(
+      qrX - platePad,
+      qrY - platePad,
+      qrSize + platePad * 2,
+      qrSize + platePad * 2
+    );
+    context.imageSmoothingEnabled = false;
+    context.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+    context.imageSmoothingEnabled = true;
+    drawRoundedRect(
+      context,
+      qrX - platePad,
+      qrY - platePad,
+      qrSize + platePad * 2,
+      qrSize + platePad * 2,
+      12,
+      "#111111",
+      3
+    );
+
+    context.fillStyle = "#111111";
+    context.font = "italic 700 30px Poppins, sans-serif";
+    context.textAlign = "center";
+    context.fillText("Scan Here", width / 2, qrY + qrSize + platePad + 52);
+
+    drawRoundedRect(context, 16, 16, width - 32, height - 32, 18, "#111111", 3);
+  };
+
   const handleDownloadQRCode = () => {
     const canvas = canvasRef.current;
     if (!canvas || !qrCodeDataUrl) return;
 
-    const context = canvas.getContext("2d");
-    if (!context) return;
-
-    const setCanvasDimensions = () => {
-      canvas.width = 500;
-      canvas.height = 650;
-    };
-
-    const fillBackground = () => {
-      context.fillStyle = "#ffffff";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-    };
-
-    const drawUserDetails = () => {
-      context.fillStyle = "#000000";
-      context.font = "35px poppins";
-      context.textAlign = "center";
-      context.fillText(firstName, canvas.width / 2, 120);
-      context.font = "bold 35px poppins";
-      context.fillText(lastName, canvas.width / 2, 160);
-    };
-
-    const drawLogo = () => {
-      return new Promise<void>((resolve) => {
-        const appLogo = new Image();
-        appLogo.src = Logo;
-        appLogo.onload = () => {
-          const scaledWidth = appLogo.width * 2;
-          const scaledHeight = appLogo.height * 2;
-          const text = "TipTapp";
-          const textWidth = context.measureText(text).width;
-          const totalWidth = scaledWidth + 40 + textWidth;
-          const logoX = (canvas.width - totalWidth) / 2;
-          const logoY = 180;
-
-          context.drawImage(appLogo, logoX, logoY, scaledWidth, scaledHeight);
-          context.fillStyle = "#000000";
-          context.textAlign = "left";
-          context.font = "bold 43px poppins";
-          context.fillText(
-            text,
-            logoX + scaledWidth + 4,
-            logoY + scaledHeight / 2 + 15
-          );
-          resolve();
-        };
-      });
-    };
-
-    const drawQRCode = () => {
-      return new Promise<void>((resolve) => {
-        const qrCodeImg = new Image();
-        qrCodeImg.src = qrCodeDataUrl;
-        qrCodeImg.onload = () => {
-          const qrSize = 250;
-          const borderWidth = 2;
-          const borderColor = "#000000";
-          const borderRadius = 5;
-          const qrX = (canvas.width - qrSize) / 2;
-          const qrY = 290;
-
-          context.drawImage(qrCodeImg, qrX, qrY, qrSize, qrSize);
-          drawRoundedRect(
-            context,
-            qrX,
-            qrY,
-            qrSize,
-            qrSize,
-            borderRadius,
-            borderColor,
-            borderWidth
-          );
-
-          context.fillStyle = "#000000";
-          context.font = "italic bold 28px poppins";
-          context.textAlign = "center";
-          const textX = canvas.width / 2;
-          const textY = qrY + qrSize + 50;
-          context.fillText(
-            "Scan",
-            textX - context.measureText(" Here").width / 2,
-            textY
-          );
-          context.font = "italic 28px poppins";
-          context.fillText(
-            "Here",
-            textX + context.measureText("Scan ").width / 2,
-            textY
-          );
-          resolve();
-        };
-      });
-    };
-
-    const drawCanvasBorder = () => {
-      const borderThickness = 2;
-      const padding = 10;
-      const borderRadius = 5;
-      const x = padding;
-      const y = padding;
-      const width = canvas.width - 2 * padding;
-      const height = canvas.height - 2 * padding;
-
-      drawRoundedRect(
-        context,
-        x,
-        y,
-        width,
-        height,
-        borderRadius,
-        "#000000",
-        borderThickness
-      );
-    };
-
     const drawAndDownload = async () => {
       await document.fonts.ready;
-      setCanvasDimensions();
-      fillBackground();
-      drawUserDetails();
-      await drawLogo();
-      await drawQRCode();
-      drawCanvasBorder();
+      await paintQrPoster(canvas, { firstName, lastName });
 
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          const link = document.createElement("a");
-          link.download = toQrDownloadFileName(fullName);
-          link.href = canvas.toDataURL("image/png");
-          link.click();
-        }, 1000);
-      });
+      const link = document.createElement("a");
+      link.download = toQrDownloadFileName(fullName);
+      link.href = canvas.toDataURL("image/png");
+      link.click();
     };
 
     void drawAndDownload();
@@ -325,49 +280,11 @@ const SPQRCodeContainer = () => {
     if (!canvas || !qrCodeDataUrl) return;
 
     const shareQRCode = async () => {
-      const context = canvas.getContext("2d");
-      if (!context) return;
-
-      canvas.width = 500;
-      canvas.height = 650;
-      context.fillStyle = "#ffffff";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-
-      context.fillStyle = "#000000";
-      context.font = "35px poppins";
-      context.textAlign = "center";
-      context.fillText(currentUser?.FirstName || "", canvas.width / 2, 120);
-      context.font = "bold 35px poppins";
-      context.fillText(currentUser?.LastName || "", canvas.width / 2, 160);
-
-      await new Promise<void>((resolve) => {
-        const appLogo = new Image();
-        appLogo.src = Logo;
-        appLogo.onload = () => {
-          const scaledWidth = appLogo.width * 2;
-          const scaledHeight = appLogo.height * 2;
-          const logoX = (canvas.width - scaledWidth) / 2;
-          const logoY = 180;
-          context.drawImage(appLogo, logoX, logoY, scaledWidth, scaledHeight);
-          resolve();
-        };
+      await document.fonts.ready;
+      await paintQrPoster(canvas, {
+        firstName: currentUser?.FirstName || "",
+        lastName: currentUser?.LastName || "",
       });
-
-      await new Promise<void>((resolve) => {
-        const qrCodeImg = new Image();
-        qrCodeImg.src = qrCodeDataUrl;
-        qrCodeImg.onload = () => {
-          const qrSize = 250;
-          const qrX = (canvas.width - qrSize) / 2;
-          const qrY = 290;
-          context.drawImage(qrCodeImg, qrX, qrY, qrSize, qrSize);
-          resolve();
-        };
-      });
-
-      context.strokeStyle = "#000000";
-      context.lineWidth = 2;
-      context.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
 
       const dataURL = canvas.toDataURL("image/png");
       const byteString = atob(dataURL.split(",")[1]);
