@@ -17,6 +17,11 @@ import { CurrencyContext } from "@/App";
 import { useCreateTipPaymentIntent } from "@/api/managePayments";
 import { setPendingTipPayment } from "@/utils/pendingTipStorage";
 import { useWithdrawAndTipLimit } from "@/api/tipManagement";
+import { minimumTipForCurrency } from "@/currency/catalog";
+import { useCurrencyCatalog } from "@/currency/useLocationCurrency";
+import { normalizeCurrencyCode } from "@/currency/countryCurrency";
+import { resolveMerchantCountry } from "@/currency/merchantCountry";
+import { formatMoney } from "@/currency/format";
 import { useTranslation } from "react-i18next";
 import { useDisableButton } from "@/components/atoms/buttons/DisableButtonContext";
 import {
@@ -37,40 +42,66 @@ import { AiFillStar } from "react-icons/ai";
 import TipSendMascot from "@/assets/images/tp-send.png";
 import TipJarMascot from "@/assets/images/tip-jar.png";
 
+function useActiveTipCurrency() {
+  useCurrencyCatalog();
+  const { currency: contextCurrency } = useContext(CurrencyContext);
+  const { data: tipLimitData } = useWithdrawAndTipLimit();
+  const limit = tipLimitData?.tippingLimit ?? {};
+  const settingsCurrency = normalizeCurrencyCode(
+    limit.currency ||
+      limit.Currency ||
+      tipLimitData?.currency ||
+      tipLimitData?.displayCurrency
+  );
+  const currency = settingsCurrency || contextCurrency || "GBP";
+  const catalogMin = minimumTipForCurrency(currency);
+  const rawMin = Number(limit.minimumAmount);
+  const rawMax = Number(limit.maximumAmount);
+  const minTip = Math.max(
+    Number.isFinite(rawMin) ? rawMin : catalogMin,
+    catalogMin
+  );
+  const maxTip = Number.isFinite(rawMax) ? rawMax : undefined;
+  return { currency, minTip, maxTip };
+}
+
 const TipAmountInput = (props: any & { t: any }) => {
-  const [value, setValue] = useState("0.00");
   const { setDisableButton } = useDisableButton();
-  const { data: TipLimitData } = useWithdrawAndTipLimit();
-  const { currency } = useContext(CurrencyContext);
-  const maxTip = TipLimitData?.tippingLimit.maximumAmount;
+  const { currency, minTip, maxTip } = useActiveTipCurrency();
+  const [value, setValue] = useState(minTip.toFixed(2));
 
   useEffect(() => {
-    setValue("1.00");
-    props.onChange(1.00);
-    setDisableButton(false);
-  }, []);
+    setValue((current) => {
+      const parsed = parseFloat(current);
+      let next = Number.isFinite(parsed) ? parsed : minTip;
+      if (next < minTip) next = minTip;
+      if (maxTip != null && next > maxTip) next = maxTip;
+      const fixed = next.toFixed(2);
+      props.onChange(parseFloat(fixed));
+      setDisableButton(false);
+      return fixed;
+    });
+  }, [minTip, maxTip]);
 
   const [, setIsEditable] = useState(false);
 
   const incrementValue = () => {
     const newValue = (parseFloat(value) + 1).toFixed(2);
 
-    if (parseFloat(newValue) <= maxTip) {
+    if (maxTip == null || parseFloat(newValue) <= maxTip) {
       setValue(newValue);
       setIsEditable(true);
       props.onChange(parseFloat(newValue));
       setDisableButton(false);
     } else {
-      ToastProvider.error(
-        `Maximum amount should be ${maxTip?.toFixed(2)} ${currency}`
-      );
+      ToastProvider.error(`Maximum amount should be ${formatMoney(maxTip, currency)}`);
       setDisableButton(true);
     }
   };
 
   const decrementValue = () => {
     const newValue = (parseFloat(value) - 1).toFixed(2);
-    if (parseFloat(newValue) >= 1) {
+    if (parseFloat(newValue) >= minTip) {
       setValue(newValue);
       setIsEditable(true);
       props.onChange(parseFloat(newValue));
@@ -86,12 +117,11 @@ const TipAmountInput = (props: any & { t: any }) => {
       setIsEditable(true);
       props.onChange(parseFloat(inputValue));
 
-      // Check validation and set button state
-      if (parseFloat(inputValue) < 1) {
+      if (parseFloat(inputValue) < minTip) {
         setDisableButton(true);
-      } else if (parseFloat(inputValue) > maxTip) {
+      } else if (maxTip != null && parseFloat(inputValue) > maxTip) {
         ToastProvider.error(
-          `Maximum amount should be ${maxTip?.toFixed(2)} ${currency}`
+          `Maximum amount should be ${formatMoney(maxTip, currency)}`
         );
         setDisableButton(true);
       } else {
@@ -117,11 +147,11 @@ const TipAmountInput = (props: any & { t: any }) => {
       <div className="mt-12 flex w-full items-center justify-between gap-16">
         <button
           className={`flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-[16px] border border-[#E4EDF5] bg-card text-[32px] leading-none text-[#0B538D] transition-colors hover:bg-[#EAF3FA] ${
-            parseFloat(value) <= 1 ? "cursor-not-allowed opacity-40" : ""
+            parseFloat(value) <= minTip ? "cursor-not-allowed opacity-40" : ""
           }`}
           onClick={decrementValue}
           type="button"
-          disabled={parseFloat(value) <= 1}
+          disabled={parseFloat(value) <= minTip}
         >
           <span className="-mt-4">−</span>
         </button>
@@ -162,7 +192,7 @@ const QrResultContainer = () => {
   const { disablebutton } = useDisableButton();
 
   const [isTipScreenOpen, setIsTipScreenOpen] = useState(false);
-  const { currency } = useContext(CurrencyContext);
+  const { currency, minTip } = useActiveTipCurrency();
   const {
     mutate: getUserDetailsMutate,
     isSuccess: isGetUserDetailsSuccess,
@@ -222,8 +252,10 @@ const QrResultContainer = () => {
       ToastProvider.error("Rating cannot be 0");
       return;
     }
-    if (values.tip < 1) {
-      ToastProvider.error(`Please add an amount of at least 1.00 ${currency}`);
+    if (values.tip < minTip) {
+      ToastProvider.error(
+        `Please add an amount of at least ${formatMoney(minTip, currency)}`
+      );
       return;
     }
     const tipData = {
@@ -245,6 +277,7 @@ const QrResultContainer = () => {
         amount: amountInCents,
         currency: currency.toLowerCase(),
         serviceProviderId: id,
+        merchantCountry: resolveMerchantCountry(currency),
       });
 
       setPendingTipPayment({

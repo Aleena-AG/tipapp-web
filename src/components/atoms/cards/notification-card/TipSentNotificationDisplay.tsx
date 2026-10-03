@@ -2,7 +2,7 @@ import { Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ProfileAvatar } from "@/components/atoms/images/ProfileAvatar";
 import { PrimaryTypo } from "@/components/atoms/typo/primaryTypo";
-import { formatNumber } from "@/hooks/formatters";
+import { formatMoney } from "@/currency/format";
 import { TipSentDetails } from "@/utils/notificationUtils";
 
 interface Props {
@@ -17,12 +17,7 @@ const TipSentNotificationDisplay = ({
   isUnread = false,
 }: Props) => {
   const { t } = useTranslation();
-  const formattedAmount = formatNumber(
-    details.amount,
-    true,
-    1,
-    details.currency
-  );
+  const formattedAmount = formatMoney(details.amount, details.currency);
 
   if (variant === "compact") {
     return (

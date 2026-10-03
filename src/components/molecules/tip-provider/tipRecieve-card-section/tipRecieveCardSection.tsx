@@ -1,5 +1,5 @@
  
-import { useState, useEffect, useRef, useMemo, useContext } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useGetTipHistoryDetailsByTipper } from "@/api/tipManagement";
@@ -7,8 +7,9 @@ import TipRecievedCard from "@/components/atoms/cards/tip-recieved-card/tipRecie
 import SpinLoader from "@/components/atoms/laoder/spin-loader";
 import NoDataFoundSection from "../../common/no-data-found/NoDataFoundSection";
 import { useTranslation } from "react-i18next";
-import { formatNumber } from "@/hooks/formatters";
-import { CurrencyContext } from "@/App";
+import { formatMoney, formatBalanceLabel } from "@/currency/format";
+import { useUser } from "@/contexts/UserContext";
+import { readDisplayFinancial } from "@/currency/financials";
 import { TrendingUp, Users, ChevronRight, Wallet } from "lucide-react";
 import TipSendMascot from "@/assets/images/tp-send.png";
 import { handleScrollTop } from "@/hooks/hooks";
@@ -16,7 +17,8 @@ import { handleScrollTop } from "@/hooks/hooks";
 const ViewHistoryCardSection = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { currency } = useContext(CurrencyContext);
+  const { userDetails } = useUser();
+  const tipsGiven = readDisplayFinancial(userDetails, "totalTipsGiven");
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetTipHistoryDetailsByTipper();
   const [isScrollable, setIsScrollable] = useState(false);
@@ -28,15 +30,6 @@ const ViewHistoryCardSection = () => {
   );
 
   const totalItems = allItems.length;
-
-  const totalAmount = useMemo(
-    () =>
-      allItems.reduce(
-        (sum, tip) => sum + parseFloat(tip.Amount || tip.amount || "0"),
-        0
-      ),
-    [allItems]
-  );
 
   const tipsThisMonth = useMemo(
     () =>
@@ -104,7 +97,7 @@ const ViewHistoryCardSection = () => {
                 {t("common.totalTipsGiven")}
               </p>
               <p className="poppins-semibold mt-2 text-[20px] text-white sm:mt-4 sm:text-[20px]">
-                {currency}&nbsp;{formatNumber(totalAmount)}
+                {formatBalanceLabel(tipsGiven.amount, tipsGiven.currency)}
               </p>
             </div>
           </div>
@@ -127,7 +120,7 @@ const ViewHistoryCardSection = () => {
               {t("common.tipsThisMonth")}
             </p>
             <p className="poppins-semibold mt-4 text-[18px] text-app sm:text-[20px]">
-              {currency}&nbsp;{formatNumber(tipsThisMonth)}
+              {formatMoney(tipsThisMonth)}
             </p>
           </div>
           {/* Ready to Tip — desktop only (mobile uses fixed bottom bar) */}

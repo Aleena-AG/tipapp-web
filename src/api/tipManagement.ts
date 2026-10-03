@@ -7,6 +7,10 @@ import {
   useQueryClient,
   UseQueryResult,
 } from "react-query";
+import { useUser } from "@/contexts/UserContext";
+import { useLocationCurrencyState } from "@/currency/useLocationCurrency";
+import { tipSettingsCountryCode } from "@/currency/tipSettingsCountry";
+import { extractUserDisplayCurrency } from "@/currency/userCurrency";
 import authFetch from "./axiosInterceptor";
 import ToastProvider from "@/providers/ToastProvider";
 import { CURRENT_USER_QUERY_KEY, refreshUserBalanceAfterWithdrawal } from "@/hooks/useStripeOnboardingStatus";
@@ -441,29 +445,39 @@ export const useGetBalanceTransfers =
   };
 
 
-export const useWithdrawAndTipLimit =()=>{
-    return useQuery({
-      queryKey: ["get_withdraw_limit"],
-      queryFn: async () => {
-        return await authFetch.get(`/settings-gateway/tip-settings`);
-      },
-      select(data) {
-        return data?.data?.data;
-      },
-    });
-  }
+export const useWithdrawAndTipLimit = () => {
+  const location = useLocationCurrencyState();
+  const { userDetails } = useUser();
+  const countryCode = tipSettingsCountryCode(userDetails);
+  const userCurrency = extractUserDisplayCurrency(userDetails);
+  const userId = userDetails?.id ?? userDetails?.KeyCloakID ?? "";
+  const userCountryCode =
+    (userDetails as { countryCode?: string; CountryCode?: string } | undefined)
+      ?.countryCode ||
+    (userDetails as { CountryCode?: string } | undefined)?.CountryCode ||
+    "";
 
+  return useQuery({
+    queryKey: [
+      "get_tip_settings",
+      countryCode ?? "",
+      location.displayCurrency,
+      location.countryCode,
+      userId,
+      userDetails?.Country ?? "",
+      userCountryCode,
+      userCurrency,
+    ],
+    queryFn: async () => {
+      return await authFetch.get("/settings-gateway/tip-settings", {
+        params: countryCode ? { countryCode } : undefined,
+      });
+    },
+    select(data) {
+      return data?.data?.data ?? data?.data;
+    },
+  });
+};
 
-  export const useTipinglimit =()=>{
-
-    return useQuery({
-      queryKey: ["get_tip_limit"],
-      queryFn: async () => {
-        return await authFetch.get(`/settings-gateway/tip-settings`);
-      },
-      select(data) {
-        return data?.data?.data;
-      },
-    });
-  }
+export const useTipinglimit = useWithdrawAndTipLimit;
 

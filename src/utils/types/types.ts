@@ -62,6 +62,7 @@ export interface TipItemType {
   NetAmount?: string;
   NetAmountInAED?: string;
   Currency?: string;
+  displayCurrency?: string;
   amount: string;
   TipDate: string;
   date: string;
@@ -137,6 +138,15 @@ export interface UserDetails {
   TotalWithdrawalOriginal?: number;
   ConnectedBankAccountId?: string;
   isOnboarded?: boolean;
+  currency?: string;
+  displayCurrency?: string;
+  countryCode?: string;
+  CountryCode?: string;
+  financials?: {
+    balance?: { currency?: string; amount?: number };
+    totalTips?: { currency?: string; amount?: number };
+    totalTipsGiven?: { currency?: string; amount?: number };
+  };
 }
 
 export interface UserRole {
@@ -239,6 +249,7 @@ export interface WithdrawalInvoice {
   TotalAmount: number;
   WithdrawAmountInAED: number;
   Currency: string;
+  displayCurrency?: string;
   StripeTransferId?: string;
   Status: string;
   StripePayoutId?: string;

@@ -9,16 +9,15 @@ import SwitchAccount from "@/components/molecules/common/switch-account/switchAc
 import { handleScrollTop } from "@/hooks/hooks";
 import { useTranslation } from "react-i18next";
 import { useGetUserDetails } from "@/api/authApi";
-import {
-  useGetBalanceAmount,
-  useGetTipHistoryDetailsByTipper,
-} from "@/api/tipManagement";
+import { useGetTipHistoryDetailsByTipper } from "@/api/tipManagement";
+import { useUser } from "@/contexts/UserContext";
+import { readDisplayFinancial } from "@/currency/financials";
 import ToastProvider from "@/providers/ToastProvider";
 import BounceLoader from "react-spinners/ClipLoader";
 
 import CharacterTipper from "@/assets/images/scan.png";
 import { CurrencyContext } from "@/App";
-import { formatNumber } from "@/hooks/formatters";
+import { formatBalanceLabel, formatMoney } from "@/currency/format";
 import {
   ChevronRight,
   Wallet,
@@ -44,9 +43,9 @@ const TPQRCodeContainer = () => {
 
   const navigate = useNavigate();
   const { currency } = useContext(CurrencyContext);
+  const { userDetails, isLoading: isUserLoading } = useUser();
+  const tipsGiven = readDisplayFinancial(userDetails, "totalTipsGiven");
 
-  const { data: tipBalance, isLoading: isBalanceLoading } =
-    useGetBalanceAmount(currency);
   const { data: tipHistoryData, isLoading: isTipsLoading } =
     useGetTipHistoryDetailsByTipper();
 
@@ -366,19 +365,19 @@ const TPQRCodeContainer = () => {
 
             <div>
               <p className="poppins-medium text-[13px] text-[#6F7682] dark:text-slate-400">
-                {t("common.accountBalance")}
+                {t("common.totalTipsGiven")}
               </p>
 
-              {isBalanceLoading ? (
+              {isUserLoading ? (
                 <BounceLoader color="#0B538D" loading size={16} />
               ) : (
                 <h3 className="poppins-semibold mt-4 text-[24px] leading-none text-[#0B538D] dark:text-[#93C5FD]">
-                  {currency} {formatNumber(tipBalance?.balance ?? 0)}
+                  {formatBalanceLabel(tipsGiven.amount, tipsGiven.currency || currency)}
                 </h3>
               )}
 
               <p className="poppins-regular mt-4 text-[12px] text-[#9A9A9A] dark:text-slate-500">
-                {t("common.availableToUse")}
+                {t("common.viewYourPastTips")}
               </p>
             </div>
           </div>
@@ -400,7 +399,7 @@ const TPQRCodeContainer = () => {
                 <BounceLoader color="#1E9E6A" loading size={16} />
               ) : (
                 <h3 className="poppins-semibold mt-4 text-[24px] leading-none text-[#12855A] dark:text-emerald-300">
-                  {currency} {formatNumber(tipsThisMonth)}
+                  {formatMoney(tipsThisMonth, currency)}
                 </h3>
               )}
 

@@ -52,7 +52,6 @@ const LoginSuccess = () => {
       // Persist session from OAuth callback (OTP not required)
       localStorage.setItem("token", token);
       localStorage.setItem("userId", userid);
-      localStorage.setItem("selectedCurrency", "GBP");
 
       if (email) {
         localStorage.setItem("email", email);

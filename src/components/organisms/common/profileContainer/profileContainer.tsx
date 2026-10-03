@@ -1,7 +1,7 @@
 import { useUser } from "@/contexts/UserContext";
 import { PrimaryButton } from "@/components/atoms/buttons/primaryButton";
 import { ProfileDetailsSection } from "@/components/molecules/profile/profile-details-section/profileDetailsSection";
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState, useContext, type MouseEvent } from "react";
 import EditIcon from "@/assets/svg/editIcon-profile.svg";
 import EditProfileDetailsSection from "@/components/molecules/profile/profile-details-section/editProfileDetailsSection";
 import { UserDetails } from "@/utils/types/types";
@@ -17,6 +17,7 @@ import { useDeleteCurrentUser } from "@/api/userDetails";
 import { useGetBalanceAmount } from "@/api/tipManagement";
 import { useQueryClient } from "react-query";
 import { Trash2 } from "lucide-react";
+import { CurrencyContext } from "@/App";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,13 +35,14 @@ const ProfileContainer = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const { userDetails, isLoading, refetch } = useUser();
+  const { currency } = useContext(CurrencyContext);
   const { getGoogleProfileData, handleLogout } = useAuth();
   const queryClient = useQueryClient();
   const {
     data: tipBalance,
     isLoading: isBalanceLoading,
     refetch: refetchBalance,
-  } = useGetBalanceAmount("GBP");
+  } = useGetBalanceAmount(currency);
 
   // Use localStorage data if available, otherwise fallback to API data
   const currentUserData = localUserData || userDetails;

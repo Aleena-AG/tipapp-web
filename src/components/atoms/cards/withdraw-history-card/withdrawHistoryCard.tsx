@@ -4,24 +4,9 @@ import { PrimaryTypo } from "@/components/atoms/typo/primaryTypo";
 import { SecondaryTypo } from "@/components/atoms/typo/secondaryTypo";
 import SpinLoader from "@/components/atoms/laoder/spin-loader";
 import { getDateValueFormated } from "@/hooks/hooks";
-import { formatNumber } from "@/hooks/formatters";
+import { formatMoney } from "@/currency/format";
 import { FaArrowDown } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-
-function getCurrencySymbol(currency?: string): string {
-  switch ((currency || "GBP").toUpperCase()) {
-    case "GBP":
-      return "£";
-    case "USD":
-      return "$";
-    case "EUR":
-      return "€";
-    case "AED":
-      return "AED ";
-    default:
-      return "£";
-  }
-}
 
 interface Props {
   data: any;
@@ -70,7 +55,6 @@ const WithdrawHistoryCard = ({
       <div className="flex flex-col gap-10">
         {data?.pages.map((page: any, pageIndex: number) =>
           page.items.map((item: any, _index: number) => {
-            const currencySymbol = getCurrencySymbol(item.Currency);
             const createdAt = item.createdAt || item.CreatedAt || "N.A";
             const status = item.Status?.toLowerCase();
 
@@ -112,11 +96,9 @@ const WithdrawHistoryCard = ({
                 <div className="shrink-0 text-right">
                   <PrimaryTypo
                     typo={
-                      formatNumber(
+                      formatMoney(
                         item.TotalAmount,
-                        true,
-                        1,
-                        currencySymbol
+                        item.displayCurrency || item.Currency
                       ) || "N.A"
                     }
                     styles="!text-[15px] poppins-semibold text-[#9E2A2B]"

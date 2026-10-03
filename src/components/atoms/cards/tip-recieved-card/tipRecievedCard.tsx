@@ -8,7 +8,7 @@ import {
 } from "@/utils/imageUtils";
 import { TipItemType } from "@/utils/types/types";
 import { getDateValueFormated } from "@/hooks/hooks";
-import { formatNumber } from "@/hooks/formatters";
+import { formatMoney } from "@/currency/format";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -139,11 +139,9 @@ const TipRecievedCard = (props: Props) => {
                   {/* Amount + Method — mobile */}
                   <div className="flex shrink-0 flex-col items-end gap-4 lg:hidden">
                     <span className="poppins-semibold text-[14px] text-[#0B538D] dark:text-[#93C5FD]">
-                      {formatNumber(
-                        item.Amount,
-                        true,
-                        1,
-                        item.Currency || "GBP"
+                      {formatMoney(
+                        item.Amount || item.amount,
+                        item.displayCurrency || item.Currency
                       )}
                     </span>
                     <PaymentMethodBadge type={item.PaymentMethodType} />
@@ -151,11 +149,9 @@ const TipRecievedCard = (props: Props) => {
 
                   {/* Amount — desktop */}
                   <span className="poppins-semibold hidden text-[14px] text-[#0B538D] lg:block lg:text-right dark:text-[#93C5FD]">
-                    {formatNumber(
-                      item.Amount,
-                      true,
-                      1,
-                      item.Currency || "GBP"
+                    {formatMoney(
+                      item.Amount || item.amount,
+                      item.displayCurrency || item.Currency
                     )}
                   </span>
 

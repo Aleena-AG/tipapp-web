@@ -9,7 +9,7 @@ import {
   resolveProfileImageSrc,
 } from "@/utils/imageUtils";
 import { getDateValueFormated } from "@/hooks/hooks";
-import { formatNumber } from "@/hooks/formatters";
+import { formatMoney } from "@/currency/format";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -98,14 +98,10 @@ const TipRecievedCardServiceprovider = ({
               </div>
               <div className="w-fit">
                 <PrimaryTypo
-                  typo={`${
-                    formatNumber(
-                      item.NetAmount || item.Amount,
-                      true,
-                      1,
-                      item.Currency || "GBP"
-                    ) || "N.A"
-                  }`}
+                  typo={formatMoney(
+                    item.NetAmount || item.Amount,
+                    item.displayCurrency || item.Currency
+                  )}
                   styles={
                     "text-sm leading-[21px] w-full min-w-[120px] flex items-end justify-end"
                   }

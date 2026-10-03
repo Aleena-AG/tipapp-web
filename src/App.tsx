@@ -58,6 +58,13 @@ import HowItWorksPage from "./page/common/how-it-works";
 import OnboardingPage from "./page/service-provider/onboarding";
 import useAuth from "./hooks/useAuth";
 import PageLoader from "@/components/atoms/laoder/page-loader";
+import { symbolForCurrency } from "@/currency/catalog";
+import { applyManualCurrency } from "@/currency/locationStore";
+import {
+  useCurrencyCatalog,
+  useLocationCurrencyState,
+} from "@/currency/useLocationCurrency";
+import { bootstrapCurrency } from "@/currency/bootstrap";
 const queryClient = new QueryClient();
 
 interface CurrencyContextType {
@@ -312,60 +319,24 @@ const router = createBrowserRouter(
   );
 
 function App() {
-  const [currency, setCurrency] = useState<string>(
-    // localStorage.getItem("selectedCurrency") || "GBP"
-    "GBP"
-  );
-  const [conversionRates, setConversionRates] = useState<{
-    [key: string]: number;
-  }>({});
-
-  // Currency symbols mapping
-  const getCurrencySymbol = (currencyCode: string): string => {
-    const symbols: { [key: string]: string } = {
-      AED: "د.إ",
-      EUR: "€",
-      GBP: "£",
-      USD: "$",
-    };
-    return symbols[currencyCode] || currencyCode;
-  };
-
-  const currencySymbol = getCurrencySymbol(currency);
+  const locationCurrency = useLocationCurrencyState();
+  useCurrencyCatalog();
+  const currency = locationCurrency.displayCurrency || "GBP";
+  const currencySymbol = symbolForCurrency(currency);
 
   useEffect(() => {
-    // Fetch currency based on geolocation
-    const fetchCurrency = async () => {
-      // const geoCurrency = await getCurrencyByLocation();
-      // setCurrency(geoCurrency || "GBP");
-      "GBP"
-    };
-
-    fetchCurrency();
-  }, []);
-
-  useEffect(() => {
-    // Fetch conversion rates when currency changes
-    const fetchRates = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_EXCHANGE_RATE_API}EUR`
-        );
-        const data = await response.json();
-        setConversionRates(data.rates || {});
-      } catch (error) {
-        console.error("Error fetching conversion rates:", error);
-        setConversionRates({});
-      }
-    };
-
-    fetchRates();
+    bootstrapCurrency();
   }, []);
 
   return (
     <ThemeProvider>
       <CurrencyContext.Provider
-        value={{ currency, setCurrency, currencySymbol, conversionRates }}
+        value={{
+          currency,
+          setCurrency: applyManualCurrency,
+          currencySymbol,
+          conversionRates: {},
+        }}
       >
         <QueryClientProvider client={queryClient}>
           <UserProvider>

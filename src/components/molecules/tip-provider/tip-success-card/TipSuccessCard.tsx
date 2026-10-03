@@ -1,6 +1,6 @@
 import { Sparkles, Heart, Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { formatNumber } from "@/hooks/formatters";
+import { formatMoney } from "@/currency/format";
 import { TipSuccessSummary } from "@/utils/pendingTipStorage";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import {
@@ -14,12 +14,7 @@ interface Props {
 
 const TipSuccessCard = ({ summary }: Props) => {
   const { t } = useTranslation();
-  const formattedAmount = formatNumber(
-    summary.amount,
-    true,
-    1,
-    summary.currency
-  );
+  const formattedAmount = formatMoney(summary.amount, summary.currency);
 
   return (
     <div className="relative mx-auto w-full max-w-[420px]">

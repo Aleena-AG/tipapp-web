@@ -14,6 +14,7 @@ import { useCreateAccountLink } from "@/api/withdraw";
 import { useGetCurrentUser } from "@/api/userDetails";
 import { useStripeOnboardingStatus } from "@/hooks/useStripeOnboardingStatus";
 import { useTranslation } from "react-i18next";
+import { normalizeCurrencyCode } from "@/currency/countryCurrency";
 
 interface Props {
   onChange: (value: number) => void;
@@ -39,7 +40,13 @@ export const TippingCardSection = (props: Props) => {
   const minwithdraw = withdrawLimitData?.tipWithdrawalLimit.minimumAmount;
 
   const { currency: contextCurrency } = useContext(CurrencyContext);
-  const currency = props.currency || contextCurrency;
+  const settingsCurrency = normalizeCurrencyCode(
+    withdrawLimitData?.tipWithdrawalLimit?.currency ||
+      withdrawLimitData?.tipWithdrawalLimit?.Currency ||
+      withdrawLimitData?.displayCurrency ||
+      withdrawLimitData?.currency
+  );
+  const currency = settingsCurrency || props.currency || contextCurrency;
 
   const incrementValue = () => {
     const currentVal = parseFloat(value);

@@ -5,7 +5,7 @@ import { ProfileEditTextArea } from "@/components/atoms/textinput/textArea/Profi
 import { UserDetails } from "@/utils/types/types";
 import { useUpdateUser } from "@/api/userDetails";
 import { useFormik } from "formik";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ToastProvider from "@/providers/ToastProvider";
 import PaymentDetailsSection from "./paymentDetailsSection";
 import { useUploadImage } from "@/api/authApi";
@@ -27,6 +27,12 @@ import {
   resolveAvatarStorageUrl,
   toAvatarRelativePath,
 } from "@/utils/constants/ProfileAvatars";
+import CurrencyPicker from "@/components/molecules/common/CurrencyPicker";
+import AddressLocationMap from "@/components/molecules/common/AddressLocationMap";
+import { currencyForCountry } from "@/currency/catalog";
+import { countryCodeFromName } from "@/currency/addressDefaults";
+import { lockUserDisplayCurrency, getLocationCurrencyState } from "@/currency/locationStore";
+import { extractUserDisplayCurrency } from "@/currency/userCurrency";
 
 const toDateInputValue = (value?: Date | string | null): string => {
   if (!value) return "";
@@ -64,13 +70,23 @@ const EditProfileDetailsSection = ({
     if (saved === "male" || saved === "female") return saved;
     return "male";
   });
+  const pendingCurrency = useRef<{
+    displayCurrency: string;
+    country: string;
+    countryCode: string;
+  } | null>(null);
   const { getMaxDate, getMinDate } = useDateOfBirthValidation();
   const { t } = useTranslation();
   const onError = (error: string) => {
+    pendingCurrency.current = null;
     ToastProvider.error(error || t("auth.anErrorOccurred"));
   };
 
   const onSuccessUpdate = () => {
+    if (pendingCurrency.current) {
+      lockUserDisplayCurrency(pendingCurrency.current);
+      pendingCurrency.current = null;
+    }
     ToastProvider.success(t("profile.profileUpdated"));
     toggleEdit();
   };
@@ -98,6 +114,7 @@ const EditProfileDetailsSection = ({
       Phone: "",
       Whatsapp: "",
       Country: "",
+      currency: "",
       City: "",
       Bio: "",
       bankName: "",
@@ -111,9 +128,19 @@ const EditProfileDetailsSection = ({
       setShowLoading(true);
       try {
         if (userDetails) {
+          const currency = (formValues.currency || "GBP").toUpperCase();
+          pendingCurrency.current = {
+            displayCurrency: currency,
+            country: formValues.Country,
+            countryCode: countryCodeFromName(formValues.Country),
+          };
           const existing = JSON.parse(localStorage.getItem("user") || "{}");
-          const { Gender: _g1, ...safeExisting } = existing;
-          const { Gender: _g2, ...safeForm } = formValues as typeof formValues & {
+          const { Gender: _g1, currency: _c1, ...safeExisting } = existing;
+          const {
+            Gender: _g2,
+            currency: _selectedCurrency,
+            ...safeForm
+          } = formValues as typeof formValues & {
             Gender?: string;
           };
           localStorage.setItem(
@@ -121,10 +148,12 @@ const EditProfileDetailsSection = ({
             JSON.stringify({
               ...safeExisting,
               ...safeForm,
+              Currency: currency,
+              currency,
               ProfilePictureURL: formValues.ProfilePictureURL,
             })
           );
-          await updateProfile(safeForm as UserDetails);
+          await updateProfile({ ...safeForm, Currency: currency } as UserDetails);
         }
       } finally {
         setTimeout(() => {
@@ -187,6 +216,11 @@ const EditProfileDetailsSection = ({
           Phone: userDetails.Phone || "",
           Whatsapp: userDetails.Whatsapp || "",
           Country: userDetails.Country || "",
+          currency:
+            extractUserDisplayCurrency(userDetails) ||
+            extractUserDisplayCurrency(cachedUser) ||
+            getLocationCurrencyState().displayCurrency ||
+            "GBP",
           City: userDetails.City || "",
           Bio: userDetails.Bio || "",
           bankName: bankDetails?.bankName || "",
@@ -426,7 +460,7 @@ const EditProfileDetailsSection = ({
                   onBlur={() => setFieldError("DateOfBirth", undefined)}
                 />
               </div>
-              <div>
+              <div className="flex w-full flex-col gap-[10px]">
                 <ProfileEditTextInput
                   placeholder={t("forms.address")}
                   value={values.Address}
@@ -442,6 +476,26 @@ const EditProfileDetailsSection = ({
                   isError={Boolean(errors.Address && touched.Address)}
                   errorMsg={errors.Address}
                   onBlur={() => setFieldError("Address", undefined)}
+                />
+                <AddressLocationMap
+                  address={values.Address}
+                  city={values.City}
+                  country={values.Country}
+                  onPlace={(place) => {
+                    setFieldValue("Address", place.address);
+                    setFieldError("Address", undefined);
+                    if (place.city) {
+                      setFieldValue("City", place.city);
+                      setFieldError("City", undefined);
+                    }
+                    if (place.country) {
+                      setFieldValue("Country", place.country);
+                      setFieldError("Country", undefined);
+                    }
+                    if (place.countryCode) {
+                      setFieldValue("currency", currencyForCountry(place.countryCode));
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -491,8 +545,16 @@ const EditProfileDetailsSection = ({
                 containerStyles="!sm:w-1/2"
                 label="Country"
                 onChange={(e) => {
-                  setFieldValue("Country", e.currentTarget.value);
+                  const nextCountry = e.currentTarget.value;
+                  const previousCode = countryCodeFromName(values.Country);
+                  const nextCode = countryCodeFromName(nextCountry);
+                  setFieldValue("Country", nextCountry);
                   setFieldError("Country", undefined);
+                  if (nextCode && nextCode !== previousCode) {
+                    setFieldValue("currency", currencyForCountry(nextCode));
+                    setFieldValue("City", "");
+                    setFieldValue("Address", "");
+                  }
                 }}
                 isError={Boolean(errors.Country && touched.Country)}
                 errorMsg={errors.Country}
@@ -515,6 +577,11 @@ const EditProfileDetailsSection = ({
                 onBlur={() => setFieldError("City", undefined)}
               />
             </div>
+            <CurrencyPicker
+              id="profile-currency"
+              value={values.currency}
+              onChange={(code) => setFieldValue("currency", code)}
+            />
             <div className="">
               <ProfileEditTextArea
                 placeholder="Type Here"

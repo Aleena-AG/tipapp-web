@@ -1,5 +1,5 @@
 import BounceLoader from "react-spinners/ClipLoader";
-import { formatNumber } from "@/hooks/formatters";
+import { formatBalanceLabel } from "@/currency/format";
 import { useTranslation } from "react-i18next";
 import { FaWallet, FaChartLine } from "react-icons/fa";
 
@@ -12,27 +12,12 @@ interface Props {
   showTotalEarned?: boolean;
 }
 
-function getCurrencySymbol(currency?: string): string {
-  switch ((currency || "GBP").toUpperCase()) {
-    case "GBP":
-      return "£";
-    case "USD":
-      return "$";
-    case "EUR":
-      return "€";
-    case "AED":
-      return "AED";
-    default:
-      return "£";
-  }
-}
-
 interface StatItemProps {
   label: string;
   value: number;
   icon: React.ReactNode;
   isLoading: boolean;
-  currencySymbol: string;
+  currency: string;
 }
 
 const StatItem = ({
@@ -40,7 +25,7 @@ const StatItem = ({
   value,
   icon,
   isLoading,
-  currencySymbol,
+  currency,
 }: StatItemProps) => {
   return (
     <div className="flex min-w-0 flex-1 items-center gap-10 rounded-[12px] border border-border bg-card px-12 py-11 dark:border-white/10 dark:bg-[#121e36]">
@@ -59,7 +44,7 @@ const StatItem = ({
           </div>
         ) : (
           <p className="mt-3 whitespace-nowrap text-[17px] poppins-semibold leading-tight text-[#8B1A1A] sm:text-[18px] dark:text-[#FCA5A5]">
-            {currencySymbol}&nbsp;{formatNumber(value, false)}
+            {formatBalanceLabel(value, currency)}
           </p>
         )}
       </div>
@@ -76,7 +61,6 @@ const BalanceStatsSummary = ({
   showTotalEarned = true,
 }: Props) => {
   const { t } = useTranslation();
-  const currencySymbol = getCurrencySymbol(currency);
 
   return (
     <div className="w-full">
@@ -94,7 +78,7 @@ const BalanceStatsSummary = ({
           value={balance}
           icon={<FaWallet />}
           isLoading={isLoading}
-          currencySymbol={currencySymbol}
+          currency={currency}
         />
         {showTotalEarned && (
           <StatItem
@@ -102,7 +86,7 @@ const BalanceStatsSummary = ({
             value={totalEarned}
             icon={<FaChartLine />}
             isLoading={isLoading}
-            currencySymbol={currencySymbol}
+            currency={currency}
           />
         )}
       </div>

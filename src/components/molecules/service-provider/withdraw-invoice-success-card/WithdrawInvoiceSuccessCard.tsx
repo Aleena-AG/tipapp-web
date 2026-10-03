@@ -1,6 +1,6 @@
 import { PrimaryTypo } from "@/components/atoms/typo/primaryTypo";
 import { SecondaryTypo } from "@/components/atoms/typo/secondaryTypo";
-import { formatNumber } from "@/hooks/formatters";
+import { formatMoney, formatBalanceLabel } from "@/currency/format";
 import { getDateValueFormated } from "@/hooks/hooks";
 import { WithdrawalInvoice } from "@/utils/types/types";
 import { useTranslation } from "react-i18next";
@@ -9,20 +9,6 @@ interface Props {
   invoice: WithdrawalInvoice;
   balance: number;
   message: string;
-}
-
-function getCurrencySymbol(currency?: string): string {
-  const normalized = currency?.toUpperCase() || "GBP";
-  switch (normalized) {
-    case "GBP":
-      return "£";
-    case "USD":
-      return "$";
-    case "EUR":
-      return "€";
-    default:
-      return "£";
-  }
 }
 
 function formatPaymentMethod(method?: string): string {
@@ -91,7 +77,7 @@ const WithdrawInvoiceSuccessCard = ({
   message,
 }: Props) => {
   const { t } = useTranslation();
-  const currencySymbol = getCurrencySymbol(invoice.Currency || "GBP");
+  const invoiceCurrency = invoice.displayCurrency || invoice.Currency;
   const remainingBalance =
     typeof balance === "number" && Number.isFinite(balance) ? balance : 0;
   const platformFee = resolvePlatformFee(invoice);
@@ -120,29 +106,24 @@ const WithdrawInvoiceSuccessCard = ({
         />
         <DetailRow
           label={t("payments.withdrawalAmount")}
-          value={formatNumber(
-            invoice.TotalAmount,
-            true,
-            1,
-            currencySymbol
-          )}
+          value={formatMoney(invoice.TotalAmount, invoiceCurrency)}
           highlight
         />
         {platformFee > 0 ? (
           <DetailRow
             label={t("payments.platformFee")}
-            value={formatNumber(platformFee, true, 1, currencySymbol)}
+            value={formatMoney(platformFee, invoiceCurrency)}
           />
         ) : null}
         {stripeFee > 0 ? (
           <DetailRow
             label={t("payments.stripeFee")}
-            value={formatNumber(stripeFee, true, 1, currencySymbol)}
+            value={formatMoney(stripeFee, invoiceCurrency)}
           />
         ) : null}
         <DetailRow
           label={t("payments.remainingBalance")}
-          value={formatNumber(remainingBalance, true, 1, currencySymbol)}
+          value={formatBalanceLabel(remainingBalance, invoiceCurrency)}
         />
         <DetailRow
           label={t("payments.status")}
@@ -155,7 +136,7 @@ const WithdrawInvoiceSuccessCard = ({
         {invoice.Commission ? (
           <DetailRow
             label={t("payments.commission")}
-            value={formatNumber(invoice.Commission, true, 1, currencySymbol)}
+            value={formatMoney(invoice.Commission, invoiceCurrency)}
           />
         ) : null}
       </div>

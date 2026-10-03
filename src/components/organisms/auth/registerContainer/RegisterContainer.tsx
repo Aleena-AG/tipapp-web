@@ -41,6 +41,12 @@ import {
   resolveAvatarStorageUrl,
 } from "@/utils/constants/ProfileAvatars";
 import { citiesForCountry } from "@/utils/constants/ukCities";
+import CurrencyPicker from "@/components/molecules/common/CurrencyPicker";
+import AddressLocationMap from "@/components/molecules/common/AddressLocationMap";
+import { currencyForCountry } from "@/currency/catalog";
+import { resolveAddressDefaults } from "@/currency/addressDefaults";
+import { useLocationCurrencyState } from "@/currency/useLocationCurrency";
+import { lockUserDisplayCurrency } from "@/currency/locationStore";
 
 interface FormValues {
   // Username: string;
@@ -52,6 +58,7 @@ interface FormValues {
   Whatsapp: string;
   Country: string;
   CountryCode: string;
+  Currency: string;
   City: string;
   Bio: string;
   // bankName: string;
@@ -61,6 +68,8 @@ interface FormValues {
   // paypal: string;
 }
 
+const initialAddress = resolveAddressDefaults(null);
+
 const initialValues: FormValues = {
   // Username: "",
   FirstName: "",
@@ -69,8 +78,9 @@ const initialValues: FormValues = {
   Email: "",
   Phone: "",
   Whatsapp: "",
-  Country: "United Kingdom",
-  CountryCode: "GB",
+  Country: initialAddress.countryName,
+  CountryCode: initialAddress.countryCode,
+  Currency: initialAddress.currency,
   City: "",
   Bio: "",
   // bankName: "Test",
@@ -115,6 +125,11 @@ function buildInitialFormValues(): FormValues {
       values.City = storedUser.City || values.City;
       values.Bio = storedUser.Bio || values.Bio;
       values.DateOfBirth = storedUser.DateOfBirth || values.DateOfBirth;
+      const address = resolveAddressDefaults(storedUser);
+      values.Country = address.countryName;
+      values.CountryCode = address.countryCode;
+      values.Currency = address.currency;
+      values.City = storedUser.City || values.City;
     }
   } catch {
     // ignore malformed local storage
@@ -163,20 +178,15 @@ const RegistrationContainer = () => {
   const showBankDetails = false;
   const { getMaxDate, getMinDate } = useDateOfBirthValidation();
   const countries = useMemo(() => countryList().getData(), []);
-  const ukCities = useMemo(
-    () =>
-      citiesForCountry({
-        countryCode: initialValues.CountryCode,
-        countryName: initialValues.Country,
-      }),
-    []
-  );
   const validationSchema = useMemo(
     () => generateRegistrationValidationSchema(showBankDetails),
     [showBankDetails]
   );
   const formikRef = useRef<FormikProps<FormValues>>(null);
   const hasPrefilledFromApiRef = useRef(false);
+  const countryTouchedRef = useRef(false);
+  const currencyTouchedRef = useRef(false);
+  const locationCurrency = useLocationCurrencyState();
   const initialFormValues = useMemo(() => buildInitialFormValues(), []);
   const {
     mutate: uploadFile,
@@ -273,6 +283,45 @@ const RegistrationContainer = () => {
     }
   }, [currentUser, uploadedImage]);
 
+  useEffect(() => {
+    if (countryTouchedRef.current) return;
+    const form = formikRef.current;
+    if (!form) return;
+    if (
+      !currentUser &&
+      !locationCurrency.countryCode &&
+      !locationCurrency.country
+    ) {
+      return;
+    }
+
+    const address = resolveAddressDefaults(currentUser);
+    const nextCurrency = currencyTouchedRef.current
+      ? form.values.Currency
+      : address.currency;
+    if (
+      form.values.CountryCode === address.countryCode &&
+      form.values.Country === address.countryName &&
+      form.values.Currency === nextCurrency
+    ) {
+      return;
+    }
+
+    const countryChanged = form.values.CountryCode !== address.countryCode;
+    form.setValues({
+      ...form.values,
+      Country: address.countryName,
+      CountryCode: address.countryCode,
+      Currency: nextCurrency,
+      City: countryChanged ? "" : form.values.City,
+    });
+  }, [
+    currentUser,
+    locationCurrency.countryCode,
+    locationCurrency.country,
+    locationCurrency.displayCurrency,
+  ]);
+
   const MIN_BYTES = 64 * 1024; // 64KB
   const MAX_BYTES = 1 * 1024 * 1024; // 1MB
 
@@ -336,7 +385,12 @@ const RegistrationContainer = () => {
 
     // Removed bank name check for sp since pre-filled
 
-    const registerData = { ...values, Country: values.CountryCode };
+    const registerData = {
+      ...values,
+      Country: values.Country,
+      CountryCode: values.CountryCode,
+      Currency: (values.Currency || currencyForCountry(values.CountryCode)).toUpperCase(),
+    };
 
     updateUser(
       {
@@ -350,6 +404,11 @@ const RegistrationContainer = () => {
       },
       {
         onSuccess: async () => {
+          lockUserDisplayCurrency({
+            displayCurrency: registerData.Currency,
+            countryCode: values.CountryCode,
+            country: values.Country,
+          });
           const updatedUser = {
             ...currentUser,
             ...registerData,
@@ -459,10 +518,14 @@ const RegistrationContainer = () => {
       onSubmit={handleSubmit}
     >
       {({ values, setFieldValue, dirty, isSubmitting }) => {
+        const cityList = citiesForCountry({
+          countryCode: values.CountryCode,
+          countryName: values.Country,
+        });
         const cityOptions =
-          values.City && !ukCities.includes(values.City)
-            ? [values.City, ...ukCities]
-            : ukCities;
+          values.City && !cityList.includes(values.City)
+            ? [values.City, ...cityList]
+            : cityList;
 
         return (
         <div className="bg-app-page min-w-[300px] sm:px-[20px] xl:px-[60px]">
@@ -630,6 +693,22 @@ const RegistrationContainer = () => {
                       isRequired={true}
                       autoComplete="off"
                     />
+                    <AddressLocationMap
+                      address={values.Address}
+                      city={values.City}
+                      country={values.Country}
+                      onPlace={(place) => {
+                        countryTouchedRef.current = true;
+                        currencyTouchedRef.current = false;
+                        setFieldValue("Address", place.address);
+                        if (place.city) setFieldValue("City", place.city);
+                        if (place.country) setFieldValue("Country", place.country);
+                        if (place.countryCode) {
+                          setFieldValue("CountryCode", place.countryCode);
+                          setFieldValue("Currency", currencyForCountry(place.countryCode));
+                        }
+                      }}
+                    />
                     <TextInput
                       name="DateOfBirth"
                       placeholder="Date Of Birth"
@@ -706,15 +785,20 @@ const RegistrationContainer = () => {
                           <select
                             id="country-select"
                             name="Country"
-                            value={'GB'}
+                            value={values.CountryCode}
                             onChange={(e) => {
+                              countryTouchedRef.current = true;
+                              currencyTouchedRef.current = false;
                               const selectedCountry = countries.find(
                                 (c: { value: string; label: string }) => c.value === e.target.value
                               );
-                              setFieldValue("CountryCode", e.target.value);
+                              const code = e.target.value.toUpperCase();
+                              setFieldValue("CountryCode", code);
                               setFieldValue("Country", selectedCountry?.label || "");
+                              setFieldValue("City", "");
+                              setFieldValue("Address", "");
+                              setFieldValue("Currency", currencyForCountry(code));
                             }}
-                            disabled
                             className="w-full h-[40px] pl-[32px] pr-4 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-card"
                             autoComplete="off"
                           >
@@ -737,21 +821,33 @@ const RegistrationContainer = () => {
                             alt="city icon"
                             className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none z-10"
                           />
-                          <select
-                            id="city-select"
-                            name="City"
-                            value={values.City}
-                            onChange={(e) => setFieldValue("City", e.target.value)}
-                            className="w-full h-[40px] pl-[32px] pr-4 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-card"
-                            autoComplete="off"
-                          >
-                            <option value="">Select City</option>
-                            {cityOptions.map((city) => (
-                              <option key={city} value={city}>
-                                {city}
-                              </option>
-                            ))}
-                          </select>
+                          {cityOptions.length > 0 ? (
+                            <select
+                              id="city-select"
+                              name="City"
+                              value={values.City}
+                              onChange={(e) => setFieldValue("City", e.target.value)}
+                              className="w-full h-[40px] pl-[32px] pr-4 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-card"
+                              autoComplete="off"
+                            >
+                              <option value="">Select City</option>
+                              {cityOptions.map((city) => (
+                                <option key={city} value={city}>
+                                  {city}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              id="city-select"
+                              name="City"
+                              value={values.City}
+                              onChange={(e) => setFieldValue("City", e.target.value)}
+                              placeholder="City"
+                              className="w-full h-[40px] pl-[32px] pr-4 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-card"
+                              autoComplete="off"
+                            />
+                          )}
                         </div>
                         <ErrorMessage
                           name="City"
@@ -760,6 +856,14 @@ const RegistrationContainer = () => {
                         />
                       </div>
                     </div>
+                    <CurrencyPicker
+                      id="signup-currency"
+                      value={values.Currency}
+                      onChange={(code) => {
+                        currencyTouchedRef.current = true;
+                        setFieldValue("Currency", code);
+                      }}
+                    />
                     <TextArea
                       name="Bio"
                       placeholder="Type Here"

@@ -15,6 +15,7 @@ export interface CreateTipPaymentIntentPayload {
   amount: number;
   currency: string;
   serviceProviderId: string;
+  merchantCountry: string;
 }
 
 export interface TipPaymentIntentResult {
@@ -49,6 +50,7 @@ export const useCreateTipPaymentIntent = (
           amount: data.amount,
           currency: data.currency,
           serviceProviderId: data.serviceProviderId,
+          merchantCountry: data.merchantCountry,
         }
       );
       return response.data?.data as TipPaymentIntentResult;

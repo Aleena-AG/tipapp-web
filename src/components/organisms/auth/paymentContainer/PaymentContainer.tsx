@@ -1,15 +1,13 @@
  
 import { PrimaryButton } from "@/components/atoms/buttons/primaryButton";
 import { PrimaryTypo } from "@/components/atoms/typo/primaryTypo";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import ToastProvider from "@/providers/ToastProvider";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAddTip } from "@/api/tipManagement";
 import { useTranslation } from "react-i18next";
 import { useGetCurrentUser } from "@/api/userDetails";
-import { useQuery } from "react-query";
-import { fetchConversionRates } from "@/hooks/convertCurrency";
-import { useContext } from "react";
+import { formatBalanceLabel } from "@/currency/format";
 import { CurrencyContext } from "@/App";
 import TipStripeCheckout from "./TipStripeCheckout";
 import {
@@ -32,7 +30,6 @@ const PaymentContainer = () => {
   const clientSecret = location.state?.clientSecret as string | undefined;
 
   const { data: currentUser } = useGetCurrentUser();
-  const { data: rates } = useQuery("rates", fetchConversionRates);
 
   const {
     mutate: addTipMutate,
@@ -77,17 +74,9 @@ const PaymentContainer = () => {
     });
   };
 
-  const getBalanceInCurrency = () => {
-    if (currentUser?.BalanceOriginal) {
-      return Number(currentUser.BalanceOriginal).toFixed(2);
-    }
-    if (!currentUser?.balance || !rates) return "0.00";
-    const balanceInAED = Number(currentUser.balance);
-    const rateAED = rates["AED"] || 1;
-    const rateCurrent = rates[currency] || 1;
-    const balanceInCurrent = (balanceInAED / rateAED) * rateCurrent;
-    return balanceInCurrent.toFixed(2);
-  };
+  const balanceAmount = Number(
+    currentUser?.BalanceOriginal ?? currentUser?.balance ?? 0
+  );
 
   if (!tipData || !clientSecret || !paymentIntentId) {
     return null;
@@ -142,7 +131,10 @@ const PaymentContainer = () => {
               htmlFor="balance"
               className="text-black text-sm font-semibold leading-[21px]"
             >
-              {t("common.accountBalance")} ({getBalanceInCurrency()} {currency})
+              {t("common.accountBalance")} ({formatBalanceLabel(
+                Number.isFinite(balanceAmount) ? balanceAmount : 0,
+                currency
+              )})
             </label>
           </div>
         </div>

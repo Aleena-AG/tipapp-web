@@ -14,7 +14,7 @@ import {
 } from "@/utils/userProfile";
 import { useGetTipHistoryDetailsByServiceProvider } from "@/api/tipManagement";
 import { CurrencyContext } from "@/App";
-import { formatNumber } from "@/hooks/formatters";
+import { formatBalanceLabel, formatMoney } from "@/currency/format";
 import BounceLoader from "react-spinners/ClipLoader";
 import CharacterSP from "@/assets/images/sp-char.png";
 import WalletImage from "@/assets/images/wallet.png";
@@ -486,7 +486,7 @@ const SPQRCodeContainer = () => {
                   key={tipAnimKey}
                   className="ta-tip-amount-pop poppins-semibold mt-4 text-[16px] text-[#1E9E6A] dark:text-emerald-400"
                 >
-                  + {currency} {formatNumber(animatedTipAmount)}
+                  + {formatMoney(animatedTipAmount, currency)}
                 </p>
                 <p className="poppins-regular mt-4 text-[12px] text-[#8A8A8A] dark:text-slate-400">
                   {latestTip?.Comment ||
@@ -530,7 +530,7 @@ const SPQRCodeContainer = () => {
                     <BounceLoader color="#9E2A2B" loading size={16} />
                   ) : (
                     <h3 className="poppins-semibold mt-4 text-[24px] leading-none text-[#9E2A2B] dark:text-[#FCA5A5]">
-                      {currency} {formatNumber(balance)}
+                      {formatBalanceLabel(balance, currency)}
                     </h3>
                   )}
                   <p className="poppins-regular mt-4 text-[12px] text-[#9A9A9A] dark:text-slate-500">
@@ -576,7 +576,7 @@ const SPQRCodeContainer = () => {
                     <BounceLoader color="#1E9E6A" loading size={16} />
                   ) : (
                     <h3 className="poppins-semibold mt-4 text-[24px] leading-none text-[#12855A] dark:text-emerald-300">
-                      {currency} {formatNumber(tipsThisMonth)}
+                      {formatMoney(tipsThisMonth, currency)}
                     </h3>
                   )}
                   {!isTipsLoading && (

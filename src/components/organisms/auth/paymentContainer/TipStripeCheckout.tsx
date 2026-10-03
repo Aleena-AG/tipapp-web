@@ -17,6 +17,7 @@ import {
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { formatMoney } from "@/currency/format";
 
 interface TipData {
   TipperID: string;
@@ -192,7 +193,7 @@ const TipStripeCheckout = ({
     <div className="flex flex-col gap-[16px] w-full">
       {formattedAmount && (
         <SecondaryTypo
-          typo={`${t("common.tipAmount")}: ${currency === "GBP" ? "£" : ""}${formattedAmount} ${currency}`}
+          typo={`${t("common.tipAmount")}: ${formatMoney(tipData.Amount ?? 0, currency)}`}
           styles="text-center text-[16px] font-semibold text-[#0B538D]"
         />
       )}

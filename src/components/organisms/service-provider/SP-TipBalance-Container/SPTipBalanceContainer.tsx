@@ -5,14 +5,15 @@ import TipBalanceCardSection from "@/components/molecules/tip-provider/tipBalanc
 import { Button } from "@/components/ui/button";
 import { handleScrollTop } from "@/hooks/hooks";
 import ToastProvider from "@/providers/ToastProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { CurrencyContext } from "@/App";
 
 const SPTipBalanceContainer = () => {
   const { t } = useTranslation();
+  const { currency } = useContext(CurrencyContext);
   const [loading, setLoading] = useState<boolean>(false);
-  const currency = 'GBP'; // Should be dynamic based on user preference or location
 
   const { data: tipBalance, isLoading: isBalanceLoading } =
     useGetBalanceAmount(currency);

@@ -4,24 +4,9 @@ import { PrimaryTypo } from "@/components/atoms/typo/primaryTypo";
 import { SecondaryTypo } from "@/components/atoms/typo/secondaryTypo";
 import SpinLoader from "@/components/atoms/laoder/spin-loader";
 import { getDateValueFormated } from "@/hooks/hooks";
-import { formatNumber } from "@/hooks/formatters";
+import { formatMoney } from "@/currency/format";
 import { FaPaperPlane } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-
-function getCurrencySymbol(currency?: string): string {
-  switch ((currency || "GBP").toUpperCase()) {
-    case "GBP":
-      return "£";
-    case "USD":
-      return "$";
-    case "EUR":
-      return "€";
-    case "AED":
-      return "AED ";
-    default:
-      return "£";
-  }
-}
 
 interface Props {
   data: any;
@@ -71,8 +56,9 @@ const BalanceTransferHistoryCard = ({
         {data?.pages.map((page: any, pageIndex: number) =>
           page.items.map((item: any, _index: number) => {
             const currency =
-              item.amounts?.gross?.currency || item.Currency || "GBP";
-            const currencySymbol = getCurrencySymbol(currency);
+              item.amounts?.gross?.currency ||
+              item.displayCurrency ||
+              item.Currency;
             const amount =
               item.gross ??
               item.amounts?.gross?.amount ??
@@ -116,7 +102,7 @@ const BalanceTransferHistoryCard = ({
                 <div className="shrink-0 text-right">
                   <PrimaryTypo
                     typo={
-                      formatNumber(amount, true, 1, currencySymbol) || "N.A"
+                      formatMoney(amount, currency) || "N.A"
                     }
                     styles="!text-[15px] poppins-semibold text-[#9E2A2B]"
                   />

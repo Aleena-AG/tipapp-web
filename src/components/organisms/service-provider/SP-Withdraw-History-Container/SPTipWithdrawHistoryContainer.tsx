@@ -4,16 +4,18 @@ import { PrimaryButton } from "@/components/atoms/buttons/primaryButton";
 import WithdrawHistoryCardSection from "@/components/molecules/service-provider/withdraw-history-card-section/withdrawHistoryCardSection";
 import { handleScrollTop } from "@/hooks/hooks";
 import ToastProvider from "@/providers/ToastProvider";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { CurrencyContext } from "@/App";
 
 const SPTipWithdrawHistoryContainer = () => {
   const { t } = useTranslation();
+  const { currency } = useContext(CurrencyContext);
   const [, setLoading] = useState<boolean>(false);
 
   const { data: tipBalance, isLoading: isBalanceLoading } =
-    useGetBalanceAmount("GBP");
+    useGetBalanceAmount(currency);
 
   useEffect(() => {
     setLoading(isBalanceLoading);

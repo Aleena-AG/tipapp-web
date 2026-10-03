@@ -1,6 +1,12 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import React, { createContext, useContext, ReactNode, useEffect } from "react";
 import { useGetCurrentUser } from "@/api/userDetails";
 import { UserDetails } from "@/utils/types/types";
+import { lockUserDisplayCurrency } from "@/currency/locationStore";
+import {
+  extractUserCountryCode,
+  extractUserCountryName,
+  extractUserDisplayCurrency,
+} from "@/currency/userCurrency";
 
 interface UserContextType {
   userDetails: UserDetails | undefined;
@@ -20,6 +26,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     isError,
     refetch,
   } = useGetCurrentUser();
+
+  useEffect(() => {
+    const displayCurrency = extractUserDisplayCurrency(userDetails);
+    if (!displayCurrency) return;
+    lockUserDisplayCurrency({
+      displayCurrency,
+      countryCode: extractUserCountryCode(userDetails),
+      country: extractUserCountryName(userDetails),
+    });
+  }, [userDetails]);
 
   return (
     <UserContext.Provider value={{ userDetails, isLoading, isError, refetch }}>

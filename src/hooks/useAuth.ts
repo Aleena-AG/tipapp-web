@@ -9,6 +9,7 @@ import {
 import { useNavigate } from "react-router";
 import ToastProvider from "@/providers/ToastProvider";
 import { useTranslation } from "react-i18next";
+import { releaseUserCurrencyOverride } from "@/currency/locationStore";
 
 export default function useAuth() {
   const navigate = useNavigate();
@@ -128,7 +129,6 @@ export default function useAuth() {
 
   const setToken = async (userToken: string) => {
     localStorage.setItem("token", userToken);
-    localStorage.setItem("selectedCurrency", "GBP");
   };
 
   const getCurrentUser = async () => {
@@ -215,6 +215,7 @@ export default function useAuth() {
     localStorage.removeItem("displaySwitch");
     localStorage.removeItem("notification_token");
     localStorage.removeItem("selectedCurrency");
+    releaseUserCurrencyOverride();
     localStorage.removeItem("pendingSignUp");
     localStorage.removeItem("googleProfileData");
     localStorage.removeItem("userEmail");
