@@ -95,6 +95,23 @@ export function parseKeycloakUserDetailsResponse(
   return null;
 }
 
+/**
+ * Receive-tips QR is only for an active service provider (`sp` or `both`).
+ * A tipper-only or inactive account must not get one.
+ */
+export function canReceivePublicTips(
+  user?: { Role?: string | null; Status?: string | null; KeyCloakID?: string | null } | null
+): boolean {
+  if (!user) return false;
+  const role = String(user.Role ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]/g, "");
+  const receivesTips = role === "sp" || role === "both" || role === "serviceprovider";
+  const status = String(user.Status ?? "").trim().toLowerCase();
+  return receivesTips && status === "active" && Boolean(user.KeyCloakID?.trim());
+}
+
 export function getUserDisplayName(
   user?: Pick<UserDetails, "FirstName" | "LastName" | "Username"> | null
 ): string {

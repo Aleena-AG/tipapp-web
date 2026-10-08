@@ -15,7 +15,6 @@ export interface CreateTipPaymentIntentPayload {
   amount: number;
   currency: string;
   serviceProviderId: string;
-  merchantCountry: string;
 }
 
 export interface TipPaymentIntentResult {
@@ -40,17 +39,14 @@ export const useCreateTipPaymentIntent = (
 ) => {
   return useMutation({
     mutationFn: async (data: CreateTipPaymentIntentPayload) => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Authentication required to create a tip payment");
-      }
+      // Public. A stored Bearer token is still sent so a signed-in tipper
+      // is recorded as themselves; a visitor with no token is a guest.
       const response = await authFetch.post(
         "/stripe/create-tip-payment-intent",
         {
           amount: data.amount,
-          currency: data.currency,
+          currency: data.currency.trim().toUpperCase(),
           serviceProviderId: data.serviceProviderId,
-          merchantCountry: data.merchantCountry,
         }
       );
       return response.data?.data as TipPaymentIntentResult;

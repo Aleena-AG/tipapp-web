@@ -369,6 +369,8 @@
     "spTrustEasyDesc": "Track & withdraw with ease",
     "qrCode": "QR Code",
     "scanToTip": "Scan to send a tip",
+    "invalidQrCode": "Invalid QR code",
+    "receiveTipsQrUnavailable": "Your QR code appears after your service provider account is active.",
     "shareQRCode": "Share",
     "totalTipsGiven": "Total Tips Given",
     "feedback": "Feedback",

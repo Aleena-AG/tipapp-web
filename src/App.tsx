@@ -7,6 +7,7 @@ import {
   RouterProvider,
   useLocation,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 import RootLayout from "@/layout/rootLayout/rootLayout";
 import {
@@ -161,6 +162,12 @@ const MainScreenRedirect = () => {
   return <Navigate to={{ pathname: "/", hash: location.hash }} replace />;
 };
 
+/** Older QR codes pointed at the logged-in tipper route. Open the public page. */
+const LegacyTipRedirect = () => {
+  const { id } = useParams();
+  return <Navigate to={id ? `/tip/${id}` : "/"} replace />;
+};
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -267,51 +274,46 @@ const router = createBrowserRouter(
           <Route path="withdraw-history" element={<SPWithdrawHistory />} />
         </Route>
 
-        {/* Tipper Routes */}
-        <Route
-          path="/tip-provider"
-          element={<ProtectedRoute roles={[UserRoles.TIPER]} />}
-        >
-          <Route index element={<TPHomeScreen />} />
+        {/* Public scan-and-pay. No login before the tip page. */}
+        <Route path="/tip/:id" element={<RootLayout />}>
           <Route
-            path="tip/:id"
+            index
             element={
               <DisableButtonProvider>
                 <QrResultScreen />
               </DisableButtonProvider>
             }
           />
-          <Route path="user-review-history" element={<UserReviewHistory />} />
-          <Route path="view-history" element={<ViewHistory />} />
-          <Route
-            path="service-provider-rating"
-            element={<SPOverallRatingScreen />}
-          />
+        </Route>
+        <Route path="/tip-provider/tip/:id" element={<LegacyTipRedirect />} />
+
+        <Route path="/tip-provider" element={<RootLayout />}>
+          <Route index element={<TPHomeScreen />} />
+        </Route>
+        <Route
+          path="/tip-provider/user-review-history"
+          element={<ProtectedRoute roles={[UserRoles.TIPER]} />}
+        >
+          <Route index element={<UserReviewHistory />} />
+        </Route>
+        <Route
+          path="/tip-provider/view-history"
+          element={<ProtectedRoute roles={[UserRoles.TIPER]} />}
+        >
+          <Route index element={<ViewHistory />} />
+        </Route>
+        <Route
+          path="/tip-provider/service-provider-rating"
+          element={<ProtectedRoute roles={[UserRoles.TIPER]} />}
+        >
+          <Route index element={<SPOverallRatingScreen />} />
         </Route>
 
-        {/* Payment Routes */}
-        <Route
-          path="/payment"
-          element={
-            <ProtectedRoute
-              roles={[UserRoles.SERVICEPROVIDER, UserRoles.TIPER]}
-            />
-          }
-        >
+        {/* Card checkout is public. Wallet pay stays behind login in the UI. */}
+        <Route path="/payment" element={<RootLayout />}>
           <Route index element={<PaymentScreen />} />
         </Route>
-        <Route
-          path="/payment/success"
-          element={
-            <ProtectedRoute
-              roles={[
-                UserRoles.SERVICEPROVIDER,
-                UserRoles.TIPER,
-                UserRoles.BOTH,
-              ]}
-            />
-          }
-        >
+        <Route path="/payment/success" element={<RootLayout />}>
           <Route index element={<PaymentSucessScreen />} />
         </Route>
       </>

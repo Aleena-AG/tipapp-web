@@ -9,7 +9,7 @@ import TipSuccessDecorations from "@/components/molecules/tip-provider/tip-succe
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
-import { useAddTip } from "@/api/tipManagement";
+import { recordCardTipReview } from "@/api/tipManagement";
 import { getPaymentIntentStatus } from "@/api/managePayments";
 import {
   buildTipSuccessSummary,
@@ -52,8 +52,6 @@ const PaymentSucessScreen = () => {
     return null;
   });
 
-  const { mutate: addTipMutate } = useAddTip();
-
   useEffect(() => {
     if (isWithdrawalSuccess) return;
 
@@ -83,32 +81,34 @@ const PaymentSucessScreen = () => {
         );
         if (statusData?.status !== "succeeded") {
           ToastProvider.error("Payment verification failed.");
-          navigate("/tip-provider", { replace: true });
+          navigate(localStorage.getItem("token") ? "/tip-provider" : "/", {
+            replace: true,
+          });
           return;
         }
 
-        addTipMutate(
-          {
-            ServiceProviderID: pending.tipData.ServiceProviderID,
+        try {
+          await recordCardTipReview({
+            guestCheckout: Boolean(pending.guestCheckout),
             paymentIntentId: paymentIntentFromUrl,
-            TipDate: pending.tipData.TipDate,
-            Rating: pending.tipData.Rating,
-            Review: pending.tipData.Review,
-          },
-          {
-            onSuccess: () => {
-              const summary = buildTipSuccessSummary(pending.tipData, "Card");
-              if (summary) {
-                setTipSuccessSummary(summary);
-                setTipSummary(summary);
-              }
-              clearPendingTipPayment();
-            },
-            onError: () => {
-              hasFinalizedRedirect.current = false;
-            },
-          }
-        );
+            clientSecret: pending.clientSecret,
+            serviceProviderId: pending.tipData.ServiceProviderID,
+            tipDate: pending.tipData.TipDate,
+            rating: pending.tipData.Rating,
+            review: pending.tipData.Review,
+          });
+        } catch {
+          ToastProvider.error(
+            "Payment succeeded, but the review could not be saved."
+          );
+        }
+
+        const summary = buildTipSuccessSummary(pending.tipData, "Card");
+        if (summary) {
+          setTipSuccessSummary(summary);
+          setTipSummary(summary);
+        }
+        clearPendingTipPayment();
       } catch {
         ToastProvider.error("Could not verify payment.");
         hasFinalizedRedirect.current = false;
@@ -116,7 +116,7 @@ const PaymentSucessScreen = () => {
     };
 
     finalizeTip();
-  }, [addTipMutate, isWithdrawalSuccess, navigate, searchParams]);
+  }, [isWithdrawalSuccess, navigate, searchParams]);
 
   useEffect(() => {
     if (isWithdrawalSuccess || !tipSummary || hasEnrichedRecipient.current) {
@@ -173,7 +173,7 @@ const PaymentSucessScreen = () => {
   const handleRouteHome = () => {
     clearSuccessData();
     if (!isAuthenticated()) {
-      navigate("/sign-in");
+      navigate("/");
       return;
     }
     if (isWithdrawalSuccess) {
@@ -187,7 +187,7 @@ const PaymentSucessScreen = () => {
     } else if (userRole === "both") {
       navigate("/user-selection");
     } else {
-      navigate("/sign-in");
+      navigate("/");
     }
   };
 
@@ -249,6 +249,7 @@ const PaymentSucessScreen = () => {
                 {t("common.backToHome")}
               </span>
             </button>
+            {isAuthenticated() && (
             <button
               type="button"
               onClick={handleSecondaryAction}
@@ -259,6 +260,7 @@ const PaymentSucessScreen = () => {
                 {t("common.viewReviews")}
               </span>
             </button>
+            )}
           </div>
         </div>
       </div>
@@ -281,11 +283,13 @@ const PaymentSucessScreen = () => {
         typo={t("common.backToHome")}
         styles="!rounded-8 !mx-2 text-white max-w-[328px] mt-[29px] w-full text-base poppins-regular "
       />
+      {isAuthenticated() && (
       <PrimaryButton
         handleOnClick={handleSecondaryAction}
         typo={t("common.viewReviews")}
         styles="!rounded-8 !mx-2 text-white max-w-[328px] mt-[16px] w-full text-base poppins-regular "
       />
+      )}
     </div>
   );
 };

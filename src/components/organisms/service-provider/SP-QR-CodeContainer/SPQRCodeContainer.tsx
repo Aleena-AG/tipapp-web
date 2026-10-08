@@ -9,9 +9,11 @@ import ToastProvider from "@/providers/ToastProvider";
 import { useUser } from "@/contexts/UserContext";
 import { useTranslation } from "react-i18next";
 import {
+  canReceivePublicTips,
   resolveUserNameParts,
   toQrDownloadFileName,
 } from "@/utils/userProfile";
+import { getPublicTipUrl } from "@/utils/appUrl";
 import { useGetTipHistoryDetailsByServiceProvider } from "@/api/tipManagement";
 import { CurrencyContext } from "@/App";
 import { formatBalanceLabel, formatMoney } from "@/currency/format";
@@ -121,14 +123,23 @@ const SPQRCodeContainer = () => {
     navigate("/service-provider/withdraw-money");
   };
 
+  const keycloakId =
+    currentUser?.KeyCloakID?.trim() ||
+    localStorage.getItem("userId")?.trim() ||
+    "";
+  const showReceiveQr = Boolean(
+    currentUser &&
+      canReceivePublicTips({ ...currentUser, KeyCloakID: keycloakId })
+  );
+
   useEffect(() => {
     const generateQRCode = async () => {
-      const fe_url = window.location.origin;
-      const userID = localStorage.getItem("userId");
+      if (!showReceiveQr || !keycloakId) {
+        setQrCodeDataUrl(null);
+        return;
+      }
       try {
-        const dataUrl = await QRCode.toDataURL(
-          `${fe_url}/tip-provider/tip/${userID}`,
-          {
+        const dataUrl = await QRCode.toDataURL(getPublicTipUrl(keycloakId), {
             width: 512,
             margin: 2,
             errorCorrectionLevel: "H",
@@ -144,8 +155,8 @@ const SPQRCodeContainer = () => {
       }
     };
 
-    generateQRCode();
-  }, []);
+    void generateQRCode();
+  }, [currentUser, keycloakId, showReceiveQr]);
 
   const drawRoundedRect = (
     context: CanvasRenderingContext2D,
@@ -394,8 +405,10 @@ const SPQRCodeContainer = () => {
             {/* QR Code Card */}
             <div className="mt-24 rounded-[24px] border border-[#F0E0E0] bg-card p-20 shadow-[0_22px_60px_rgba(158,42,43,0.12)] sm:p-24 dark:border-white/10 dark:bg-[#0a1629]/95 dark:shadow-[0_22px_60px_rgba(0,0,0,0.45)]">
               <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left">
-                <div className="flex h-[200px] w-[200px] shrink-0 items-center justify-center rounded-[28px] border-2 border-[#9E2A2B]/20 bg-white p-12 sm:h-[220px] sm:w-[220px] dark:border-[#E8B923]/40 dark:bg-white">
-                  {qrCodeDataUrl ? (
+                <div className="flex h-[200px] w-[200px] shrink-0 items-center justify-center rounded-[28px] border-2 border-[#9E2A2B]/20 bg-white p-12 text-center sm:h-[220px] sm:w-[220px] dark:border-[#E8B923]/40 dark:bg-white">
+                  {isUserLoading ? (
+                    <BounceLoader color="#9E2A2B" loading size={28} />
+                  ) : showReceiveQr && qrCodeDataUrl ? (
                     <img
                       src={qrCodeDataUrl}
                       alt="QR Code"
@@ -405,7 +418,9 @@ const SPQRCodeContainer = () => {
                       className="h-full w-full object-contain [image-rendering:pixelated]"
                     />
                   ) : (
-                    <BounceLoader color="#9E2A2B" loading size={28} />
+                    <p className="poppins-medium px-8 text-[13px] leading-snug text-[#9E2A2B]">
+                      {t("common.receiveTipsQrUnavailable")}
+                    </p>
                   )}
                 </div>
 
@@ -450,12 +465,14 @@ const SPQRCodeContainer = () => {
                   }
                   styles="flex-1 !bg-[#9E2A2B] hover:!bg-[#ce260b] dark:!bg-[#C53030] dark:hover:!bg-[#9E2A2B] !rounded-2xl !text-white text-[15px] poppins-semibold h-[48px] shadow-[0_14px_28px_rgba(158,42,43,0.28)] dark:shadow-[0_14px_28px_rgba(197,48,48,0.35)] transition-all duration-300 hover:-translate-y-0.5"
                   handleOnClick={handleDownloadQRCode}
+                  isDisable={!showReceiveQr || !qrCodeDataUrl}
                 />
                 <button
                   type="button"
                   aria-label={t("common.shareQRCode")}
                   title={t("common.shareQRCode")}
                   onClick={handleShareQRCode}
+                  disabled={!showReceiveQr || !qrCodeDataUrl}
                   className="flex h-[48px] w-[52px] shrink-0 items-center justify-center rounded-2xl border-2 border-[#9E2A2B] bg-card text-[#9E2A2B] transition-all hover:-translate-y-0.5 hover:bg-[#FDF8F8] dark:border-[#E8B923] dark:bg-[#121e36] dark:text-[#E8B923] dark:hover:bg-[#1a2744]"
                 >
                   <Share2 className="h-[18px] w-[18px]" />

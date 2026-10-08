@@ -17,3 +17,9 @@ export function getFrontendOrigin(): string {
 export function getStripeOnboardingReturnUrl(): string {
   return `${getFrontendOrigin()}/service-provider/onboarding?stripe_return=1`;
 }
+
+/** Public guest tip page. A phone camera must open this URL in the browser. */
+export function getPublicTipUrl(keycloakId: string): string {
+  const id = keycloakId.trim();
+  return `${getFrontendOrigin()}/tip/${encodeURIComponent(id)}`;
+}

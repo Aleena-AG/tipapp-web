@@ -17,6 +17,8 @@ export interface PendingTipPayment {
   tipData: PendingTipData;
   paymentIntentId: string;
   clientSecret?: string;
+  /** True when the payment intent was created with no Bearer token. */
+  guestCheckout?: boolean;
 }
 
 export interface TipSuccessSummary {

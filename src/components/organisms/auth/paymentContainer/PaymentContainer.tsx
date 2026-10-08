@@ -28,6 +28,8 @@ const PaymentContainer = () => {
   const tipData = location.state?.tipData;
   const paymentIntentId = location.state?.paymentIntentId as string | undefined;
   const clientSecret = location.state?.clientSecret as string | undefined;
+  const guestCheckout = Boolean(location.state?.guestCheckout);
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
 
   const { data: currentUser } = useGetCurrentUser();
 
@@ -39,7 +41,9 @@ const PaymentContainer = () => {
 
   useEffect(() => {
     if (!tipData || !clientSecret || !paymentIntentId) {
-      navigate("/tip-provider", { replace: true });
+      navigate(localStorage.getItem("token") ? "/tip-provider" : "/", {
+        replace: true,
+      });
     }
   }, [tipData, clientSecret, paymentIntentId, navigate]);
 
@@ -114,9 +118,11 @@ const PaymentContainer = () => {
               tipData={tipData}
               paymentIntentId={paymentIntentId}
               clientSecret={clientSecret}
+              guestCheckout={guestCheckout}
             />
           )}
 
+          {isLoggedIn && (
           <div className="flex gap-[8px] justify-start items-center h-fit">
             <input
               type="radio"
@@ -137,9 +143,10 @@ const PaymentContainer = () => {
               )})
             </label>
           </div>
+          )}
         </div>
 
-        {paymentMethod === "balance" && (
+        {isLoggedIn && paymentMethod === "balance" && (
           <div className="flex flex-col justify-center items-center mt-[8px] gap-[12px]">
             <PrimaryButton
               typo={

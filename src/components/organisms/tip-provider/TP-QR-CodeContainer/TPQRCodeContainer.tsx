@@ -42,6 +42,9 @@ const TPQRCodeContainer = () => {
   const [isValidating, setIsValidating] = useState(false);
 
   const navigate = useNavigate();
+  const isLoggedIn = Boolean(
+    localStorage.getItem("token") && localStorage.getItem("userType")
+  );
   const { currency } = useContext(CurrencyContext);
   const { userDetails, isLoading: isUserLoading } = useUser();
   const tipsGiven = readDisplayFinancial(userDetails, "totalTipsGiven");
@@ -148,7 +151,7 @@ const TPQRCodeContainer = () => {
       setIsValidating(false);
       const uuid = extractAndValidateUUID(data);
       if (uuid) {
-        navigate(`/tip-provider/tip/${uuid}`);
+        navigate(`/tip/${uuid}`);
       }
     }
   }, [isValidating, isGetUserDetailsSuccess, data, navigate]);
@@ -156,15 +159,18 @@ const TPQRCodeContainer = () => {
   useEffect(() => {
     if (isValidating && isGetUserDetailsError) {
       setIsValidating(false);
+      const status = getUserDetailsError.response?.status;
       const errorMessage =
-        getUserDetailsError.response?.data?.message ||
-        getUserDetailsError.message ||
-        "Invalid QR code. Please scan a valid service provider's QR code.";
+        status === 404 || status === 400
+          ? t("common.invalidQrCode")
+          : getUserDetailsError.response?.data?.message ||
+            getUserDetailsError.message ||
+            t("common.invalidQrCode");
 
       ToastProvider.error(errorMessage);
       setInvalidQR(true);
     }
-  }, [isValidating, isGetUserDetailsError, getUserDetailsError]);
+  }, [isValidating, isGetUserDetailsError, getUserDetailsError, t]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -196,9 +202,11 @@ const TPQRCodeContainer = () => {
 
   return (
     <div className="relative w-full">
+      {isLoggedIn && (
       <div className="fixed right-3 top-[72px] z-30 sm:right-4 sm:top-[76px] lg:right-8 lg:top-[80px]">
         <SwitchAccount variant="floating" />
       </div>
+      )}
       {/* Validation overlay */}
       {isValidating && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50">
@@ -354,6 +362,8 @@ const TPQRCodeContainer = () => {
         />
       </div>
 
+      {isLoggedIn && (
+      <>
       {/* Stats */}
       <div className="mt-16 grid grid-cols-1 gap-16 sm:grid-cols-2">
         {/* Balance */}
@@ -474,6 +484,8 @@ const TPQRCodeContainer = () => {
           </button>
         </div>
       </div>
+      </>
+      )}
     </div>
 
     {/* RIGHT MASCOT SECTION */}

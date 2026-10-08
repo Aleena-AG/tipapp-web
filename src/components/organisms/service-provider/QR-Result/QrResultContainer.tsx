@@ -9,7 +9,6 @@ import TextArea from "@/components/atoms/textinput/textArea/TextArea";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetUserDetails } from "@/api/authApi";
 import ToastProvider from "@/providers/ToastProvider";
-import useAuth from "@/hooks/useAuth";
 import BounceLoader from "react-spinners/ClipLoader";
 import { SafeImage } from "@/components/atoms/images/SafeImage";
 import { handleScrollTop } from "@/hooks/hooks";
@@ -20,7 +19,6 @@ import { useWithdrawAndTipLimit } from "@/api/tipManagement";
 import { minimumTipForCurrency } from "@/currency/catalog";
 import { useCurrencyCatalog } from "@/currency/useLocationCurrency";
 import { normalizeCurrencyCode } from "@/currency/countryCurrency";
-import { resolveMerchantCountry } from "@/currency/merchantCountry";
 import { formatMoney } from "@/currency/format";
 import { useTranslation } from "react-i18next";
 import { useDisableButton } from "@/components/atoms/buttons/DisableButtonContext";
@@ -190,6 +188,7 @@ const QrResultContainer = () => {
     ProfilePictureURL: "",
   });
   const { disablebutton } = useDisableButton();
+  const [invalidQr, setInvalidQr] = useState(false);
 
   const [isTipScreenOpen, setIsTipScreenOpen] = useState(false);
   const { currency, minTip } = useActiveTipCurrency();
@@ -205,16 +204,9 @@ const QrResultContainer = () => {
   const {
     mutateAsync: createTipPaymentIntentAsync,
     isLoading: isPaymentIntentLoading,
-  } = useCreateTipPaymentIntent(
-    undefined,
-    (error: string) => {
-      ToastProvider.error(error || "Failed to create payment intent");
-    }
-  );
+  } = useCreateTipPaymentIntent();
 
-  const { getCurrentUserId } = useAuth();
   const { id } = useParams();
-  localStorage.setItem("ServiceProviderID", id as any);
 
   const initialValues = {
     rating: 0,
@@ -237,19 +229,8 @@ const QrResultContainer = () => {
   }
 
   const handleSubmit = async (values: FormValues) => {
-    const token = localStorage.getItem("token");
-    const userid = (await getCurrentUserId()) || "";
-    if (!token || !userid) {
-      ToastProvider.error("Please login to continue");
-      navigate("/sign-in");
-      return;
-    }
     if (!id) {
-      ToastProvider.error("Service provider not found");
-      return;
-    }
-    if (values.rating === 0) {
-      ToastProvider.error("Rating cannot be 0");
+      setInvalidQr(true);
       return;
     }
     if (values.tip < minTip) {
@@ -258,11 +239,12 @@ const QrResultContainer = () => {
       );
       return;
     }
+    const guestCheckout = !localStorage.getItem("token");
     const tipData = {
-      TipperID: userid,
+      TipperID: guestCheckout ? "" : localStorage.getItem("userId") || "",
       ServiceProviderID: id,
       Amount: values.tip,
-      Currency: currency,
+      Currency: currency.toUpperCase(),
       TipDate: new Date(),
       Review: values.review,
       Rating: values.rating,
@@ -275,9 +257,8 @@ const QrResultContainer = () => {
     try {
       const result = await createTipPaymentIntentAsync({
         amount: amountInCents,
-        currency: currency.toLowerCase(),
+        currency: currency.toUpperCase(),
         serviceProviderId: id,
-        merchantCountry: resolveMerchantCountry(currency),
       });
 
       setPendingTipPayment({
@@ -287,6 +268,7 @@ const QrResultContainer = () => {
         },
         paymentIntentId: result.paymentIntentId,
         clientSecret: result.clientSecret,
+        guestCheckout,
       });
 
       navigate("/payment", {
@@ -294,6 +276,7 @@ const QrResultContainer = () => {
           tipData,
           clientSecret: result.clientSecret,
           paymentIntentId: result.paymentIntentId,
+          guestCheckout,
         },
       });
     } catch (error: any) {
@@ -303,9 +286,8 @@ const QrResultContainer = () => {
         error?.response?.data?.message ||
         error?.message ||
         "Failed to create payment intent. Please try again.";
-      if (status === 401) {
-        ToastProvider.error("Please login to continue");
-        navigate("/sign-in");
+      if (status === 404) {
+        setInvalidQr(true);
         return;
       }
       ToastProvider.error(message);
@@ -317,12 +299,8 @@ const QrResultContainer = () => {
       const userData = parseKeycloakUserDetailsResponse(getUserDetailsData);
       if (!userData) return;
 
-      // Check if user is banned
       if (userData?.Status === "banned") {
-        ToastProvider.error(
-          "This service provider is currently unavailable to receive tips. Please try another service provider."
-        );
-        navigate("/tip-provider");
+        setInvalidQr(true);
         return;
       }
 
@@ -334,40 +312,63 @@ const QrResultContainer = () => {
         ProfilePictureURL: userData.ProfilePictureURL ?? "",
       });
     }
-  }, [isGetUserDetailsSuccess, getUserDetailsData, navigate]);
+  }, [isGetUserDetailsSuccess, getUserDetailsData]);
 
   useEffect(() => {
     if (isGetUserDetailsError && getUserDetailsError) {
-      console.error(
-        "User details error:",
-        getUserDetailsError.response?.data?.message ||
-          getUserDetailsError.message
-      );
-      if (getUserDetailsError.response?.status === 401) {
-        ToastProvider.error("Please login to continue");
-        navigate("/sign-in");
-      } else {
-        // Handle other errors (network issues, etc.) but not 400 since validation happens before navigation
-        ToastProvider.error(
-          getUserDetailsError.response?.data?.message ||
-            getUserDetailsError.message ||
-            "Failed to load user details. Please try again."
-        );
-        // Navigate back to tip provider page for any error except 401
-        setTimeout(() => {
-          navigate("/tip-provider");
-        }, 2000);
+      const status = getUserDetailsError.response?.status;
+      if (status === 404 || status === 400) {
+        setInvalidQr(true);
+        return;
       }
+      ToastProvider.error(
+        getUserDetailsError.response?.data?.message ||
+          getUserDetailsError.message ||
+          "Failed to load user details. Please try again."
+      );
     }
-  }, [isGetUserDetailsError, getUserDetailsError, navigate]);
+  }, [isGetUserDetailsError, getUserDetailsError]);
 
   useEffect(() => {
+    if (!id) {
+      setInvalidQr(true);
+      return;
+    }
+    setInvalidQr(false);
     getUserDetailsMutate(id);
   }, [id]);
 
   const handleBackToHome = () => {
-    navigate("/tip-provider");
+    if (localStorage.getItem("token")) {
+      const role = localStorage.getItem("userType");
+      if (role === "sp") {
+        navigate("/service-provider");
+        return;
+      }
+      if (role === "tp" || role === "both") {
+        navigate("/tip-provider");
+        return;
+      }
+    }
+    navigate("/");
   };
+
+  if (invalidQr) {
+    return (
+      <div className="mx-auto flex min-h-[320px] w-full max-w-[480px] flex-col items-center justify-center gap-16 rounded-[20px] border border-[#E4EDF5] bg-card p-32 text-center shadow-sm">
+        <h1 className="poppins-semibold text-[22px] text-[#0B2B4E] dark:text-white">
+          {t("common.invalidQrCode")}
+        </h1>
+        <button
+          type="button"
+          onClick={handleBackToHome}
+          className="flex h-[48px] items-center justify-center rounded-[12px] bg-[#0B538D] px-24 text-white"
+        >
+          <span className="poppins-semibold text-[15px]">{t("common.backToHome")}</span>
+        </button>
+      </div>
+    );
+  }
 
   if (isGetUserDetailsLoading) {
     return (

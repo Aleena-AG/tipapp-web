@@ -1,6 +1,6 @@
 import { PrimaryButton } from "@/components/atoms/buttons/primaryButton";
 import { SecondaryTypo } from "@/components/atoms/typo/secondaryTypo";
-import { useAddTip } from "@/api/tipManagement";
+import { recordCardTipReview } from "@/api/tipManagement";
 import { getPaymentIntentStatus } from "@/api/managePayments";
 import {
   buildTipSuccessSummary,
@@ -35,12 +35,14 @@ interface TipStripeCheckoutProps {
   tipData: TipData;
   paymentIntentId: string;
   clientSecret: string;
+  guestCheckout: boolean;
 }
 
 const TipStripeCheckout = ({
   tipData,
   paymentIntentId,
   clientSecret,
+  guestCheckout,
 }: TipStripeCheckoutProps) => {
   const { t } = useTranslation();
   const stripe = useStripe();
@@ -50,39 +52,40 @@ const TipStripeCheckout = ({
   const [isElementReady, setIsElementReady] = useState(false);
   const [walletsAvailable, setWalletsAvailable] = useState(false);
 
-  const { mutate: addTipMutate, isLoading: isAddTipLoading } = useAddTip();
-
   const recordTip = useCallback(
-    (confirmedPaymentIntentId: string) => {
-      addTipMutate(
-        {
-          ServiceProviderID: tipData.ServiceProviderID,
+    async (confirmedPaymentIntentId: string) => {
+      const tipDate =
+        tipData.TipDate instanceof Date
+          ? tipData.TipDate.toISOString()
+          : String(tipData.TipDate);
+      try {
+        await recordCardTipReview({
+          guestCheckout,
           paymentIntentId: confirmedPaymentIntentId,
-          TipDate: tipData.TipDate,
-          Rating: tipData.Rating,
-          Review: tipData.Review,
-        },
+          clientSecret,
+          serviceProviderId: tipData.ServiceProviderID,
+          tipDate,
+          rating: tipData.Rating,
+          review: tipData.Review,
+        });
+      } catch {
+        ToastProvider.error(
+          "Payment succeeded, but the review could not be saved."
+        );
+      }
+      const summary = buildTipSuccessSummary(
         {
-          onSuccess: () => {
-            const summary = buildTipSuccessSummary(
-              {
-                ...tipData,
-                TipDate:
-                  tipData.TipDate instanceof Date
-                    ? tipData.TipDate.toISOString()
-                    : String(tipData.TipDate),
-              },
-              "Card"
-            );
-            if (summary) setTipSuccessSummary(summary);
-            clearPendingTipPayment();
-            ToastProvider.success("Payment is done successfully");
-            navigate("/payment/success");
-          },
-        }
+          ...tipData,
+          TipDate: tipDate,
+        },
+        "Card"
       );
+      if (summary) setTipSuccessSummary(summary);
+      clearPendingTipPayment();
+      ToastProvider.success("Payment is done successfully");
+      navigate("/payment/success");
     },
-    [addTipMutate, navigate, tipData]
+    [clientSecret, guestCheckout, navigate, tipData]
   );
 
   const finalizePayment = useCallback(
@@ -92,7 +95,7 @@ const TipStripeCheckout = ({
         clientSecret
       );
       if (statusData?.status === "succeeded") {
-        recordTip(confirmedPaymentIntentId);
+        await recordTip(confirmedPaymentIntentId);
       } else {
         ToastProvider.error("Payment was not completed. Please try again.");
       }
@@ -126,7 +129,7 @@ const TipStripeCheckout = ({
       const confirmedId = paymentIntent?.id || paymentIntentId;
 
       if (paymentIntent?.status === "succeeded") {
-        recordTip(confirmedId);
+        await recordTip(confirmedId);
         return;
       }
 
@@ -171,7 +174,7 @@ const TipStripeCheckout = ({
       const confirmedId = paymentIntent?.id || paymentIntentId;
 
       if (paymentIntent?.status === "succeeded") {
-        recordTip(confirmedId);
+        await recordTip(confirmedId);
         return;
       }
 
@@ -184,7 +187,7 @@ const TipStripeCheckout = ({
     }
   }, [elements, finalizePayment, paymentIntentId, recordTip, stripe]);
 
-  const isBusy = isProcessing || isAddTipLoading;
+  const isBusy = isProcessing;
   const currency = tipData.Currency || "GBP";
   const formattedAmount =
     tipData.Amount != null ? tipData.Amount.toFixed(2) : null;

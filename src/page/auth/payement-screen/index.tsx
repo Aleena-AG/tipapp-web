@@ -17,7 +17,8 @@ const PaymentScreen = () => {
   }, [stripeConfig?.publishableKey]);
 
   if (!clientSecret || !location.state?.tipData) {
-    return <Navigate to="/tip-provider" replace />;
+    const signedIn = Boolean(localStorage.getItem("token"));
+    return <Navigate to={signedIn ? "/tip-provider" : "/"} replace />;
   }
 
   if (isLoading || !stripePromise) {

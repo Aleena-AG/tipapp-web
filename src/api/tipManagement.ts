@@ -45,8 +45,11 @@ export const useGetTipHistoryDetails =
 
 export const useGetTipHistoryDetailsByTipper =
   (): UseInfiniteQueryResult<GetTipsApiResponse> => {
+    const hasToken =
+      typeof window !== "undefined" && Boolean(localStorage.getItem("token"));
     return useInfiniteQuery({
       queryKey: ["get_Tip_history_by_tipper"],
+      enabled: hasToken,
       queryFn: async ({ pageParam = 1 }) => {
         const response = await authFetch.get(
           `/tip-management/tipper?page=${pageParam}`,
@@ -280,6 +283,45 @@ export const useAddTip = () => {
     },
   });
 };
+
+/**
+ * Card tips are recorded by the Stripe webhook.
+ * A visitor attaches an optional review with guest-review.
+ * A signed-in tipper's review uses POST /tip-management, which only updates
+ * the webhook row when the payment intent already exists.
+ */
+export async function recordCardTipReview(input: {
+  guestCheckout: boolean;
+  paymentIntentId: string;
+  clientSecret?: string;
+  serviceProviderId: string;
+  tipDate: string;
+  rating?: number;
+  review?: string;
+}): Promise<void> {
+  const rating = input.rating != null && input.rating > 0 ? input.rating : undefined;
+  const review = input.review?.trim() || undefined;
+  if (!rating && !review) return;
+
+  if (input.guestCheckout) {
+    if (!input.clientSecret) return;
+    await authFetch.post("/tip-management/guest-review", {
+      paymentIntentId: input.paymentIntentId,
+      clientSecret: input.clientSecret,
+      ...(rating ? { Rating: rating } : {}),
+      ...(review ? { Review: review } : {}),
+    });
+    return;
+  }
+
+  await authFetch.post("/tip-management", {
+    ServiceProviderID: input.serviceProviderId,
+    TipDate: input.tipDate,
+    paymentIntentId: input.paymentIntentId,
+    ...(rating ? { Rating: rating } : {}),
+    ...(review ? { Review: review } : {}),
+  });
+}
 
 export const useAddComment = (
   onSuccess: () => void,

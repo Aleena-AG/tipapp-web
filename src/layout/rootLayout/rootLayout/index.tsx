@@ -42,6 +42,16 @@ const RootLayout = () => {
         return;
       }
 
+      // Guests and half-registered accounts can still scan and pay.
+      if (
+        path === "/tip-provider" ||
+        path.startsWith("/tip/") ||
+        path === "/payment" ||
+        path.startsWith("/payment/")
+      ) {
+        return;
+      }
+
       const userType = localStorage.getItem("userType");
       navigate("/register", {
         replace: true,

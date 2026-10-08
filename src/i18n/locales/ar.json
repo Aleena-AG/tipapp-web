@@ -368,6 +368,8 @@
     "spTrustEasyDesc": "تتبّع واسحب بسهولة",
     "qrCode": "رمز QR",
     "scanToTip": "امسح لإرسال إكرامية",
+    "invalidQrCode": "رمز QR غير صالح",
+    "receiveTipsQrUnavailable": "يظهر رمز QR بعد أن يصبح حساب مقدم الخدمة نشطاً.",
     "shareQRCode": "مشاركة",
     "totalTipsGiven": "إجمالي الإكراميات المقدمة",
     "feedback": "التعليقات",
