@@ -205,7 +205,6 @@ const AddressLocationMap = ({
       window.clearTimeout(timer);
       controller.abort();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeQuery, street, city]);
 
   const pickOnMap = async (next: MapPoint) => {
@@ -219,7 +218,7 @@ const AddressLocationMap = ({
     showPlace({ ...place, lat: next.lat, lng: next.lng }, true);
   };
 
-  const useMyLocation = async () => {
+  const locateOnMap = async () => {
     setLocating(true);
     try {
       let place: ResolvedAddressPlace | null = null;
@@ -269,7 +268,7 @@ const AddressLocationMap = ({
       <button
         type="button"
         onClick={() => {
-          void useMyLocation();
+          void locateOnMap();
         }}
         disabled={locating}
         className="inline-flex h-[36px] w-fit items-center gap-[6px] rounded-md border border-[#0B538D] px-[12px] text-[13px] font-medium text-[#0B538D] disabled:opacity-60"

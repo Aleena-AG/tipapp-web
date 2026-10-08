@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { getLocationCurrencyState, releaseUserCurrencyOverride } from "@/currency/locationStore";

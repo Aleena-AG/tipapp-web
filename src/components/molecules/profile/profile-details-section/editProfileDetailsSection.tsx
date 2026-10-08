@@ -134,15 +134,16 @@ const EditProfileDetailsSection = ({
             country: formValues.Country,
             countryCode: countryCodeFromName(formValues.Country),
           };
-          const existing = JSON.parse(localStorage.getItem("user") || "{}");
-          const { Gender: _g1, currency: _c1, ...safeExisting } = existing;
-          const {
-            Gender: _g2,
-            currency: _selectedCurrency,
-            ...safeForm
-          } = formValues as typeof formValues & {
-            Gender?: string;
-          };
+          const safeExisting = JSON.parse(
+            localStorage.getItem("user") || "{}"
+          ) as Record<string, unknown>;
+          delete safeExisting.Gender;
+          delete safeExisting.currency;
+          const safeForm = {
+            ...(formValues as typeof formValues & { Gender?: string }),
+          } as Record<string, unknown>;
+          delete safeForm.Gender;
+          delete safeForm.currency;
           localStorage.setItem(
             "user",
             JSON.stringify({
@@ -369,9 +370,8 @@ const EditProfileDetailsSection = ({
   };
 
   const updateLocalStorage = (userDetails: UserDetails) => {
-    const { Gender: _gender, ...safeUser } = userDetails as UserDetails & {
-      Gender?: string | null;
-    };
+    const safeUser = { ...userDetails } as UserDetails & { Gender?: string | null };
+    delete safeUser.Gender;
     localStorage.setItem("user", JSON.stringify(safeUser));
   };
 
