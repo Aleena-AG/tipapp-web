@@ -73,7 +73,11 @@ const RootLayout = () => {
   const hideChrome = hideChromeRoutes.some(
     (p) => location.pathname === p || location.pathname.startsWith(`${p}/`)
   );
-  const hideFooter = hideChrome || location.pathname === "/";
+  const isGuestPayFlow =
+    location.pathname.startsWith("/tip/") ||
+    location.pathname === "/payment" ||
+    location.pathname.startsWith("/payment/");
+  const hideFooter = hideChrome || location.pathname === "/" || isGuestPayFlow;
   const isLanding = location.pathname === "/";
 
   return (

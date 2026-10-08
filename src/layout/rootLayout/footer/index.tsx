@@ -11,29 +11,30 @@ import {
 const Footer = () => {
   const { t } = useTranslation();
 
+  const linkClass =
+    "poppins-medium text-[12px] leading-4 text-[#5B6475] transition-colors hover:text-[#0B538D] dark:text-[#B7C7D9] dark:hover:text-white";
+
   return (
-    <footer className="border-t border-border bg-app-surface-muted px-4 pt-6 pb-4 sm:px-6 lg:px-10 dark:border-white/10 dark:bg-[#010816]">
-      <div className="mx-auto w-full max-w-[1280px]">
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-          {/* Brand */}
-          <div className="flex shrink-0 items-center gap-3">
+    <footer className="border-t border-[#E6EEF5] bg-white px-16 py-20 dark:border-white/10 dark:bg-[#0a1629] sm:px-24">
+      <div className="mx-auto flex w-full max-w-[1100px] flex-col items-center gap-16">
+        <div className="flex w-full flex-col items-center gap-14 sm:flex-row sm:justify-between">
+          <div className="flex items-center gap-10">
             <img
               src={appLogo}
               alt="TipTapp"
-              className="h-10 w-10 rounded-lg object-contain shadow-sm"
+              className="h-[44px] w-[44px] rounded-[12px] object-contain"
             />
             <div className="flex flex-col leading-tight">
-              <span className="poppins-semibold whitespace-nowrap text-sm text-app">
+              <span className="poppins-semibold text-[15px] text-[#0B2B4E] dark:text-white">
                 TipTapp
               </span>
-              <span className="poppins-regular whitespace-nowrap text-[11px] text-app-muted">
+              <span className="poppins-regular text-[12px] text-[#8A93A0]">
                 {t("footer.tagline")}
               </span>
             </div>
           </div>
 
-          {/* Download + social */}
-          <div className="flex shrink-0 items-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-10">
             <DownloadBadges />
             {FooterSocialMediaIcons.map((icon, index) => (
               <Link
@@ -42,40 +43,41 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#0A66C2] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                className="flex h-[40px] w-[40px] items-center justify-center rounded-[10px] bg-[#0A66C2] transition-colors hover:bg-[#084e96]"
               >
                 <img
                   src={icon.icon ?? LinkedInIcon}
-                  alt="LinkedIn"
-                  className="h-5 w-5 [filter:brightness(0)_invert(1)]"
+                  alt=""
+                  className="h-[18px] w-[18px] [filter:brightness(0)_invert(1)]"
                 />
               </Link>
             ))}
           </div>
         </div>
 
-        {/* Bottom line */}
-        <div className="mt-5 flex flex-col items-center gap-2 border-t border-border pt-4 text-center sm:flex-row sm:justify-between sm:text-left">
-          <span className="poppins-medium text-[11px] leading-4 text-app-muted">
+        <div className="flex w-full flex-col items-center gap-12 border-t border-[#E6EEF5] pt-16 text-center dark:border-white/10">
+          <span className="poppins-medium text-[12px] text-[#8A93A0]">
             {t("footer.copyright")}
           </span>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+          <nav className="flex max-w-[720px] flex-wrap items-center justify-center gap-x-16 gap-y-8">
             <Link
               to="/view-more/newsletter"
               onClick={() => window.scrollTo(0, 0)}
-              className="poppins-medium text-[11px] leading-4 text-app-muted transition-colors hover:text-[#1E4FA3] dark:hover:text-[#93C5FD]"
+              className={linkClass}
             >
               {t("footer.moreFromTipTapp.newsletters")}
             </Link>
-            {attachedDocuments.map((document, index) => (
-              <span
-                key={index}
-                className="poppins-regular text-[11px] leading-4 text-app-muted transition-colors hover:text-app"
+            {attachedDocuments.map((document) => (
+              <Link
+                key={document.name}
+                to={document.href}
+                onClick={() => window.scrollTo(0, 0)}
+                className={linkClass}
               >
                 {t(document.name)}
-              </span>
+              </Link>
             ))}
-          </div>
+          </nav>
         </div>
       </div>
     </footer>

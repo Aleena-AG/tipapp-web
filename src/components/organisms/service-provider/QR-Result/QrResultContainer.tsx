@@ -1,11 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { SecondaryTypo } from "@/components/atoms/typo/secondaryTypo";
-import Rating from "@/components/atoms/rating/Rating";
-import TextArea from "@/components/atoms/textinput/textArea/TextArea";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetUserDetails } from "@/api/authApi";
 import ToastProvider from "@/providers/ToastProvider";
@@ -21,6 +18,7 @@ import { minimumTipForCurrency } from "@/currency/catalog";
 import { useCurrencyCatalog } from "@/currency/useLocationCurrency";
 import { normalizeCurrencyCode } from "@/currency/countryCurrency";
 import { formatMoney } from "@/currency/format";
+import { symbolForCurrency } from "@/currency/catalog";
 import { useTranslation } from "react-i18next";
 import { useDisableButton } from "@/components/atoms/buttons/DisableButtonContext";
 import {
@@ -29,17 +27,11 @@ import {
 } from "@/utils/userProfile";
 import { getRoleAvatarFallback } from "@/utils/imageUtils";
 import { FaArrowLeft } from "react-icons/fa";
-import {
-  ChevronRight,
-  BadgeCheck,
-  ShieldCheck,
-  Zap,
-  Smile,
-  Star,
-} from "lucide-react";
-import { AiFillStar } from "react-icons/ai";
-import TipSendMascot from "@/assets/images/tp-send.png";
-import TipJarMascot from "@/assets/images/tip-jar.png";
+import { ArrowRight, BadgeCheck, Briefcase, MapPin } from "lucide-react";
+import { AiFillStar, AiOutlineStar } from "react-icons/ai";
+
+const PRESET_AMOUNTS = [2, 5, 10, 20];
+const REVIEW_LIMIT = 500;
 
 function useActiveTipCurrency() {
   useCurrencyCatalog();
@@ -64,10 +56,33 @@ function useActiveTipCurrency() {
   return { currency, minTip, maxTip };
 }
 
-const TipAmountInput = (props: any & { t: any }) => {
+const TipAmountInput = (props: { onChange: (amount: number) => void; t: (key: string) => string }) => {
   const { setDisableButton } = useDisableButton();
   const { currency, minTip, maxTip } = useActiveTipCurrency();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(minTip.toFixed(2));
+  const [custom, setCustom] = useState(false);
+  const symbol = symbolForCurrency(currency);
+  const presets = PRESET_AMOUNTS.filter(
+    (amount) => amount + 0.001 >= minTip && (maxTip == null || amount <= maxTip)
+  );
+
+  const publish = (next: number, isCustom: boolean) => {
+    const fixed = next.toFixed(2);
+    setValue(fixed);
+    setCustom(isCustom);
+    props.onChange(parseFloat(fixed));
+    if (next < minTip) {
+      setDisableButton(true);
+      return;
+    }
+    if (maxTip != null && next > maxTip) {
+      ToastProvider.error(`Maximum amount should be ${formatMoney(maxTip, currency)}`);
+      setDisableButton(true);
+      return;
+    }
+    setDisableButton(false);
+  };
 
   useEffect(() => {
     setValue((current) => {
@@ -76,103 +91,129 @@ const TipAmountInput = (props: any & { t: any }) => {
       if (next < minTip) next = minTip;
       if (maxTip != null && next > maxTip) next = maxTip;
       const fixed = next.toFixed(2);
+      const matchesPreset = presets.some((amount) => Math.abs(amount - next) < 0.001);
+      setCustom(!matchesPreset);
       props.onChange(parseFloat(fixed));
       setDisableButton(false);
       return fixed;
     });
   }, [minTip, maxTip]);
 
-  const [, setIsEditable] = useState(false);
+  const numeric = parseFloat(value);
+  const activePreset = presets.find((amount) => Math.abs(amount - numeric) < 0.001);
 
   const incrementValue = () => {
-    const newValue = (parseFloat(value) + 1).toFixed(2);
-
-    if (maxTip == null || parseFloat(newValue) <= maxTip) {
-      setValue(newValue);
-      setIsEditable(true);
-      props.onChange(parseFloat(newValue));
-      setDisableButton(false);
-    } else {
+    const next = parseFloat(value) + 1;
+    if (maxTip != null && next > maxTip) {
       ToastProvider.error(`Maximum amount should be ${formatMoney(maxTip, currency)}`);
       setDisableButton(true);
+      return;
     }
+    const matchesPreset = presets.some((amount) => Math.abs(amount - next) < 0.001);
+    publish(next, !matchesPreset);
   };
 
   const decrementValue = () => {
-    const newValue = (parseFloat(value) - 1).toFixed(2);
-    if (parseFloat(newValue) >= minTip) {
-      setValue(newValue);
-      setIsEditable(true);
-      props.onChange(parseFloat(newValue));
-      setDisableButton(false);
-    }
+    const next = parseFloat(value) - 1;
+    if (next < minTip) return;
+    const matchesPreset = presets.some((amount) => Math.abs(amount - next) < 0.001);
+    publish(next, !matchesPreset);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-
-    if (/^\d+(\.\d{0,2})?$/.test(inputValue)) {
-      setValue(inputValue);
-      setIsEditable(true);
-      props.onChange(parseFloat(inputValue));
-
-      if (parseFloat(inputValue) < minTip) {
-        setDisableButton(true);
-      } else if (maxTip != null && parseFloat(inputValue) > maxTip) {
-        ToastProvider.error(
-          `Maximum amount should be ${formatMoney(maxTip, currency)}`
-        );
-        setDisableButton(true);
-      } else {
-        setDisableButton(false);
-      }
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+    if (inputValue !== "" && !/^\d+(\.\d{0,2})?$/.test(inputValue)) return;
+    setValue(inputValue);
+    setCustom(true);
+    const parsed = parseFloat(inputValue);
+    if (!Number.isFinite(parsed)) {
+      setDisableButton(true);
+      return;
+    }
+    props.onChange(parsed);
+    if (parsed < minTip) {
+      setDisableButton(true);
+    } else if (maxTip != null && parsed > maxTip) {
+      ToastProvider.error(`Maximum amount should be ${formatMoney(maxTip, currency)}`);
+      setDisableButton(true);
+    } else {
+      setDisableButton(false);
     }
   };
 
   const handleBlur = () => {
-    if (!value.includes(".")) {
-      setValue(parseFloat(value).toFixed(2));
-    } else if (value.split(".")[1].length < 2) {
-      setValue(parseFloat(value).toFixed(2));
+    const parsed = parseFloat(value);
+    if (!Number.isFinite(parsed)) {
+      publish(minTip, !presets.some((amount) => Math.abs(amount - minTip) < 0.001));
+      return;
     }
+    publish(parsed, !presets.some((amount) => Math.abs(amount - parsed) < 0.001));
   };
 
+  const chipClass = (selected: boolean) =>
+    `poppins-semibold h-[38px] rounded-full border px-4 text-[12px] transition-colors ${
+      selected
+        ? "border-[#0B538D] bg-[#EAF4FF] text-[#0B538D]"
+        : "border-[#E6EEF5] bg-white text-[#5B6475] hover:bg-[#F7FAFD]"
+    }`;
+
   return (
-    <div className="mt-[30px] flex flex-col items-center">
-      <SecondaryTypo
-        typo={props.t("common.amount")}
-        styles="text-app text-center text-[14px] mb-8"
-      />
-      <div className="mt-12 flex w-full items-center justify-between gap-16">
+    <div>
+      <div className="mt-16 flex items-center gap-10">
         <button
-          className={`flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-[16px] border border-[#E4EDF5] bg-card text-[32px] leading-none text-[#0B538D] transition-colors hover:bg-[#EAF3FA] ${
-            parseFloat(value) <= minTip ? "cursor-not-allowed opacity-40" : ""
+          className={`flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[14px] border border-[#E6EEF6] bg-white text-[26px] leading-none text-[#0B538D] ${
+            numeric <= minTip ? "cursor-not-allowed opacity-40" : ""
           }`}
           onClick={decrementValue}
           type="button"
-          disabled={parseFloat(value) <= minTip}
+          disabled={numeric <= minTip}
+          aria-label={props.t("common.amount")}
         >
-          <span className="-mt-4">−</span>
+          <span className="-mt-2">−</span>
         </button>
-        <div className="flex min-w-0 flex-1 flex-col items-center">
-          <input
-            type="text"
-            value={value}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className="w-full max-w-[160px] rounded-md border-none text-center text-[42px] font-poppins-thin text-app outline-none"
-          />
-          <SecondaryTypo
-            typo={currency}
-            styles="text-[#7A7A7A] dark:text-slate-400 text-center text-[13px] mt-2"
-          />
-        </div>
+        <input
+          ref={inputRef}
+          type="text"
+          inputMode="decimal"
+          value={value}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          aria-label={props.t("common.tipAmount")}
+          className={`poppins-bold h-[52px] min-w-0 flex-1 rounded-[14px] border bg-[#F4F7FB] text-center text-[26px] text-[#0B2B4E] outline-none ${
+            custom ? "border-[#0B538D]" : "border-transparent"
+          }`}
+        />
         <button
-          className="flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-[16px] bg-[#0B538D] text-[32px] leading-none text-white transition-colors hover:bg-[#0077B6]"
+          className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[14px] bg-[#0B538D] text-[26px] leading-none text-white hover:bg-[#0077B6]"
           onClick={incrementValue}
           type="button"
+          aria-label={props.t("common.tipAmount")}
         >
-          <span className="-mt-4">+</span>
+          <span className="-mt-2">+</span>
+        </button>
+      </div>
+      <div className="mt-14 grid grid-cols-5 gap-8">
+        {presets.map((amount) => (
+          <button
+            key={amount}
+            type="button"
+            onClick={() => publish(amount, false)}
+            className={chipClass(!custom && activePreset === amount)}
+          >
+            {symbol}
+            {amount}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => {
+            setCustom(true);
+            inputRef.current?.focus();
+            inputRef.current?.select();
+          }}
+          className={chipClass(custom)}
+        >
+          {props.t("common.otherAmount")}
         </button>
       </div>
     </div>
@@ -187,11 +228,11 @@ const QrResultContainer = () => {
     id: "--",
     Bio: "--",
     ProfilePictureURL: "",
+    Country: "",
+    City: "",
   });
   const { disablebutton } = useDisableButton();
   const [invalidQr, setInvalidQr] = useState(false);
-
-  const [isTipScreenOpen, setIsTipScreenOpen] = useState(false);
   const { currency, minTip } = useActiveTipCurrency();
   const {
     mutate: getUserDetailsMutate,
@@ -316,6 +357,8 @@ const QrResultContainer = () => {
         id: String(userData.KeyCloakID ?? userData.id ?? "--"),
         Bio: userData.Bio ?? "--",
         ProfilePictureURL: userData.ProfilePictureURL ?? "",
+        Country: userData.Country ?? "",
+        City: userData.City ?? "",
       });
     }
   }, [isGetUserDetailsSuccess, getUserDetailsData]);
@@ -393,335 +436,171 @@ const QrResultContainer = () => {
     );
   }
 
-  const trustBadges = [
-    {
-      icon: ShieldCheck,
-      title: t("common.secureTipping"),
-      desc: t("common.secureTippingDesc"),
-    },
-    {
-      icon: Zap,
-      title: t("common.instantPayment"),
-      desc: t("common.instantPaymentDesc"),
-    },
-    {
-      icon: Smile,
-      title: t("common.leaveFeedback"),
-      desc: t("common.leaveFeedbackDesc"),
-    },
-  ];
-
-  const tipBadges = [
-    {
-      icon: Smile,
-      title: t("common.positiveFeedback"),
-      desc: t("common.positiveFeedbackDesc"),
-      iconColor: "text-[#0B538D]",
-      iconBg: "bg-[#EAF4FF]",
-    },
-    {
-      icon: Zap,
-      title: t("common.fastEasyTipping"),
-      desc: t("common.fastEasyTippingDesc"),
-      iconColor: "text-[#1EA672]",
-      iconBg: "bg-[#E6F7EF]",
-    },
-    {
-      icon: ShieldCheck,
-      title: t("common.securePrivate"),
-      desc: t("common.securePrivateDesc"),
-      iconColor: "text-[#8B5CF6]",
-      iconBg: "bg-[#F1EBFE]",
-    },
-  ];
+  const location = [user.City, user.Country].filter((part) => part && part !== "--").join(", ");
+  const displayName = getUserDisplayName(user);
+  const hasProfile = Boolean(user.id && user.id !== "--");
 
   return (
-    <div className="relative mx-auto w-full max-w-[1180px] px-4">
-      {/* Decorative dot grids */}
-      <div
-        className="pointer-events-none absolute right-2 top-4 hidden h-24 w-28 opacity-50 lg:block"
-        style={{
-          backgroundImage:
-            "radial-gradient(rgba(11,83,141,0.25) 1.5px, transparent 1.5px)",
-          backgroundSize: "13px 13px",
-        }}
-      />
-      <div
-        className="pointer-events-none absolute bottom-2 left-2 hidden h-24 w-28 opacity-50 lg:block"
-        style={{
-          backgroundImage:
-            "radial-gradient(rgba(11,83,141,0.2) 1.5px, transparent 1.5px)",
-          backgroundSize: "13px 13px",
-        }}
-      />
-
-      {/* Page header */}
-      <div className="mb-24 flex flex-col gap-16">
+    <div className="relative mx-auto w-full max-w-[440px]">
+      <div className="mb-20 flex flex-col gap-16">
         <button
           type="button"
-          onClick={isTipScreenOpen ? () => setIsTipScreenOpen(false) : handleBackToHome}
-          className="inline-flex w-fit items-center gap-8 rounded-full border border-[#E4EDF5] bg-card px-16 py-8 text-[#0B538D] shadow-[0_4px_12px_rgba(11,83,141,0.08)] transition-colors hover:bg-[#EAF3FA]"
+          onClick={handleBackToHome}
+          className="inline-flex w-fit items-center gap-8 rounded-full border border-[#E4EDF5] bg-white px-16 py-8 text-[#0B538D] shadow-[0_4px_12px_rgba(11,83,141,0.08)] transition-colors hover:bg-[#EAF3FA]"
         >
           <FaArrowLeft className="text-[12px]" />
           <span className="poppins-semibold text-[13px]">{t("buttons.back")}</span>
         </button>
-
         <div>
-          <h1 className="poppins-semibold text-[30px] leading-[1.1] tracking-[-0.03em] text-[#0B2B4E] dark:text-white sm:text-[40px]">
-            {isTipScreenOpen
-              ? t("common.rateMyWork")
-              : t("userSelection.serviceProvider")}
+          <h1 className="poppins-bold text-[28px] leading-[1.15] tracking-[-0.03em] text-[#0B2B4E]">
+            {t("common.rateAndTip")}
           </h1>
-          <p className="poppins-regular mt-8 max-w-[480px] text-[14px] text-[#6F7682] dark:text-slate-400 sm:text-[15px]">
-            {isTipScreenOpen
-              ? t("common.whatElseCanIDoToImproveMyService")
-              : t("common.reviewProviderBeforeTipping")}
+          <p className="poppins-regular mt-6 text-[14px] text-[#8A93A0]">
+            {t("common.rateAndTipSubtitle")}
           </p>
         </div>
       </div>
 
-      <div className="relative grid grid-cols-1 gap-32 lg:grid-cols-2 lg:items-center lg:gap-[56px]">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ setFieldValue }) => (
-            <Form className="w-full max-w-[440px] overflow-hidden rounded-[20px] border border-[#E4EDF5] bg-card shadow-[0_8px_32px_rgba(11,83,141,0.08)]">
-              {/* Top bar */}
-              <div className="flex items-center gap-12 border-b border-[#EEF2F6] px-20 py-16">
-                {isTipScreenOpen && (
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#EAF4FF]">
-                    <Star className="h-[18px] w-[18px] fill-[#0B538D] text-[#0B538D]" />
-                  </span>
-                )}
-                <div>
-                  <h2 className="poppins-semibold text-[17px] text-[#0B538D] sm:text-[18px]">
-                    {isTipScreenOpen
-                      ? t("common.rateMyWork")
-                      : t("userSelection.serviceProvider")}
-                  </h2>
-                  {!isTipScreenOpen && (
-                    <p className="poppins-regular text-[12px] text-[#7A7A7A] dark:text-slate-400">
-                      {t("common.scanToGetStarted")}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {!isTipScreenOpen && (
-                <div className="flex flex-col px-20 pb-24 pt-24 sm:px-28">
-                  <div className="flex flex-col items-center">
-                    <div className="rounded-full">
-                      <SafeImage
-                        src={user.ProfilePictureURL}
-                        fallbackSrc={getRoleAvatarFallback("sp")}
-                        className="h-[128px] w-[128px] rounded-full object-cover"
-                        alt="profile"
-                      />
-                    </div>
-                    <div className="mt-16 flex items-center justify-center gap-6">
-                      <h3 className="poppins-semibold text-center text-[20px] text-app">
-                        {getUserDisplayName(user) || "User Not Found"}
-                      </h3>
-                      {user.id && (
-                        <BadgeCheck className="h-5 w-5 shrink-0 fill-[#0B538D] text-white" />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mt-24">
-                    <div className="rounded-[12px] bg-[#F8FBFE] px-16 py-12 dark:bg-[#12233d] dark:ring-1 dark:ring-white/10">
-                      <p className="poppins-medium text-[11px] text-[#7A7A7A] dark:text-slate-400">
-                        {t("common.description")}
-                      </p>
-                      <p className="poppins-regular mt-4 line-clamp-3 text-[13px] leading-[22px] text-[#141414] dark:text-white">
-                        {user?.Bio && user.Bio !== "--"
-                          ? user.Bio.toString()
-                          : t("common.noDescriptionYet")}
-                      </p>
-                    </div>
-                  </div>
-
-                  {user.id && (
-                    <div className="mt-24 flex flex-col gap-12">
-                      <button
-                        type="button"
-                        onClick={() => setIsTipScreenOpen(true)}
-                        className="flex h-[48px] w-full items-center justify-center gap-8 rounded-[12px] bg-[#0B538D] text-white transition-colors hover:bg-[#0077B6]"
-                      >
-                        <span className="poppins-semibold text-[15px]">
-                          {t("common.tipAndServiceReview")}
-                        </span>
-                        <ChevronRight className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {isTipScreenOpen && (
-                <div className="flex flex-col px-20 pb-28 pt-24 sm:px-28">
-                  <div className="flex justify-center">
-                    <Field name="rating">
-                      {({ field }: any) => (
-                        <Rating
-                          value={field.value}
-                          onChange={(value) => setFieldValue("rating", value)}
-                        />
-                      )}
-                    </Field>
-                  </div>
-
-                  <div className="mt-20 w-full">
-                    <SecondaryTypo
-                      typo={t("common.whatElseCanIDoToImproveMyService")}
-                      styles="text-[14px] text-app"
-                    />
-                    <div className="mt-8 w-full">
-                      <TextArea
-                        name="review"
-                        placeholder={t("common.typeHere")}
-                        containerStyles="w-full"
-                        inputStyles="w-full"
-                      />
-                    </div>
-                  </div>
-
-                  <Field name="tip">
-                    {({ field }: any) => (
-                      <TipAmountInput
-                        value={field.value}
-                        onChange={(newAmount: number) => {
-                          setFieldValue("tip", newAmount);
-                        }}
-                        t={t}
-                      />
-                    )}
-                  </Field>
-
-                  <button
-                    type="submit"
-                    onClick={() => handleScrollTop()}
-                    disabled={disablebutton}
-                    className={`mt-16 flex h-[48px] w-full items-center justify-center rounded-[12px] bg-[#0B538D] text-white transition-colors hover:bg-[#0077B6] ${
-                      disablebutton ? "cursor-not-allowed opacity-40" : ""
-                    }`}
-                  >
-                    <span className="poppins-semibold text-[15px]">
-                      {isPaymentIntentLoading
-                        ? t("common.processing")
-                        : t("common.submit")}
-                    </span>
-                  </button>
-                </div>
-              )}
-            </Form>
-          )}
-        </Formik>
-
-        {/* Appreciate section — desktop only */}
-        {!isTipScreenOpen && (
-          <div className="hidden lg:flex lg:flex-col lg:gap-32">
-            <div className="flex items-center gap-24">
-              <div className="relative flex shrink-0 items-center justify-center">
-                <div className="absolute h-[320px] w-[320px] rounded-full bg-gradient-to-br from-[#EAF4FF] via-[#D7EAF9] to-[#CFE4F6]" />
-                <div className="absolute h-[370px] w-[370px] rounded-full border border-[#0B538D]/10" />
-                <img
-                  src={TipSendMascot}
-                  alt="Tip mascot"
-                  className="relative z-10 h-[360px] w-auto object-contain drop-shadow-[0_26px_50px_rgba(11,83,141,0.18)]"
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ setFieldValue, values }) => (
+          <Form className="flex flex-col gap-14">
+            <section className="rounded-[20px] border border-[#E8EEF6] bg-white p-16 shadow-[0_8px_28px_rgba(11,83,141,0.06)]">
+              <div className="flex items-center gap-12">
+                <SafeImage
+                  src={user.ProfilePictureURL}
+                  fallbackSrc={getRoleAvatarFallback("sp")}
+                  className="h-[52px] w-[52px] shrink-0 rounded-full object-cover"
+                  alt={displayName || "profile"}
                 />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-6">
+                    <h2 className="poppins-semibold truncate text-[16px] text-[#0B2B4E]">
+                      {displayName || t("common.noDataAvailableYet")}
+                    </h2>
+                    {hasProfile && (
+                      <BadgeCheck className="h-[18px] w-[18px] shrink-0 fill-[#0B538D] text-white" />
+                    )}
+                  </div>
+                  <div className="mt-4 flex flex-wrap items-center gap-10 text-[#8A93A0]">
+                    {location && (
+                      <span className="inline-flex items-center gap-4">
+                        <MapPin className="h-[13px] w-[13px]" />
+                        <span className="poppins-regular text-[12px]">{location}</span>
+                      </span>
+                    )}
+                    <span className="inline-flex items-center gap-4">
+                      <Briefcase className="h-[13px] w-[13px]" />
+                      <span className="poppins-regular text-[12px]">
+                        {t("userSelection.serviceProvider")}
+                      </span>
+                    </span>
+                  </div>
+                </div>
               </div>
-
-              <div className="min-w-0">
-                <h2 className="poppins-semibold text-[28px] leading-[1.1] tracking-[-0.03em] text-[#0B2B4E] dark:text-white xl:text-[32px]">
-                  {t("common.readyToAppreciateLine1")}{" "}
-                  <span className="text-[#0B538D]">
-                    {t("common.readyToAppreciateLine2")}
-                  </span>
-                </h2>
-                <p className="poppins-regular mt-12 max-w-[280px] text-[15px] leading-relaxed text-[#6F7682] dark:text-slate-400">
-                  {t("common.readyToAppreciateSubtext")}
+              <div className="mt-14 rounded-[12px] bg-[#F7F9FC] px-14 py-12">
+                <p className="poppins-medium text-[11px] text-[#8A93A0]">{t("common.about")}</p>
+                <p className="poppins-regular mt-4 line-clamp-3 text-[13px] leading-[20px] text-[#0B2B4E]">
+                  {user.Bio && user.Bio !== "--" ? user.Bio : t("common.noDescriptionYet")}
                 </p>
               </div>
-            </div>
+            </section>
 
-            <div className="grid grid-cols-3 gap-12">
-              {trustBadges.map(({ icon: Icon, title, desc }) => (
-                <div
-                  key={title}
-                  className="rounded-[16px] border border-[#E5EEF7] bg-card p-16 shadow-[0_10px_28px_rgba(11,83,141,0.06)]"
-                >
-                  <span className="mb-12 flex h-10 w-10 items-center justify-center rounded-full bg-[#EAF4FF]">
-                    <Icon className="h-5 w-5 text-[#0B538D]" />
-                  </span>
-                  <h3 className="poppins-semibold text-[13px] text-[#0B2B4E] dark:text-white">
-                    {title}
-                  </h3>
-                  <p className="poppins-regular mt-4 text-[11px] leading-relaxed text-[#8A8A8A]">
-                    {desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tip jar illustration + feature cards — desktop only */}
-        {isTipScreenOpen && (
-          <div className="hidden lg:flex lg:flex-col lg:gap-32">
-            <div className="relative flex items-center justify-center">
-              {/* Soft lavender blob background */}
-              <div className="" />
-              <div
-                className="pointer-events-none absolute right-6 top-2 h-16 w-20 opacity-40"
-               
-              />
-
-              <img
-                src={TipJarMascot}
-                alt="Tip jar mascot"
-                className="relative z-10 h-[320px] w-auto object-contain drop-shadow-[0_26px_50px_rgba(11,83,141,0.16)]"
-              />
-
-              {/* Speech bubble */}
-              <div className="absolute right-0 top-8 z-20 w-[160px] rounded-[18px] border border-[#EEF2F6] bg-card px-16 py-12 text-center shadow-[0_14px_34px_rgba(11,83,141,0.12)]">
-                <div className="flex justify-center gap-2">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <AiFillStar key={i} className="h-4 w-4 text-[#F4D11B]" />
-                  ))}
-                </div>
-                <p className="poppins-medium mt-6 text-[12px] leading-snug text-[#6F7682] dark:text-slate-400">
-                  {t("common.thanksForHelpingMeGrow")}
-                </p>
-                <span className="absolute -bottom-2 left-6 h-4 w-4 rotate-45 border-b border-r border-border bg-card" />
+            <section className="rounded-[20px] border border-[#E8EEF6] bg-white p-16 shadow-[0_8px_28px_rgba(11,83,141,0.06)]">
+              <div className="flex items-center justify-between gap-12">
+                <h3 className="poppins-semibold text-[16px] text-[#0B2B4E]">
+                  {t("common.rateTheirService")}
+                </h3>
+                <span className="poppins-medium shrink-0 rounded-full bg-[#EAF4FF] px-10 py-4 text-[11px] text-[#0B538D]">
+                  {t("common.tapToRate")}
+                </span>
               </div>
-            </div>
+              <Field name="rating">
+                {({ field }: any) => (
+                  <div className="mt-16 flex justify-between gap-8">
+                    {Array.from({ length: 5 }, (_, index) => {
+                      const ratingValue = index + 1;
+                      const active = ratingValue <= field.value;
+                      return (
+                        <button
+                          key={ratingValue}
+                          type="button"
+                          onClick={() => setFieldValue("rating", ratingValue)}
+                          className="flex h-[48px] w-[48px] items-center justify-center rounded-full bg-[#FFF8E8]"
+                          aria-label={`${ratingValue}`}
+                        >
+                          {active ? (
+                            <AiFillStar className="h-[26px] w-[26px] text-[#F5B400]" />
+                          ) : (
+                            <AiOutlineStar className="h-[26px] w-[26px] text-[#F6D56A]" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </Field>
 
-            <div className="grid grid-cols-3 gap-12">
-              {tipBadges.map(({ icon: Icon, title, desc, iconColor, iconBg }) => (
-                <div
-                  key={title}
-                  className="rounded-[16px] border border-[#E5EEF7] bg-card p-16 text-center shadow-[0_10px_28px_rgba(11,83,141,0.06)]"
-                >
-                  <span
-                    className={`mx-auto mb-12 flex h-10 w-10 items-center justify-center rounded-full ${iconBg}`}
-                  >
-                    <Icon className={`h-5 w-5 ${iconColor}`} />
-                  </span>
-                  <h3 className="poppins-semibold text-[13px] text-[#0B2B4E] dark:text-white">
-                    {title}
-                  </h3>
-                  <p className="poppins-regular mt-4 text-[11px] leading-relaxed text-[#8A8A8A]">
-                    {desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+              <h3 className="poppins-semibold mt-18 text-[15px] text-[#0B2B4E]">
+                {t("common.leaveReviewOptional")}
+              </h3>
+              <Field name="review">
+                {({ field }: any) => (
+                  <div className="relative mt-10">
+                    <textarea
+                      {...field}
+                      maxLength={REVIEW_LIMIT}
+                      rows={3}
+                      placeholder={t("common.shareYourExperience")}
+                      onChange={(event) =>
+                        setFieldValue("review", event.target.value.slice(0, REVIEW_LIMIT))
+                      }
+                      className="poppins-regular w-full resize-none rounded-[14px] border border-[#E6EEF5] bg-[#F7F9FC] px-14 py-12 pb-28 text-[14px] text-[#0B2B4E] outline-none placeholder:text-[#A0A8B4] focus:border-[#0B538D]/40"
+                    />
+                    <span className="poppins-regular absolute bottom-10 right-12 text-[11px] text-[#A0A8B4]">
+                      {String(values.review || "").length}/{REVIEW_LIMIT}
+                    </span>
+                  </div>
+                )}
+              </Field>
+            </section>
+
+            <section className="rounded-[20px] border border-[#E8EEF6] bg-white p-16 shadow-[0_8px_28px_rgba(11,83,141,0.06)]">
+              <div className="flex items-center justify-between gap-12">
+                <h3 className="poppins-semibold text-[16px] text-[#0B2B4E]">
+                  {t("common.tipAmount")}
+                </h3>
+                <span className="poppins-semibold inline-flex items-center rounded-full border border-[#E6EEF5] bg-[#F7F9FC] px-12 py-6 text-[12px] text-[#0B2B4E]">
+                  {currency}
+                </span>
+              </div>
+              <TipAmountInput
+                onChange={(newAmount: number) => setFieldValue("tip", newAmount)}
+                t={t}
+              />
+            </section>
+
+            <button
+              type="submit"
+              onClick={() => handleScrollTop()}
+              disabled={disablebutton || isPaymentIntentLoading || !hasProfile}
+              className={`flex h-[52px] w-full items-center justify-center gap-8 rounded-[14px] bg-[#0B538D] text-white shadow-[0_8px_20px_rgba(11,83,141,0.22)] transition-colors hover:bg-[#0077B6] ${
+                disablebutton || isPaymentIntentLoading || !hasProfile
+                  ? "cursor-not-allowed opacity-40"
+                  : ""
+              }`}
+            >
+              <span className="poppins-semibold text-[16px]">
+                {isPaymentIntentLoading ? t("common.processing") : t("common.submitTipAndReview")}
+              </span>
+              {!isPaymentIntentLoading && <ArrowRight className="h-[18px] w-[18px]" />}
+            </button>
+          </Form>
         )}
-      </div>
+      </Formik>
     </div>
   );
 };

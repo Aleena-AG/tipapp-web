@@ -84,7 +84,7 @@ const DownloadBadges = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-nowrap items-center gap-2">
+    <div className="flex flex-wrap items-center justify-center gap-8">
       <StoreBadge
         href={APP_STORE_URL}
         glyph={<AppleGlyph />}
