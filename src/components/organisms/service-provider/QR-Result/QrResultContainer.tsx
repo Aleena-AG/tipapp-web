@@ -13,6 +13,7 @@ import BounceLoader from "react-spinners/ClipLoader";
 import { SafeImage } from "@/components/atoms/images/SafeImage";
 import { handleScrollTop } from "@/hooks/hooks";
 import { CurrencyContext } from "@/App";
+import { getValidAccessToken } from "@/api/axiosInterceptor";
 import { useCreateTipPaymentIntent } from "@/api/managePayments";
 import { setPendingTipPayment } from "@/utils/pendingTipStorage";
 import { useWithdrawAndTipLimit } from "@/api/tipManagement";
@@ -239,7 +240,7 @@ const QrResultContainer = () => {
       );
       return;
     }
-    const guestCheckout = !localStorage.getItem("token");
+    const guestCheckout = !getValidAccessToken();
     const tipData = {
       TipperID: guestCheckout ? "" : localStorage.getItem("userId") || "",
       ServiceProviderID: id,
@@ -260,6 +261,11 @@ const QrResultContainer = () => {
         currency: currency.toUpperCase(),
         serviceProviderId: id,
       });
+
+      if (!result?.clientSecret || !result?.paymentIntentId) {
+        ToastProvider.error("Failed to create payment intent. Please try again.");
+        return;
+      }
 
       setPendingTipPayment({
         tipData: {

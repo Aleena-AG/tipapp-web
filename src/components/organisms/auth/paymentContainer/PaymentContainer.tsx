@@ -4,6 +4,7 @@ import { PrimaryTypo } from "@/components/atoms/typo/primaryTypo";
 import { useEffect, useState, useContext } from "react";
 import ToastProvider from "@/providers/ToastProvider";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getValidAccessToken } from "@/api/axiosInterceptor";
 import { useAddTip } from "@/api/tipManagement";
 import { useTranslation } from "react-i18next";
 import { useGetCurrentUser } from "@/api/userDetails";
@@ -29,7 +30,7 @@ const PaymentContainer = () => {
   const paymentIntentId = location.state?.paymentIntentId as string | undefined;
   const clientSecret = location.state?.clientSecret as string | undefined;
   const guestCheckout = Boolean(location.state?.guestCheckout);
-  const isLoggedIn = Boolean(localStorage.getItem("token"));
+  const isLoggedIn = Boolean(getValidAccessToken());
 
   const { data: currentUser } = useGetCurrentUser();
 

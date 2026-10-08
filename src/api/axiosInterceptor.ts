@@ -21,6 +21,49 @@ function requestPath(url: string | undefined): string {
   return path.replace(/\/+$/, "");
 }
 
+/**
+ * Card tip calls stay public. A missing or expired token must not cancel them.
+ * A still-valid token is attached so a signed-in tipper is saved as themselves.
+ */
+const PUBLIC_GUEST_PATHS = [
+  "/stripe/create-tip-payment-intent",
+  "/stripe/config",
+  "/stripe/payment-intent/",
+  "/user-details/keycloak/",
+  "/tip-management/guest-review",
+];
+
+function isPublicGuestRequest(url: string | undefined): boolean {
+  const path = requestPath(url);
+  return PUBLIC_GUEST_PATHS.some((part) => path.includes(part));
+}
+
+export function getValidAccessToken(): string | null {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  try {
+    const decodedToken: { exp?: number } = jwtDecode(token);
+    if (typeof decodedToken.exp !== "number") return null;
+    if (decodedToken.exp < Date.now() / 1000) return null;
+    return token;
+  } catch {
+    return null;
+  }
+}
+
+function clearStoredSession(): void {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("userType");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("email");
+  localStorage.removeItem("displaySwitch");
+  localStorage.removeItem("notification_token");
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("selectedCurrency");
+  releaseUserCurrencyOverride();
+}
+
 /** GPS and IP lookups. An explicit ?countryCode= call is the cached last resort. */
 function isVisitorLocationLookup(config: {
   url?: string;
@@ -41,25 +84,18 @@ const authFetch = axios.create({
 
 authFetch.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken: any = jwtDecode(token);
-      const currentTime = Date.now() / 1000;
-      if (decodedToken.exp < currentTime) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("userType");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("email");
-        localStorage.removeItem("displaySwitch");
-        localStorage.removeItem("notification_token");  
-        localStorage.removeItem("userEmail");  
-        localStorage.removeItem("selectedCurrency");
-        releaseUserCurrencyOverride();
+    const storedToken = localStorage.getItem("token");
+    const validToken = getValidAccessToken();
+    const guestCall = isPublicGuestRequest(config.url);
+
+    if (storedToken && !validToken) {
+      clearStoredSession();
+      if (!guestCall) {
         window.location.reload();
         throw new axios.Cancel("Token expired");
       }
-      config.headers.Authorization = `Bearer ${token}`;
+    } else if (validToken) {
+      config.headers.Authorization = `Bearer ${validToken}`;
     }
     // Location discovery must not send a cached country. The backend treats
     // X-Country-Code as the answer for IP lookups, which would freeze a stale GB.
