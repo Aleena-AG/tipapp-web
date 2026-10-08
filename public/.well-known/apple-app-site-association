@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "VXN7KYMRY3.com.gcect.tipapp",
+        "paths": ["/tip/*"]
+      }
+    ]
+  }
+}

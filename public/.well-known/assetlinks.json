@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.gcect.tipapp",
+      "sha256_cert_fingerprints": [
+        "F8:3E:2F:B5:B9:05:74:47:09:CC:93:2D:E8:C6:7A:59:00:EC:45:73:D8:3D:B6:1F:85:C3:0A:0F:6B:18:89:C8"
+      ]
+    }
+  }
+]
