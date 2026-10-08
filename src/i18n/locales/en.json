@@ -257,7 +257,20 @@
     "tipSuccessTitle": "Tip sent successfully!",
     "tipSuccessSubtitle": "You just brightened your service provider's day",
     "tipSuccessEncouragement": "Your kindness makes a real difference — thank you!",
-    "tipSentVia": "Paid via {{method}}"
+    "tipSentVia": "Paid via {{method}}",
+    "appPrompt": {
+      "title": "Unlock More with Our App!",
+      "subtitle": "Thank you for your support! Download our app to enjoy more features and opportunities.",
+      "sendReceive": "Send & Receive Tips",
+      "sendReceiveDesc": "Support others and receive appreciation.",
+      "becomeProvider": "Become a Service Provider",
+      "becomeProviderDesc": "Offer your services and grow your opportunities.",
+      "explore": "Explore All Features",
+      "exploreDesc": "Enjoy everything our platform has to offer.",
+      "getApp": "Get the App",
+      "maybeLater": "Maybe Later",
+      "close": "Close"
+    }
   },
   "notifications": {
     "notifications": "Notifications",

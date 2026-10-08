@@ -4,6 +4,7 @@ import { PrimaryTypo } from "@/components/atoms/typo/primaryTypo";
 import { SecondaryTypo } from "@/components/atoms/typo/secondaryTypo";
 import { Home, Star } from "lucide-react";
 import WithdrawInvoiceSuccessCard from "@/components/molecules/service-provider/withdraw-invoice-success-card/WithdrawInvoiceSuccessCard";
+import AppDownloadPrompt from "@/components/molecules/tip-provider/app-download-prompt/AppDownloadPrompt";
 import TipSuccessCard from "@/components/molecules/tip-provider/tip-success-card/TipSuccessCard";
 import TipSuccessDecorations from "@/components/molecules/tip-provider/tip-success-screen/TipSuccessDecorations";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
@@ -234,6 +235,7 @@ const PaymentSucessScreen = () => {
   if (tipSummary) {
     return (
       <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#EEF3F9] via-[#F8F7FF] to-[#E8EEF6] px-4 py-12 pt-[88px] dark:from-[#010816] dark:via-[#061428] dark:to-[#0a1629]">
+        <AppDownloadPrompt />
         <TipSuccessDecorations />
         <div className="relative z-[1] flex w-full max-w-[420px] flex-col items-center">
           <TipSuccessCard summary={tipSummary} />
@@ -269,6 +271,7 @@ const PaymentSucessScreen = () => {
 
   return (
     <div className="min-h-screen bg-primary-hex flex flex-col justify-center items-center">
+      <AppDownloadPrompt />
       <img src={PaymentSucess} alt="App logo" />
       <PrimaryTypo
         typo={t("common.success")}

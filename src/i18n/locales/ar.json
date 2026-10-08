@@ -256,7 +256,20 @@
     "tipSuccessTitle": "تم إرسال الإكرامية بنجاح!",
     "tipSuccessSubtitle": "لقد أسعدت مقدم الخدمة للتو",
     "tipSuccessEncouragement": "لطفك يُحدث فرقاً حقيقياً — شكراً لك!",
-    "tipSentVia": "تم الدفع عبر {{method}}"
+    "tipSentVia": "تم الدفع عبر {{method}}",
+    "appPrompt": {
+      "title": "افتح المزيد مع تطبيقنا!",
+      "subtitle": "شكراً لدعمك! حمّل تطبيقنا للاستمتاع بمزيد من الميزات والفرص.",
+      "sendReceive": "أرسل واستلم الإكراميات",
+      "sendReceiveDesc": "ادعم الآخرين وتلقَّ التقدير.",
+      "becomeProvider": "كن مقدم خدمة",
+      "becomeProviderDesc": "قدّم خدماتك ووسّع فرصك.",
+      "explore": "استكشف كل الميزات",
+      "exploreDesc": "استمتع بكل ما تقدمه منصتنا.",
+      "getApp": "احصل على التطبيق",
+      "maybeLater": "ربما لاحقاً",
+      "close": "إغلاق"
+    }
   },
   "notifications": {
     "notifications": "الإشعارات",
