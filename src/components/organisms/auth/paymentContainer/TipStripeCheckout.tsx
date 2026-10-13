@@ -1,7 +1,6 @@
 import { PrimaryButton } from "@/components/atoms/buttons/primaryButton";
 import { SecondaryTypo } from "@/components/atoms/typo/secondaryTypo";
 import { recordCardTipReview } from "@/api/tipManagement";
-import { getPaymentIntentStatus } from "@/api/managePayments";
 import {
   buildTipSuccessSummary,
   clearPendingTipPayment,
@@ -65,6 +64,8 @@ const TipStripeCheckout = ({
           clientSecret,
           serviceProviderId: tipData.ServiceProviderID,
           tipDate,
+          amount: tipData.Amount,
+          currency: tipData.Currency,
           rating: tipData.Rating,
           review: tipData.Review,
         });
@@ -88,21 +89,6 @@ const TipStripeCheckout = ({
     [clientSecret, guestCheckout, navigate, tipData]
   );
 
-  const finalizePayment = useCallback(
-    async (confirmedPaymentIntentId: string) => {
-      const statusData = await getPaymentIntentStatus(
-        confirmedPaymentIntentId,
-        clientSecret
-      );
-      if (statusData?.status === "succeeded") {
-        await recordTip(confirmedPaymentIntentId);
-      } else {
-        ToastProvider.error("Payment was not completed. Please try again.");
-      }
-    },
-    [clientSecret, recordTip]
-  );
-
   const handleExpressCheckoutConfirm = useCallback(async () => {
     if (!stripe || !elements) {
       ToastProvider.error("Stripe has not loaded yet. Please try again.");
@@ -112,9 +98,8 @@ const TipStripeCheckout = ({
     setIsProcessing(true);
 
     try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
+      const { error } = await stripe.confirmPayment({
         elements,
-        clientSecret,
         redirect: "if_required",
         confirmParams: {
           return_url: `${window.location.origin}/payment/success`,
@@ -126,28 +111,14 @@ const TipStripeCheckout = ({
         return;
       }
 
-      const confirmedId = paymentIntent?.id || paymentIntentId;
-
-      if (paymentIntent?.status === "succeeded") {
-        await recordTip(confirmedId);
-        return;
-      }
-
-      await finalizePayment(confirmedId);
+      await recordTip(paymentIntentId);
     } catch (err) {
       console.error("Wallet payment error:", err);
       ToastProvider.error("Payment failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }
-  }, [
-    clientSecret,
-    elements,
-    finalizePayment,
-    paymentIntentId,
-    recordTip,
-    stripe,
-  ]);
+  }, [elements, paymentIntentId, recordTip, stripe]);
 
   const confirmStripePayment = useCallback(async () => {
     if (!stripe || !elements) {
@@ -158,7 +129,7 @@ const TipStripeCheckout = ({
     setIsProcessing(true);
 
     try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
+      const { error } = await stripe.confirmPayment({
         elements,
         redirect: "if_required",
         confirmParams: {
@@ -171,21 +142,14 @@ const TipStripeCheckout = ({
         return;
       }
 
-      const confirmedId = paymentIntent?.id || paymentIntentId;
-
-      if (paymentIntent?.status === "succeeded") {
-        await recordTip(confirmedId);
-        return;
-      }
-
-      await finalizePayment(confirmedId);
+      await recordTip(paymentIntentId);
     } catch (err) {
       console.error("Payment error:", err);
       ToastProvider.error("Payment failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }
-  }, [elements, finalizePayment, paymentIntentId, recordTip, stripe]);
+  }, [elements, paymentIntentId, recordTip, stripe]);
 
   const isBusy = isProcessing;
   const currency = tipData.Currency || "GBP";

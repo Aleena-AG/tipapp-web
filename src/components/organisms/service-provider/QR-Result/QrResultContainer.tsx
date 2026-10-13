@@ -512,6 +512,21 @@ const QrResultContainer = () => {
             <section className="rounded-[20px] border border-[#E8EEF6] bg-white p-16 shadow-[0_8px_28px_rgba(11,83,141,0.06)]">
               <div className="flex items-center justify-between gap-12">
                 <h3 className="poppins-semibold text-[16px] text-[#0B2B4E]">
+                  {t("common.tipAmount")}
+                </h3>
+                <span className="poppins-semibold inline-flex items-center rounded-full border border-[#E6EEF5] bg-[#F7F9FC] px-12 py-6 text-[12px] text-[#0B2B4E]">
+                  {currency}
+                </span>
+              </div>
+              <TipAmountInput
+                onChange={(newAmount: number) => setFieldValue("tip", newAmount)}
+                t={t}
+              />
+            </section>
+
+            <section className="rounded-[20px] border border-[#E8EEF6] bg-white p-16 shadow-[0_8px_28px_rgba(11,83,141,0.06)]">
+              <div className="flex items-center justify-between gap-12">
+                <h3 className="poppins-semibold text-[16px] text-[#0B2B4E]">
                   {t("common.rateTheirService")}
                 </h3>
                 <span className="poppins-medium shrink-0 rounded-full bg-[#EAF4FF] px-10 py-4 text-[11px] text-[#0B538D]">
@@ -566,21 +581,6 @@ const QrResultContainer = () => {
                   </div>
                 )}
               </Field>
-            </section>
-
-            <section className="rounded-[20px] border border-[#E8EEF6] bg-white p-16 shadow-[0_8px_28px_rgba(11,83,141,0.06)]">
-              <div className="flex items-center justify-between gap-12">
-                <h3 className="poppins-semibold text-[16px] text-[#0B2B4E]">
-                  {t("common.tipAmount")}
-                </h3>
-                <span className="poppins-semibold inline-flex items-center rounded-full border border-[#E6EEF5] bg-[#F7F9FC] px-12 py-6 text-[12px] text-[#0B2B4E]">
-                  {currency}
-                </span>
-              </div>
-              <TipAmountInput
-                onChange={(newAmount: number) => setFieldValue("tip", newAmount)}
-                t={t}
-              />
             </section>
 
             <button

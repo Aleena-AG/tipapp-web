@@ -63,17 +63,6 @@ export const useCreateTipPaymentIntent = (
   });
 };
 
-export const getPaymentIntentStatus = async (
-  paymentIntentId: string,
-  clientSecret?: string
-) => {
-  const response = await authFetch.get(
-    `/stripe/payment-intent/${paymentIntentId}/status`,
-    clientSecret ? { params: { clientSecret } } : undefined
-  );
-  return response.data?.data;
-};
-
 export const useCreatePaymentMethod = (
   onSuccess: () => void,
   onError: (error: string) => void
@@ -126,29 +115,6 @@ export const useGetPayementMethods = (): UseQueryResult<any> => {
     queryFn: async () => {
       const response = await authFetch.get("/stripe/get-payment-methods");
       return response?.data?.data;
-    },
-  });
-};
-
-export const useConfirmPayment = (
-  onSuccess: () => void,
-  onError: (error: string) => void
-) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (data: any) => {
-      return await authFetch.post("/stripe/confirm-payment-intent", data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["get_card_details"]);
-      onSuccess();
-    },
-    onError: (error: any) => {
-      console.error(
-        "Card details error:",
-        error.response?.data?.message || error.message
-      );
-      onError(error.response?.data?.message || error.message);
     },
   });
 };

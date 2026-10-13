@@ -23,3 +23,33 @@ export function getPublicTipUrl(keycloakId: string): string {
   const id = keycloakId.trim();
   return `${getFrontendOrigin()}/tip/${encodeURIComponent(id)}`;
 }
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function decodePathPart(part: string): string {
+  try {
+    return decodeURIComponent(part).trim();
+  } catch {
+    return part.trim();
+  }
+}
+
+/** Provider id from a scanned tip link, or from a raw Keycloak UUID. */
+export function providerIdFromScan(raw: string): string {
+  const value = raw.replace(/^\uFEFF/, "").trim();
+  if (!value) return "";
+
+  const candidate = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  try {
+    const url = new URL(candidate);
+    const segments = url.pathname.split("/").filter(Boolean).map(decodePathPart);
+    const tipIndex = segments.lastIndexOf("tip");
+    const id = tipIndex >= 0 ? segments[tipIndex + 1] : "";
+    if (id) return id;
+  } catch {
+    // Not a link. A bare UUID is still a provider id.
+  }
+
+  return UUID_PATTERN.test(value) ? value : "";
+}

@@ -255,11 +255,11 @@ export const useAddTip = () => {
       if (data.paymentMethodType) {
         payload.paymentMethodType = data.paymentMethodType;
       }
-      if (data.Amount != null && data.paymentMethodType === "BALANCE") {
+      if (data.Amount != null) {
         payload.Amount = data.Amount;
       }
-      if (data.Currency && data.paymentMethodType === "BALANCE") {
-        payload.Currency = data.Currency;
+      if (data.Currency) {
+        payload.Currency = String(data.Currency).trim().toUpperCase();
       }
       if (data.Review != null && data.Review !== "") {
         payload.Review = data.Review;
@@ -285,10 +285,10 @@ export const useAddTip = () => {
 };
 
 /**
- * Card tips are recorded by the Stripe webhook.
- * A visitor attaches an optional review with guest-review.
- * A signed-in tipper's review uses POST /tip-management, which only updates
- * the webhook row when the payment intent already exists.
+ * After Stripe.js confirms the card in the browser.
+ * A guest sends paymentIntentId and clientSecret in the JSON body.
+ * A signed-in tipper sends the same tip body as the app. Amount is major units.
+ * If the webhook already saved the tip, this attaches the rating to that row.
  */
 export async function recordCardTipReview(input: {
   guestCheckout: boolean;
@@ -296,15 +296,21 @@ export async function recordCardTipReview(input: {
   clientSecret?: string;
   serviceProviderId: string;
   tipDate: string;
+  amount?: number;
+  currency?: string;
   rating?: number;
   review?: string;
 }): Promise<void> {
-  const rating = input.rating != null && input.rating > 0 ? input.rating : undefined;
-  const review = input.review?.trim() || undefined;
-  if (!rating && !review) return;
+  const rating =
+    input.rating != null && input.rating >= 1 && input.rating <= 5
+      ? input.rating
+      : undefined;
+  const review = input.review?.trim() ?? "";
 
   if (input.guestCheckout) {
-    if (!input.clientSecret) return;
+    if (!input.clientSecret) {
+      throw new Error("Payment session is missing");
+    }
     await authFetch.post("/tip-management/guest-review", {
       paymentIntentId: input.paymentIntentId,
       clientSecret: input.clientSecret,
@@ -316,10 +322,13 @@ export async function recordCardTipReview(input: {
 
   await authFetch.post("/tip-management", {
     ServiceProviderID: input.serviceProviderId,
+    Amount: input.amount,
+    Currency: (input.currency || "GBP").trim().toUpperCase(),
     TipDate: input.tipDate,
     paymentIntentId: input.paymentIntentId,
+    paymentMethodType: "STRIPE",
     ...(rating ? { Rating: rating } : {}),
-    ...(review ? { Review: review } : {}),
+    Review: review,
   });
 }
 

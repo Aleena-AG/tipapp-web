@@ -8,16 +8,15 @@ import tryAgainIcon from "@/assets/svg/try-again.svg";
 import SwitchAccount from "@/components/molecules/common/switch-account/switchAccount";
 import { handleScrollTop } from "@/hooks/hooks";
 import { useTranslation } from "react-i18next";
-import { useGetUserDetails } from "@/api/authApi";
 import { useGetTipHistoryDetailsByTipper } from "@/api/tipManagement";
 import { useUser } from "@/contexts/UserContext";
 import { readDisplayFinancial } from "@/currency/financials";
-import ToastProvider from "@/providers/ToastProvider";
 import BounceLoader from "react-spinners/ClipLoader";
 
 import CharacterTipper from "@/assets/images/scan.png";
 import { CurrencyContext } from "@/App";
 import { formatBalanceLabel, formatMoney } from "@/currency/format";
+import { providerIdFromScan } from "@/utils/appUrl";
 import {
   ChevronRight,
   Wallet,
@@ -34,12 +33,10 @@ import {
 
 const TPQRCodeContainer = () => {
   const { t } = useTranslation();
-  const [data, setData] = useState("No result");
   const [open, setOpen] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [timeoutReached, setTimeoutReached] = useState(false);
   const [invalidQR, setInvalidQR] = useState(false);
-  const [isValidating, setIsValidating] = useState(false);
 
   const navigate = useNavigate();
   const isLoggedIn = Boolean(
@@ -97,80 +94,18 @@ const TPQRCodeContainer = () => {
     navigate("/tip-provider/user-review-history");
   };
 
-  const {
-    mutate: getUserDetailsMutate,
-    isSuccess: isGetUserDetailsSuccess,
-    isError: isGetUserDetailsError,
-    error: getUserDetailsError,
-  } = useGetUserDetails();
-
-  const extractAndValidateUUID = (scannedData: string) => {
-    const baseUrl = window.location.origin;
-    let uuid = "";
-
-    if (scannedData.length === 36) {
-      uuid = scannedData;
-    } else if (scannedData.startsWith(baseUrl)) {
-      const tipURL = scannedData.replace(baseUrl, "");
-      const uuidMatch = tipURL.match(/\/tip\/([a-f0-9-]{36})/i);
-      if (uuidMatch && uuidMatch[1]) {
-        uuid = uuidMatch[1];
-      }
-    } else if (
-      scannedData.includes("/tip-provider/tip/") ||
-      scannedData.includes("/tip/")
-    ) {
-      const uuidMatch = scannedData.match(/\/tip\/([a-f0-9-]{36})/i);
-      if (uuidMatch && uuidMatch[1]) {
-        uuid = uuidMatch[1];
-      }
-    }
-
-    return uuid;
-  };
-
-  useEffect(() => {
-    if (data === "No result" || !scanned) return;
-
-    const uuid = extractAndValidateUUID(data);
-
-    if (!uuid) {
+  const handleScan = (text: string) => {
+    if (scanned) return;
+    const providerId = providerIdFromScan(text);
+    if (!providerId) {
       setInvalidQR(true);
-      ToastProvider.error(
-        "Invalid QR code. Please scan a valid service provider's QR code."
-      );
       return;
     }
-
-    setIsValidating(true);
-    getUserDetailsMutate(uuid);
-  }, [data, scanned, getUserDetailsMutate]);
-
-  useEffect(() => {
-    if (isValidating && isGetUserDetailsSuccess) {
-      setIsValidating(false);
-      const uuid = extractAndValidateUUID(data);
-      if (uuid) {
-        navigate(`/tip/${uuid}`);
-      }
-    }
-  }, [isValidating, isGetUserDetailsSuccess, data, navigate]);
-
-  useEffect(() => {
-    if (isValidating && isGetUserDetailsError) {
-      setIsValidating(false);
-      const status = getUserDetailsError.response?.status;
-      const errorMessage =
-        status === 404 || status === 400
-          ? t("common.invalidQrCode")
-          : getUserDetailsError.response?.data?.message ||
-            getUserDetailsError.message ||
-            t("common.invalidQrCode");
-
-      ToastProvider.error(errorMessage);
-      setInvalidQR(true);
-    }
-  }, [isValidating, isGetUserDetailsError, getUserDetailsError, t]);
+    setScanned(true);
+    setInvalidQR(false);
+    setOpen(false);
+    navigate(`/tip/${encodeURIComponent(providerId)}`);
+  };
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -181,7 +116,7 @@ const TPQRCodeContainer = () => {
           setOpen(false);
           setTimeoutReached(true);
         }
-      }, 10000);
+      }, 20000);
     }
 
     return () => {
@@ -195,9 +130,7 @@ const TPQRCodeContainer = () => {
     setOpen(true);
     setScanned(false);
     setTimeoutReached(false);
-    setData("No result");
     setInvalidQR(false);
-    setIsValidating(false);
   };
 
   return (
@@ -207,24 +140,6 @@ const TPQRCodeContainer = () => {
         <SwitchAccount variant="floating" />
       </div>
       )}
-      {/* Validation overlay */}
-      {isValidating && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50">
-          <div className="flex flex-col items-center rounded-2xl bg-card p-32 shadow-2xl">
-            <BounceLoader
-              color="#0B538D"
-              loading={isValidating}
-              size={50}
-              aria-label="Validating QR Code"
-              data-testid="validation-loader"
-            />
-            <span className="poppins-regular mt-16 text-sm text-muted-foreground">
-              Validating QR code...
-            </span>
-          </div>
-        </div>
-      )}
-
       {/* Invalid QR alert */}
       {invalidQR && (
         <div className="fixed left-4 right-4 top-24 z-40 mx-auto flex max-w-[500px] items-center gap-8 rounded-lg border border-red-400 bg-red-100 px-16 py-12 text-red-700">
@@ -281,22 +196,28 @@ const TPQRCodeContainer = () => {
       {/* QR Scan Card */}
       <div className="mt-24 rounded-[24px] border border-[#E5EEF7] bg-card p-20 shadow-[0_22px_60px_rgba(11,83,141,0.12)] sm:p-24 dark:border-white/10 dark:bg-[#0a1629]/95 dark:shadow-[0_22px_60px_rgba(0,0,0,0.45)]">
         {open ? (
-          <div className="h-[240px] overflow-hidden rounded-[22px] border border-[#E5EEF7] bg-black sm:h-[280px] dark:border-white/10 [&_section]:!h-full [&_section]:!p-0 [&_video]:!h-full [&_video]:!object-contain">
+          <div className="h-[320px] overflow-hidden rounded-[22px] border border-[#E5EEF7] bg-black sm:h-[380px] dark:border-white/10">
             <QrScanner
-              constraints={{ facingMode: "environment" }}
-              audio={false}
-              stopDecoding={scanned}
-              containerStyle={{ height: "100%", paddingTop: 0 }}
-              videoStyle={{ height: "100%", objectFit: "contain" }}
-              onResult={(result) => {
-                if (result && !scanned) {
-                  setData(result.getText());
-                  setScanned(true);
-                  setInvalidQR(false);
-                  setTimeout(() => setOpen(false), 1000);
-                }
+              constraints={{
+                facingMode: { ideal: "environment" },
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
               }}
-              onError={(error) => console.info(error)}
+              audio={false}
+              scanDelay={300}
+              viewFinderBorder={24}
+              stopDecoding={scanned}
+              containerStyle={{ width: "100%", height: "100%", paddingTop: 0 }}
+              videoStyle={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+              onDecode={handleScan}
+              onError={(error) => {
+                if (error?.name === "NotFoundException") return;
+                console.info(error);
+              }}
             />
           </div>
         ) : timeoutReached ? (

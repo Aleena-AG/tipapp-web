@@ -11,7 +11,6 @@ import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { recordCardTipReview } from "@/api/tipManagement";
-import { getPaymentIntentStatus } from "@/api/managePayments";
 import {
   buildTipSuccessSummary,
   clearPendingTipPayment,
@@ -76,18 +75,6 @@ const PaymentSucessScreen = () => {
 
     const finalizeTip = async () => {
       try {
-        const statusData = await getPaymentIntentStatus(
-          paymentIntentFromUrl,
-          pending.clientSecret
-        );
-        if (statusData?.status !== "succeeded") {
-          ToastProvider.error("Payment verification failed.");
-          navigate(localStorage.getItem("token") ? "/tip-provider" : "/", {
-            replace: true,
-          });
-          return;
-        }
-
         try {
           await recordCardTipReview({
             guestCheckout: Boolean(pending.guestCheckout),
@@ -95,6 +82,8 @@ const PaymentSucessScreen = () => {
             clientSecret: pending.clientSecret,
             serviceProviderId: pending.tipData.ServiceProviderID,
             tipDate: pending.tipData.TipDate,
+            amount: pending.tipData.Amount,
+            currency: pending.tipData.Currency,
             rating: pending.tipData.Rating,
             review: pending.tipData.Review,
           });
@@ -111,13 +100,13 @@ const PaymentSucessScreen = () => {
         }
         clearPendingTipPayment();
       } catch {
-        ToastProvider.error("Could not verify payment.");
+        ToastProvider.error("Could not save the tip.");
         hasFinalizedRedirect.current = false;
       }
     };
 
     finalizeTip();
-  }, [isWithdrawalSuccess, navigate, searchParams]);
+  }, [isWithdrawalSuccess, searchParams]);
 
   useEffect(() => {
     if (isWithdrawalSuccess || !tipSummary || hasEnrichedRecipient.current) {
