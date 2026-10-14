@@ -53,6 +53,11 @@ const RootLayout = () => {
       }
 
       const userType = localStorage.getItem("userType");
+      // Fresh Google/Apple signup has a token but no role yet — stay on the homepage.
+      if (path === "/" && !user && !userType) {
+        return;
+      }
+
       navigate("/register", {
         replace: true,
         state: {

@@ -132,6 +132,8 @@ const HomePage = () => {
           navigate("/service-provider");
         } else if (userRole === UserRoles.TIPER || userRole === "tp") {
           navigate("/tip-provider");
+        } else if (!user && !userRole) {
+          setShowLanding(true);
         } else {
           navigate("/user-selection");
         }

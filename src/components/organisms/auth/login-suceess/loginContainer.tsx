@@ -6,6 +6,11 @@ import { normalizeToCanonicalUserType } from "@/utils/constants/enums";
 import PageLoader from "@/components/atoms/laoder/page-loader";
 
 const POST_AUTH_ROLE_KEY = "postAuthRole";
+const PRODUCTION_ORIGIN = "https://tiptapthetippingapp.com";
+
+function isVercelPreviewHost(hostname: string) {
+  return hostname.endsWith(".vercel.app");
+}
 
 /** Full navigation after OAuth so App boots cleanly with token already in storage. */
 function redirectAfterAuth(path: string, role?: string) {
@@ -14,7 +19,10 @@ function redirectAfterAuth(path: string, role?: string) {
   } else {
     sessionStorage.removeItem(POST_AUTH_ROLE_KEY);
   }
-  window.location.replace(path);
+  const origin = isVercelPreviewHost(window.location.hostname)
+    ? PRODUCTION_ORIGIN
+    : window.location.origin;
+  window.location.replace(`${origin}${path}`);
 }
 
 const LoginSuccess = () => {
@@ -24,6 +32,14 @@ const LoginSuccess = () => {
   useEffect(() => {
     if (handledRef.current) return;
     handledRef.current = true;
+
+    // Preview deploys must not keep the session. Replay the callback on the public site.
+    if (isVercelPreviewHost(window.location.hostname)) {
+      const target = new URL("/login-success", PRODUCTION_ORIGIN);
+      target.search = location.search;
+      window.location.replace(target.toString());
+      return;
+    }
 
     const run = async () => {
       const queryParams = new URLSearchParams(location.search);
@@ -71,11 +87,11 @@ const LoginSuccess = () => {
         );
       }
 
-      // New OAuth user: pick tipper / SP, then complete profile (no OTP)
+      // New OAuth user lands on the public homepage. Role is chosen later.
       if (role === "not_registered") {
         localStorage.removeItem("userType");
         localStorage.removeItem("displaySwitch");
-        redirectAfterAuth("/user-selection", "not_registered");
+        redirectAfterAuth("/", "not_registered");
         return;
       }
 

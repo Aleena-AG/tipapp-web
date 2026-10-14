@@ -7,8 +7,6 @@ import {
 import { normalizeCountryCode, normalizeCurrencyCode } from "./countryCurrency";
 import type { ResolvedLocation } from "./types";
 
-const NOMINATIM_USER_AGENT = "TipApp-Web/1.0 (location-currency)";
-
 function unwrapRecord(payload: unknown): Record<string, unknown> {
   let current: unknown = payload;
   for (let depth = 0; depth < 4; depth += 1) {
@@ -66,27 +64,6 @@ function withTimeout(ms: number): { signal: AbortSignal; cancel: () => void } {
   };
 }
 
-async function readGps(): Promise<{ lat: number; lng: number } | null> {
-  if (typeof navigator === "undefined" || !navigator.geolocation) return null;
-
-  return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        resolve({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      },
-      () => resolve(null),
-      {
-        enableHighAccuracy: false,
-        timeout: 5000,
-        maximumAge: 0,
-      }
-    );
-  });
-}
-
 function locationSource(payload: unknown): string {
   return readString(unwrapRecord(payload), ["source", "Source"]).toLowerCase();
 }
@@ -95,54 +72,6 @@ function locationSource(payload: unknown): string {
 function freshLocation(payload: unknown): ResolvedLocation | null {
   if (locationSource(payload) === "header") return null;
   return normalizeLocationPayload(payload);
-}
-
-async function locationFromCoordinates(
-  lat: number,
-  lng: number
-): Promise<ResolvedLocation | null> {
-  try {
-    const response = await authFetch.get("/location", {
-      params: { lat, lng },
-    });
-    const normalized = freshLocation(response.data);
-    if (normalized) return normalized;
-  } catch {
-    // Fall through to Nominatim.
-  }
-
-  const timeout = withTimeout(5000);
-  try {
-    const url = new URL("https://nominatim.openstreetmap.org/reverse");
-    url.searchParams.set("lat", String(lat));
-    url.searchParams.set("lon", String(lng));
-    url.searchParams.set("format", "json");
-    const headers = new Headers({ Accept: "application/json" });
-    try {
-      headers.set("User-Agent", NOMINATIM_USER_AGENT);
-    } catch {
-      // Browsers forbid overriding User-Agent. Nominatim still receives the browser UA.
-    }
-    const response = await fetch(url.toString(), {
-      signal: timeout.signal,
-      headers,
-    });
-    if (!response.ok) return null;
-    const body = (await response.json()) as {
-      address?: { country_code?: string; country?: string };
-    };
-    const countryCode = normalizeCountryCode(body.address?.country_code);
-    if (!countryCode) return null;
-    return {
-      countryCode,
-      country: body.address?.country?.trim() || "",
-      displayCurrency: currencyForCountry(countryCode),
-    };
-  } catch {
-    return null;
-  } finally {
-    timeout.cancel();
-  }
 }
 
 async function locationFromIp(): Promise<ResolvedLocation | null> {
@@ -203,23 +132,12 @@ async function locationFromCachedCountry(): Promise<ResolvedLocation | null> {
 let runId = 0;
 
 /**
- * GPS, then IP, then a cached country as a last resort.
- * A cached country is never returned before GPS and IP are tried.
+ * IP, then a cached country as a last resort.
+ * Device location is never requested, so the browser does not prompt the user.
+ * A cached country is never returned before IP is tried.
  */
 export async function resolveVisitorLocation(): Promise<void> {
   const id = ++runId;
-
-  const gps = await readGps();
-  if (id !== runId) return;
-
-  if (gps) {
-    const fromGps = await locationFromCoordinates(gps.lat, gps.lng);
-    if (id !== runId) return;
-    if (fromGps) {
-      applyResolvedLocation(fromGps);
-      return;
-    }
-  }
 
   const fromIp = await locationFromIp();
   if (id !== runId) return;
